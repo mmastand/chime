@@ -15,6 +15,7 @@ from .hc_param_import_export import (
     constants_from_uploaded_file,
     param_download_widget,
 )
+from streamlit.ScriptRunner import RerunException
 
 DATE_FORMAT = "%b, %d"  # see https://strftime.org
 
@@ -123,6 +124,10 @@ def display_sidebar(st, d: Constants) -> Parameters:
     uploaded_file = st.sidebar.file_uploader("Load Parameters", type=['json'])
     if uploaded_file is not None:
         d, raw_imported = constants_from_uploaded_file(uploaded_file)
+
+    st.sidebar.markdown("""
+        <span style="color:red;font-size:small;">Known Bug: You must refresh your browser window before loading parameters, otherwise the projections will not be updated.</span> 
+    """, unsafe_allow_html=True)
 
     author = st.sidebar.text_input("Author Name", 
         value="Jane Doe" if uploaded_file is None else raw_imported["Author"])
