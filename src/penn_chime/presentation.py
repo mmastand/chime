@@ -126,7 +126,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
         d, raw_imported = constants_from_uploaded_file(uploaded_file)
 
     st.sidebar.markdown("""
-        <span style="color:red;font-size:small;">Known Bug: You must refresh your browser window before loading parameters, otherwise the projections will not be updated.</span> 
+        <span style="color:red;font-size:small;">Known Limitation: You must refresh your browser window before loading parameters, otherwise the projections will not be updated.</span> 
     """, unsafe_allow_html=True)
 
     author = st.sidebar.text_input("Author Name", 
