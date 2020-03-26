@@ -19,6 +19,14 @@ class Parameters:
         relative_contact_rate: float,
         susceptible: int,
 
+        total_beds: int,
+        total_non_covid_beds: int,
+        total_icu_beds: int,
+        total_non_covid_icu_beds: int,
+        total_vents: int,
+        total_non_covid_vents: int,
+        infection_start: str,
+
         hospitalized: RateLos,
         icu: RateLos,
         ventilated: RateLos,
@@ -30,14 +38,8 @@ class Parameters:
         n_days: int = 60,
         recovery_days: int = 14,
         author: str = "Jane Doe",
-        scenario: str = "COVID model",
-
-        total_beds: int = 200,
-        total_non_covid_beds: int = 50,
-        total_icu_beds: int = 50,
-        total_non_covid_icu_beds: int = 10,
-        total_vents: int = 20,
-        total_non_covid_vents: int = 5,
+        scenario: str = "COVID model"
+                
     ):
         self.current_hospitalized = current_hospitalized
         self.doubling_time = doubling_time
@@ -56,15 +58,16 @@ class Parameters:
         self.n_days = n_days
         self.recovery_days = recovery_days
 
-        self.author = author
-        self.scenario = scenario
-
         self.total_beds = total_beds
         self.total_non_covid_beds = total_non_covid_beds
         self.total_icu_beds = total_icu_beds
         self.total_non_covid_icu_beds = total_non_covid_icu_beds
         self.total_vents = total_vents
         self.total_non_covid_vents = total_non_covid_vents
+        self.infection_start = infection_start
+
+        self.author = author
+        self.scenario = scenario
 
         self.labels = {
             "hospitalized": "Hospitalized",

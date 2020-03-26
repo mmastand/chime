@@ -28,6 +28,14 @@ class Constants:
         relative_contact_rate: int,
         region: Regions,
 
+        total_beds: int,
+        total_non_covid_beds: int,
+        total_icu_beds: int,
+        total_non_covid_icu_beds: int,
+        total_vents: int,
+        total_non_covid_vents: int,
+        infection_start: str,
+
         hospitalized: RateLos,
         icu: RateLos,
         ventilated: RateLos,
@@ -37,6 +45,7 @@ class Constants:
         max_y_axis: int = None,
         n_days: int = 60,
         recovery_days: int = 14,
+
     ):
         self.region = region
         self.current_hospitalized = current_hospitalized
@@ -53,6 +62,15 @@ class Constants:
         self.max_y_axis = max_y_axis
         self.n_days = n_days
         self.recovery_days = recovery_days
+
+        self.total_beds = total_beds
+        self.total_non_covid_beds = total_non_covid_beds
+        self.total_icu_beds = total_icu_beds
+        self.total_non_covid_icu_beds = total_non_covid_icu_beds
+        self.total_vents = total_vents
+        self.total_non_covid_vents = total_non_covid_vents
+        self.infection_start = infection_start
+        
 
     def __repr__(self) -> str:
         return f"Constants(susceptible_default: {self.region.susceptible}, known_infected: {self.known_infected})"
