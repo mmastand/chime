@@ -585,7 +585,7 @@ def build_download_link(st, filename: str, df: pd.DataFrame, parameters: Paramet
         <a download="{filename}" href="data:file/csv;base64,{csv}">Download full table as CSV</a>
 """.format(csv=csv,filename=filename), unsafe_allow_html=True)
 
-def build_data_and_params(projection_admits, census_df, model, parameters):
+def build_data_and_params(projection_admits, census_df, beds_df, model, parameters):
     # taken from admissions table function:
     admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
     admits_table["day"] = admits_table.index
@@ -604,6 +604,13 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
     census_table = census_table.dropna().astype(int)
     census_table.rename(parameters.labels)
     
+    # taken from beds table function
+    bed_table = beds_df[np.mod(beds_df.index, 1) == 0].copy()
+    bed_table.index = range(bed_table.shape[0])
+    bed_table.loc[0, :] = 0
+    bed_table = bed_table.dropna().astype(int)
+    bed_table.rename(parameters.labels)
+
     # taken from raw sir table function:
     projection_area = model.raw_df
     infect_table = (projection_area.iloc[::1, :]).apply(np.floor)
@@ -621,6 +628,10 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
     df["HospitalCensus"] = census_table["hospitalized"]
     df["ICUCensus"] = census_table["icu"]
     df["VentilatedCensus"] = census_table["ventilated"]
+    
+    df["HospitalBeds"] = bed_table["hospitalized"]
+    df["ICUBeds"] = bed_table["icu"]
+    df["Ventilators"] = bed_table["ventilated"]
 
     df["Susceptible"] = infect_table["susceptible"]
     df["Infections"] = infect_table["infected"]

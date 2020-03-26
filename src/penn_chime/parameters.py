@@ -32,12 +32,12 @@ class Parameters:
         author: str = "Jane Doe",
         scenario: str = "COVID model",
 
-        total_beds: int = 200,
-        total_non_covid_beds: int = 50,
-        total_icu_beds: int = 50,
-        total_non_covid_icu_beds: int = 10,
-        total_vents: int = 20,
-        total_non_covid_vents: int = 5,
+        total_beds: int = 500,
+        total_non_covid_beds: int = 300,
+        total_icu_beds: int = 100,
+        total_non_covid_icu_beds: int = 30,
+        total_vents: int = 50,
+        total_non_covid_vents: int = 10,
     ):
         self.current_hospitalized = current_hospitalized
         self.doubling_time = doubling_time

@@ -129,7 +129,8 @@ if st.checkbox("Show Additional Projections"):
 
 st.header("Export Full Data and Parameters")
 df = build_data_and_params(projection_admits = m.admits_df, 
-                           census_df = m.census_df, 
+                           census_df = m.census_df,
+                           beds_df= m.beds_df, 
                            model = m, 
                            parameters = p)
 
