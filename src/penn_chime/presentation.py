@@ -55,7 +55,7 @@ def display_header(st, m, p):
         """
         The estimated number of currently infected individuals is **{total_infections:.0f}**. The **{initial_infections}**
     confirmed cases in the region imply a **{detection_prob_str}** rate of detection. This is based on current inputs for
-    Hospitalizations (**{current_hosp}**), Hospitalization rate (**{hosp_rate:.0%}**), Region size (**{S}**),
+    Hospitalizations (**{current_hosp}**), Hospitalization rate (**{hosp_rate:.1%}**), Region size (**{S}**),
     and Hospital market share (**{market_share:.0%}**).
 
 An initial doubling time of **{doubling_time}** days and a recovery time of **{recovery_days}** days imply an $R_0$ of
@@ -257,15 +257,15 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_beds = st.sidebar.number_input(
         "Total # of Beds",
     #    min_value=0,
-       value=0,
+       value=d.total_beds,
     #    step=10,
        format="%i",
     )
 
     total_non_covid_beds = st.sidebar.number_input(
-        "Total # of Beds for Non-COVID Patients",
+        "Total # of Beds for COVID Patients",
     #    min_value=0,
-       value=0,
+       value=d.total_non_covid_beds,
     #    step=10,
        format="%i",
     )
@@ -273,15 +273,15 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_icu_beds = st.sidebar.number_input(
         "Total # of ICU Beds",
     #    min_value=0,
-       value=0,
+       value=d.total_icu_beds,
     #    step=10,
        format="%i",
     )
 
     total_non_covid_icu_beds = st.sidebar.number_input(
-        "Total # of ICU Beds for Non-COVID Patients",
+        "Total # of ICU Beds for COVID Patients",
     #    min_value=0,
-       value=0,
+       value=d.total_non_covid_icu_beds,
     #    step=10,
        format="%i",
     )
@@ -289,22 +289,22 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_vents = st.sidebar.number_input(
         "Total # of Ventilators",
     #    min_value=0,
-       value=0,
+       value=d.total_vents,
     #    step=10,
        format="%i",
     )
 
     total_non_covid_vents = st.sidebar.number_input(
-        "Total # of Ventilators for Non-COVID Patients",
+        "Total # of Ventilators for COVID Patients",
     #    min_value=0,
-       value=0,
+       value=d.total_non_covid_vents,
     #    step=10,
        format="%i",
     )
 
     infection_start = st.sidebar.date_input(
         "Enter the date the infection started.",
-        value=datetime(2020, 3, 20)  # d.infection_start,
+        value=d.infection_start  # d.infection_start,
     )
 
     as_date_default = False if uploaded_file is None else raw_imported["PresentResultAsDates"]
@@ -336,6 +336,14 @@ def display_sidebar(st, d: Constants) -> Parameters:
         hospitalized=RateLos(hospitalized_rate, hospitalized_los),
         icu=RateLos(icu_rate, icu_los),
         ventilated=RateLos(ventilated_rate, ventilated_los),
+
+        total_beds=total_beds,
+        total_non_covid_beds= total_non_covid_beds,
+        total_icu_beds=total_icu_beds,
+        total_non_covid_icu_beds=total_non_covid_icu_beds,
+        total_vents=total_vents,
+        total_non_covid_vents=total_non_covid_vents,
+        infection_start=infection_start,
 
         author = author,
         scenario = scenario,
@@ -530,6 +538,23 @@ def draw_census_table(st, census_df: pd.DataFrame, labels, as_date: bool = False
     st.table(census_table)
     return None
 
+def draw_beds_table(st, bed_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
+    if daily_count == True:
+        bed_table = bed_df[np.mod(bed_df.index, 1) == 0].copy()
+    else:
+        bed_table = bed_df[np.mod(bed_df.index, 7) == 0].copy()
+    bed_table.index = range(bed_table.shape[0])
+    bed_table.loc[0, :] = 0
+    bed_table = bed_table.dropna().astype(int)
+
+    if as_date:
+        bed_table = add_date_column(
+            bed_table, drop_day_column=True, date_format=DATE_FORMAT
+        )
+
+    bed_table.rename(labels)
+    st.table(bed_table)
+    return None
 
 def draw_raw_sir_simulation_table(st, model, parameters):
     as_date = parameters.as_date
@@ -559,7 +584,7 @@ def build_download_link(st, filename: str, df: pd.DataFrame, parameters: Paramet
         <a download="{filename}" href="data:file/csv;base64,{csv}">Download full table as CSV</a>
 """.format(csv=csv,filename=filename), unsafe_allow_html=True)
 
-def build_data_and_params(projection_admits, census_df, model, parameters):
+def build_data_and_params(projection_admits, census_df, beds_df, model, parameters):
     # taken from admissions table function:
     admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
     admits_table["day"] = admits_table.index
@@ -578,6 +603,14 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
     census_table = census_table.dropna().astype(int)
     census_table.rename(parameters.labels)
     
+    # taken from beds table function:
+
+    bed_table = beds_df[np.mod(beds_df.index, 1) == 0].copy()
+    bed_table.index = range(bed_table.shape[0])
+    bed_table.loc[0, :] = 0
+    bed_table = bed_table.dropna().astype(int)
+    bed_table.rename(parameters.labels)
+
     # taken from raw sir table function:
     projection_area = model.raw_df
     infect_table = (projection_area.iloc[::1, :]).apply(np.floor)
@@ -595,6 +628,10 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
     df["HospitalCensus"] = census_table["hospitalized"]
     df["ICUCensus"] = census_table["icu"]
     df["VentilatedCensus"] = census_table["ventilated"]
+
+    df["HospitalBeds"] = bed_table["hospitalized"]
+    df["ICUBeds"] = bed_table["icu"]
+    df["Ventilators"] = bed_table["ventilated"]
 
     df["Susceptible"] = infect_table["susceptible"]
     df["Infections"] = infect_table["infected"]
@@ -620,6 +657,15 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
     df["RegionalPopulation"] = parameters.relative_contact_rate
     df["CurrentlyKnownRegionalInfections"] = parameters.known_infected
     
+    df["TotalNumberOfBeds"] = parameters.total_beds
+    df["TotalNumberOfBedsForNCPatients"] = parameters.total_non_covid_beds
+    df["TotalNumberOfICUBeds"] = parameters.total_icu_beds
+    df["TotalNumberOfICUBedsForNCPatients"] = parameters.total_non_covid_icu_beds
+    df["TotalNumberOfVents"] = parameters.total_vents
+    df["TotalNumberOfVentsForNCPatients"] = parameters.total_non_covid_vents
+    df["InfectionStartDate"] = parameters.infection_start
+
+    
     # Reorder columns
     df = df[[
         "Author", 
@@ -641,6 +687,15 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
         "HospitalMarketShare",
         "RegionalPopulation",
         "CurrentlyKnownRegionalInfections",
+        
+        "TotalNumberOfBeds",
+        "TotalNumberOfBedsForNCPatients",
+        "TotalNumberOfICUBeds",
+        "TotalNumberOfICUBedsForNCPatients",
+        "TotalNumberOfVents",
+        "TotalNumberOfVentsForNCPatients",
+
+        "InfectionStartDate",
 
         "Date",
         "HospitalAdmissions", 
@@ -650,6 +705,10 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
         "HospitalCensus",
         "ICUCensus",
         "VentilatedCensus",
+        
+        "HospitalBeds",
+        "ICUBeds",
+        "Ventilators", 
 
         "Susceptible",
         "Infections",

@@ -93,6 +93,50 @@ def admitted_patients_chart(
     )
 
 
+ # Total covid med/surg beds = total beds - nc beds - icu
+ # covid_icu_beds  = total icu - nc_icu
+ # covid_vents = total_vents - nc_vents
+def covid_beds_chart(
+    alt, census: pd.DataFrame, parameters: Parameters
+) -> Chart:
+    """docstring"""
+
+    plot_projection_days = parameters.n_days - 10
+    max_y_axis = parameters.max_y_axis
+    max_y_axis_set = parameters.max_y_axis_set
+    as_date = parameters.as_date
+    if as_date:
+        census = add_date_column(census)
+        x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
+        idx = "date:T"
+    else:
+        x_kwargs = {"shorthand": "day", "title": "Days from today"}
+        idx = "day"
+
+    y_scale = alt.Scale()
+
+    if max_y_axis_set and max_y_axis is not None:
+        y_scale.domain = (0, max_y_axis)
+        y_scale.clamp = True
+
+    # TODO fix the fold to allow any number of dispositions
+    return (
+        alt.Chart(census.head(plot_projection_days))
+        .transform_fold(fold=["hospitalized", "icu", "ventilated"])
+        .mark_line(point=True)
+        .encode(
+            x=alt.X(**x_kwargs),
+            y=alt.Y("value:Q", title="COVID Beds Available", scale=y_scale),
+            color="key:N",
+            tooltip=[
+                idx,
+                alt.Tooltip("value:Q", format=".0f", title="Beds Available"),
+                "key:N",
+            ],
+        )
+        .interactive()
+    )
+
 def additional_projections_chart(
     alt, model, parameters
 ) -> Chart:
