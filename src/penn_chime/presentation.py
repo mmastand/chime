@@ -254,6 +254,59 @@ def display_sidebar(st, d: Constants) -> Parameters:
         format="%i",
     )
 
+    total_beds = st.sidebar.number_input(
+        "Total # of Beds",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    total_non_covid_beds = st.sidebar.number_input(
+        "Total # of Beds for Non-COVID Patients",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    total_icu_beds = st.sidebar.number_input(
+        "Total # of ICU Beds",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    total_non_covid_icu_beds = st.sidebar.number_input(
+        "Total # of ICU Beds for Non-COVID Patients",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    total_vents = st.sidebar.number_input(
+        "Total # of Ventilators",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    total_non_covid_vents = st.sidebar.number_input(
+        "Total # of Ventilators for Non-COVID Patients",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    infection_start = st.sidebar.date_input(
+        "Enter the date the infection started.",
+        value=datetime(2020, 3, 20)  # d.infection_start,
+    )
+
     as_date_default = False if uploaded_file is None else raw_imported["PresentResultAsDates"]
     as_date = st.sidebar.checkbox(label="Present result as dates instead of days", value=as_date_default)
     
