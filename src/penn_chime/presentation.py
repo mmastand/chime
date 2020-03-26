@@ -656,6 +656,8 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     df["HospitalMarketShare"] = parameters.market_share
     df["RegionalPopulation"] = parameters.relative_contact_rate
     df["CurrentlyKnownRegionalInfections"] = parameters.known_infected
+
+    df["InfectionStartDate"] = parameters.infection_start
     
     # Reorder columns
     df = df[[
@@ -678,6 +680,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         "HospitalMarketShare",
         "RegionalPopulation",
         "CurrentlyKnownRegionalInfections",
+        "InfectionStartDate",
 
         "Date",
         "HospitalAdmissions", 
@@ -687,6 +690,10 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         "HospitalCensus",
         "ICUCensus",
         "VentilatedCensus",
+
+        "HospitalBeds",
+        "ICUBeds",
+        "Ventilators",
 
         "Susceptible",
         "Infections",
