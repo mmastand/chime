@@ -25,7 +25,6 @@ class Parameters:
         total_non_covid_icu_beds: int,
         total_vents: int,
         total_non_covid_vents: int,
-        infection_start: str,
 
         hospitalized: RateLos,
         icu: RateLos,
@@ -64,7 +63,6 @@ class Parameters:
         self.total_non_covid_icu_beds = total_non_covid_icu_beds
         self.total_vents = total_vents
         self.total_non_covid_vents = total_non_covid_vents
-        self.infection_start = infection_start
 
         self.author = author
         self.scenario = scenario

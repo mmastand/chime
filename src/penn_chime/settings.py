@@ -25,7 +25,6 @@ DEFAULTS = Constants(
     total_non_covid_icu_beds=30,
     total_vents=50,
     total_non_covid_vents=10,
-    infection_start= datetime(2020,3,22),
 
     current_hospitalized=14,
     doubling_time=4,

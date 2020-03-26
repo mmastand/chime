@@ -302,11 +302,6 @@ def display_sidebar(st, d: Constants) -> Parameters:
        format="%i",
     )
 
-    infection_start = st.sidebar.date_input(
-        "Enter the date the infection started.",
-        value=d.infection_start  # d.infection_start,
-    )
-
     as_date_default = False if uploaded_file is None else raw_imported["PresentResultAsDates"]
     as_date = st.sidebar.checkbox(label="Present result as dates instead of days", value=as_date_default)
     
@@ -343,7 +338,6 @@ def display_sidebar(st, d: Constants) -> Parameters:
         total_non_covid_icu_beds=total_non_covid_icu_beds,
         total_vents=total_vents,
         total_non_covid_vents=total_non_covid_vents,
-        infection_start=infection_start,
 
         author = author,
         scenario = scenario,
@@ -663,7 +657,6 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     df["TotalNumberOfICUBedsForNCPatients"] = parameters.total_non_covid_icu_beds
     df["TotalNumberOfVents"] = parameters.total_vents
     df["TotalNumberOfVentsForNCPatients"] = parameters.total_non_covid_vents
-    df["InfectionStartDate"] = parameters.infection_start
 
     
     # Reorder columns
@@ -694,8 +687,6 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         "TotalNumberOfICUBedsForNCPatients",
         "TotalNumberOfVents",
         "TotalNumberOfVentsForNCPatients",
-
-        "InfectionStartDate",
 
         "Date",
         "HospitalAdmissions", 
