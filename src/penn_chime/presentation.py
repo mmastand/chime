@@ -1,5 +1,6 @@
 """effectful functions for streamlit io"""
 
+import os
 from typing import Optional
 from datetime import datetime
 
@@ -14,6 +15,7 @@ from .hc_param_import_export import (
     constants_from_uploaded_file,
     param_download_widget,
 )
+from streamlit.ScriptRunner import RerunException
 
 DATE_FORMAT = "%b, %d"  # see https://strftime.org
 
@@ -42,14 +44,16 @@ def display_header(st, m, p):
 <link rel="stylesheet" href="https://www1.pennmedicine.org/styles/shared/penn-medicine-header.css">
 
 <div class="penn-medicine-header__content">
-    <a id="title" class="penn-medicine-header__title">COVID-19 Hospital Impact Model for Epidemics</a>
-</div>
+    <a id="title" class="penn-medicine-header__title" style="font-size:24pt;color:#00aeff">COVID-19 Hospital Impact Model for Epidemics</a>
+</div> 
+<br>
     """,
         unsafe_allow_html=True,
     )
 
     st.markdown(
-        """The estimated number of currently infected individuals is **{total_infections:.0f}**. The **{initial_infections}**
+        """
+        The estimated number of currently infected individuals is **{total_infections:.0f}**. The **{initial_infections}**
     confirmed cases in the region imply a **{detection_prob_str}** rate of detection. This is based on current inputs for
     Hospitalizations (**{current_hosp}**), Hospitalization rate (**{hosp_rate:.0%}**), Region size (**{S}**),
     and Hospital market share (**{market_share:.0%}**).
@@ -79,6 +83,34 @@ outbreak **{impact_statement:s} {doubling_time_t:.1f}** days, implying an effect
 
     return None
 
+def display_how_to_use(st):
+    st.subheader("How to Use This Tool")
+    st.markdown(
+        """
+        **This app is based on the [CHIME](https://github.com/CodeForPhilly/chime) app, developed by Penn Medicine.**
+        It is designed to assist hospitals and public health officials with understanding hospital capacity needs as 
+        they relate to the COVID-19 pandemic. CHIME enables capacity planning by providing estimates of total daily (i.e. new) 
+        and running totals of (i.e. census) inpatient hospitalizations, ICU admissions, and patients requiring ventilation.
+
+        This tool has the ability to load and save parameters, as well as save parameters and calculations. Enable
+        these features by changing the *Author Name* and *Scenario Name* to values of your choosing. Rather than create the parameter file
+        from scratch we highly recommend using the "Save Parameters" button to create a parameter file which can then be edited by hand
+        if desired. Please note however that it is easy to inadvertently produce an invalid JSON file when editing by hand. If you wish
+        to update a set of existing parameters we recommend loading in the parameters, editing them in the UI, and re-exporting a new
+        version of the parameters.
+        
+        **Saving Parameters:** At the bottom
+        of the left sidebar, a download link will appear to save your parameters as a file. Click to save the file. This file is .json and 
+        can be opened in a text editor.
+
+        **Loading Parameters:** At the top of the left sidebar, browse for a parameter file (in the same format as the exported parameters)
+        or drag and drop. Parameter values will update.
+
+        **Saving Calculations**: At the bottom of the main page, a link will appear to save all model parameters and calculations as a .csv
+        file. Click the link to save the file.
+        <br><br>
+        """,
+        unsafe_allow_html=True,)
 
 def display_sidebar(st, d: Constants) -> Parameters:
     # Initialize variables
@@ -89,9 +121,13 @@ def display_sidebar(st, d: Constants) -> Parameters:
     if d.known_infected < 1:
         raise ValueError("Known cases must be larger than one to enable predictions.")
 
-    uploaded_file = st.sidebar.file_uploader("Import Parameters", type=['json'])
+    uploaded_file = st.sidebar.file_uploader("Load Parameters", type=['json'])
     if uploaded_file is not None:
         d, raw_imported = constants_from_uploaded_file(uploaded_file)
+
+    st.sidebar.markdown("""
+        <span style="color:red;font-size:small;">Known Bug: You must refresh your browser window before loading parameters, otherwise the projections will not be updated.</span> 
+    """, unsafe_allow_html=True)
 
     author = st.sidebar.text_input("Author Name", 
         value="Jane Doe" if uploaded_file is None else raw_imported["Author"])
@@ -218,17 +254,69 @@ def display_sidebar(st, d: Constants) -> Parameters:
         format="%i",
     )
 
+    total_beds = st.sidebar.number_input(
+        "Total # of Beds",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    total_non_covid_beds = st.sidebar.number_input(
+        "Total # of Beds for Non-COVID Patients",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    total_icu_beds = st.sidebar.number_input(
+        "Total # of ICU Beds",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    total_non_covid_icu_beds = st.sidebar.number_input(
+        "Total # of ICU Beds for Non-COVID Patients",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    total_vents = st.sidebar.number_input(
+        "Total # of Ventilators",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    total_non_covid_vents = st.sidebar.number_input(
+        "Total # of Ventilators for Non-COVID Patients",
+    #    min_value=0,
+    #    value=d.known_infected,
+    #    step=10,
+    #    format="%i",
+    )
+
+    infection_start = st.sidebar.date_input(
+        "Enter the date the infection started.",
+        value=datetime(2020, 3, 20)  # d.infection_start,
+    )
+
     as_date_default = False if uploaded_file is None else raw_imported["PresentResultAsDates"]
     as_date = st.sidebar.checkbox(label="Present result as dates instead of days", value=as_date_default)
     
-    max_y_axis_set_default = False if uploaded_file is None else raw_imported["SetYAxisToStaticValue"]
+    max_y_axis_set_default = False if uploaded_file is None else raw_imported["MaxYAxisSet"]
     max_y_axis_set = st.sidebar.checkbox("Set the Y-axis on graphs to a static value", value=max_y_axis_set_default)
-    max_y_axis = None
+    max_y_axis = 500 if uploaded_file is None else raw_imported["MaxYAxis"]
     if max_y_axis_set:
-        y_axis_limit = 500 if uploaded_file is None else raw_imported["YAxisStaticValue"]
         max_y_axis = st.sidebar.number_input(
             "Y-axis static value", 
-            value=y_axis_limit, 
+            value=max_y_axis, 
             format="%i", 
             step=25,
         )
@@ -240,6 +328,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
         known_infected=known_infected,
         market_share=market_share,
         max_y_axis=max_y_axis,
+        max_y_axis_set=max_y_axis_set,
         n_days=n_days,
         relative_contact_rate=relative_contact_rate,
         susceptible=susceptible,
@@ -256,7 +345,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
         parameters, 
         as_date=as_date, 
         max_y_axis_set=max_y_axis_set, 
-        y_axis_limit=max_y_axis
+        max_y_axis=max_y_axis
     )
     return parameters
 
@@ -376,6 +465,8 @@ def write_footer(st):
         """* This application is based on the work that is developed and made freely available (under MIT license) by Penn Medicine (https://github.com/CodeForPhilly/chime). 
         """
     )
+    BUILD_TIME = os.environ['BUILD_TIME'] # == "`date`"
+    st.markdown(f"""Last Changed: **{BUILD_TIME}**""")
     st.markdown("© 2020, Health Catalyst Inc.")
 
 

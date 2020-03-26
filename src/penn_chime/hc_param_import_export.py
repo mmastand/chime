@@ -27,7 +27,7 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Constants, dict]:
     )
     return constants, imported_params
 
-def param_download_widget(st, parameters, as_date, max_y_axis_set, y_axis_limit):
+def param_download_widget(st, parameters, as_date, max_y_axis_set, max_y_axis):
     if parameters.author == "Jane Doe" or parameters.scenario == "COVID Model":
         st.sidebar.markdown("""
         **Enter a unique author name and scenario name to enable parameter download.**""")
@@ -50,13 +50,13 @@ def param_download_widget(st, parameters, as_date, max_y_axis_set, y_axis_limit)
             "RegionalPopulation": parameters.susceptible,
             "CurrentlyKnownRegionalInfections": parameters.known_infected,
             "PresentResultAsDates": as_date,
-            "SetYAxisToStaticValue":max_y_axis_set,
-            "YAxisStaticValue":y_axis_limit,
+            "MaxYAxisSet":max_y_axis_set,
+            "MaxYAxis":max_y_axis,
         }
         out_json = json.dumps(out_obj)
         b64_json = base64.b64encode(out_json.encode()).decode()
         st.sidebar.markdown(
-            """<a download="{filename}" href="data:text/plain;base64,{b64_json}">Save parameters</a>"""
+            """<a download="{filename}" href="data:text/plain;base64,{b64_json}" style="padding:.75em;border-radius:10px;background-color:#00aeff;color:white;font-family:sans-serif;text-decoration:none;">Save Parameters</a>"""
             .format(b64_json=b64_json,filename=filename), 
             unsafe_allow_html=True,
         )
