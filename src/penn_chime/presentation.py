@@ -257,49 +257,49 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_beds = st.sidebar.number_input(
         "Total # of Beds",
     #    min_value=0,
-    #    value=d.known_infected,
+       value=0,
     #    step=10,
-    #    format="%i",
+       format="%i",
     )
 
     total_non_covid_beds = st.sidebar.number_input(
         "Total # of Beds for Non-COVID Patients",
     #    min_value=0,
-    #    value=d.known_infected,
+       value=0,
     #    step=10,
-    #    format="%i",
+       format="%i",
     )
 
     total_icu_beds = st.sidebar.number_input(
         "Total # of ICU Beds",
     #    min_value=0,
-    #    value=d.known_infected,
+       value=0,
     #    step=10,
-    #    format="%i",
+       format="%i",
     )
 
     total_non_covid_icu_beds = st.sidebar.number_input(
         "Total # of ICU Beds for Non-COVID Patients",
     #    min_value=0,
-    #    value=d.known_infected,
+       value=0,
     #    step=10,
-    #    format="%i",
+       format="%i",
     )
 
     total_vents = st.sidebar.number_input(
         "Total # of Ventilators",
     #    min_value=0,
-    #    value=d.known_infected,
+       value=0,
     #    step=10,
-    #    format="%i",
+       format="%i",
     )
 
     total_non_covid_vents = st.sidebar.number_input(
         "Total # of Ventilators for Non-COVID Patients",
     #    min_value=0,
-    #    value=d.known_infected,
+       value=0,
     #    step=10,
-    #    format="%i",
+       format="%i",
     )
 
     infection_start = st.sidebar.date_input(
