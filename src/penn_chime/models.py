@@ -193,9 +193,9 @@ def build_beds_df(
     covid_icu_beds  = p.total_icu_beds - p.total_non_covid_icu_beds
     covid_vents = p.total_vents - p.total_non_covid_vents
 
-    beds_df["med_surg_beds"] = total_covid_beds - census_df["hospitalized"]
-    beds_df["icu_beds"] = covid_icu_beds - census_df["icu"]
-    beds_df["ventilators"] = covid_vents - census_df["ventilated"]
+    beds_df["hospitalized"] = total_covid_beds - census_df["hospitalized"]
+    beds_df["icu"] = covid_icu_beds - census_df["icu"]
+    beds_df["ventilated"] = covid_vents - census_df["ventilated"]
     # beds_df = beds_df[["day", *lengths_of_stay.keys()]]
     beds_df = beds_df.head(n_days)
     return beds_df

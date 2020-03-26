@@ -257,7 +257,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_beds = st.sidebar.number_input(
         "Total # of Beds",
     #    min_value=0,
-       value=0,
+       value=200,
     #    step=10,
        format="%i",
     )
@@ -265,7 +265,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_non_covid_beds = st.sidebar.number_input(
         "Total # of Beds for Non-COVID Patients",
     #    min_value=0,
-       value=0,
+       value=50,
     #    step=10,
        format="%i",
     )
@@ -273,7 +273,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_icu_beds = st.sidebar.number_input(
         "Total # of ICU Beds",
     #    min_value=0,
-       value=0,
+       value=50,
     #    step=10,
        format="%i",
     )
@@ -281,7 +281,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_non_covid_icu_beds = st.sidebar.number_input(
         "Total # of ICU Beds for Non-COVID Patients",
     #    min_value=0,
-       value=0,
+       value=10,
     #    step=10,
        format="%i",
     )
@@ -289,7 +289,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_vents = st.sidebar.number_input(
         "Total # of Ventilators",
     #    min_value=0,
-       value=0,
+       value=20,
     #    step=10,
        format="%i",
     )
@@ -297,7 +297,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_non_covid_vents = st.sidebar.number_input(
         "Total # of Ventilators for Non-COVID Patients",
     #    min_value=0,
-       value=0,
+       value=5,
     #    step=10,
        format="%i",
     )
@@ -538,6 +538,24 @@ def draw_census_table(st, census_df: pd.DataFrame, labels, as_date: bool = False
     st.table(census_table)
     return None
 
+
+def draw_bed_table(st, bed_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
+    if daily_count == True:
+        bed_table = bed_df[np.mod(bed_df.index, 1) == 0].copy()
+    else:
+        bed_table = bed_df[np.mod(bed_df.index, 7) == 0].copy()
+    bed_table.index = range(bed_table.shape[0])
+    bed_table.loc[0, :] = 0
+    bed_table = bed_table.dropna().astype(int)
+
+    if as_date:
+        bed_table = add_date_column(
+            bed_table, drop_day_column=True, date_format=DATE_FORMAT
+        )
+
+    bed_table.rename(labels)
+    st.table(bed_table)
+    return None
 
 def draw_raw_sir_simulation_table(st, model, parameters):
     as_date = parameters.as_date
