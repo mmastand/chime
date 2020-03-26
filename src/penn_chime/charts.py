@@ -126,7 +126,7 @@ def covid_beds_chart(
         .mark_line(point=True)
         .encode(
             x=alt.X(**x_kwargs),
-            y=alt.Y("value:Q", title="Beds Available", scale=y_scale),
+            y=alt.Y("value:Q", title="COVID Beds Available", scale=y_scale),
             color="key:N",
             tooltip=[
                 idx,
