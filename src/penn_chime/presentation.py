@@ -337,6 +337,14 @@ def display_sidebar(st, d: Constants) -> Parameters:
         icu=RateLos(icu_rate, icu_los),
         ventilated=RateLos(ventilated_rate, ventilated_los),
 
+        total_beds = total_beds,
+        total_non_covid_beds = total_non_covid_beds,
+        total_icu_beds = total_icu_beds,
+        total_non_covid_icu_beds = total_non_covid_icu_beds,
+        total_vents = total_vents,
+        total_non_covid_vents = total_non_covid_vents,
+
+
         author = author,
         scenario = scenario,
     )
