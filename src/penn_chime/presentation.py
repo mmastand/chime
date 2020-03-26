@@ -539,7 +539,7 @@ def draw_census_table(st, census_df: pd.DataFrame, labels, as_date: bool = False
     return None
 
 
-def draw_bed_table(st, bed_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
+def draw_beds_table(st, bed_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
     if daily_count == True:
         bed_table = bed_df[np.mod(bed_df.index, 1) == 0].copy()
     else:
