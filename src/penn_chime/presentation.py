@@ -84,20 +84,26 @@ outbreak **{impact_statement:s} {doubling_time_t:.1f}** days, implying an effect
     return None
 
 def display_how_to_use(st):
+    BUILD_TIME = os.environ['BUILD_TIME'] # == "`date`"
     st.subheader("Information About This Tool")
     st.markdown(
-        """
-        **This app is based on the [CHIME](https://github.com/CodeForPhilly/chime) app, developed by Penn Medicine.**
-        It is designed to assist hospitals and public health officials with understanding hospital capacity needs as 
-        they relate to the COVID-19 pandemic. 
+        f"""
 
-        The tool allows you to: 
+        This tool was developed by Health Catalyst to assist healthcare systems with their modeling and forecasting of COVID-19 infection 
+        rates in their local catchment region, and the subsequent impact of those rates on care delivery capacity. We extend our deep 
+        thanks to the [Predictive Healthcare team at Penn Medicine] (http://predictivehealthcare.pennmedicine.org/)  for their [COVID-19 
+        Hospital Impact Model for Epidemics] (https://penn-chime.phl.io/), and making the code for their tool available to the opensource community. We leveraged the Penn 
+        epidemiology models, and added new features in our tool such as the ability to run multiple scenarios, store those scenarios on 
+        users' local desktops, then upload those scenarios again for later use. We also added additional features that reflect hospital 
+        operations, such as the ability to understand capacity.
 
-        * Input local epidemiology and capacity values 
-        * See admissions, census, and availability for total hospital beds, ICU beds, and ventilators
-        * Save and upload scenarios
-        * Download a table of input parameters and resulting calculations
+        We've done our best to test and validate this tool, balancing time-to-value with thorough test and validation. We are confident there 
+        are no major problems or errors in the model, and we are comfortable in advocating it for its intended use. That said, we expect that 
+        we've missed minor errors in functionality, not output, and encourage you to report those to us [here] (mailto:jason.jones@healthcatalyst.com). In addition, we encourage you 
+        to suggest enhancements [here] (mailto:jason.jones@healthcatalyst.com).
         
+        Last Changed: **{BUILD_TIME}**
+
         See **Application Guidance** section below for more information 
         """,
         unsafe_allow_html=True,)
@@ -186,7 +192,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
     )
     ventilators_rate = (
         st.sidebar.number_input(
-            "ventilators %(total infections)",
+            "Ventilators %(total infections)",
             min_value=0.0,
             max_value=100.0,
             value=d.ventilators.rate * 100,
@@ -333,6 +339,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
         author = author,
         scenario = scenario,
     )
+
     param_download_widget(
         st,
         parameters, 
@@ -340,6 +347,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
         max_y_axis_set=max_y_axis_set, 
         max_y_axis=max_y_axis
     )
+
     return parameters
 
 
@@ -475,8 +483,6 @@ def write_footer(st):
         """* This application is based on the work that is developed and made freely available (under MIT license) by Penn Medicine (https://github.com/CodeForPhilly/chime). 
         """
     )
-    BUILD_TIME = os.environ['BUILD_TIME'] # == "`date`"
-    st.markdown(f"""Last Changed: **{BUILD_TIME}**""")
     st.markdown("© 2020, Health Catalyst Inc.")
 
 
