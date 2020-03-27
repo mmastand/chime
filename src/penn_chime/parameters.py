@@ -72,6 +72,7 @@ class Parameters:
             "hospitalized": "Hospitalized",
             "icu": "ICU",
             "ventilated": "Ventilated",
+            "ventilators": "Ventilators",
             "day": "Day",
             "date": "Date",
             "susceptible": "Susceptible",

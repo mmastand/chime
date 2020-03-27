@@ -50,6 +50,7 @@ if st.checkbox("Show more info about this tool"):
 
 st.subheader("New Admissions")
 st.markdown("Projected number of **daily** COVID-19 admissions")
+st.dataframe(m.census_df) #######
 new_admit_chart = new_admissions_chart(alt, m.admits_df, parameters=p)
 st.altair_chart(
     new_admissions_chart(alt, m.admits_df, parameters=p),
@@ -57,7 +58,6 @@ st.altair_chart(
 )
 
 st.markdown(chart_descriptions(new_admit_chart, p.labels))
-st.dataframe(m.admits_df)
 if st.checkbox("Show Projected Admissions in tabular form"):
     if st.checkbox("Show Daily Counts"):
         draw_projected_admissions_table(st, m.admits_df, p.labels, as_date=p.as_date, daily_count=True)
@@ -72,6 +72,7 @@ st.subheader("Admitted Patients (Census)")
 st.markdown(
     "Projected **census** of COVID-19 patients, accounting for arrivals and discharges"
 )
+st.dataframe(m.census_df)#########
 census_chart = admitted_patients_chart(alt=alt, census=m.census_df, parameters=p)
 st.altair_chart(
     admitted_patients_chart(alt=alt, census=m.census_df, parameters=p),
@@ -93,6 +94,7 @@ st.subheader("COVID-19 Beds")
 st.markdown(
     "Projected **number** of available COVID-19 beds, accounting for admits and discharges"
 )  
+st.dataframe(m.beds_df)##########
 beds_chart = covid_beds_chart(alt=alt, census=m.beds_df, parameters=p)
 st.altair_chart(
     covid_beds_chart(alt=alt, census=m.beds_df, parameters=p),

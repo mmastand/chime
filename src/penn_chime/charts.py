@@ -122,7 +122,7 @@ def covid_beds_chart(
     # TODO fix the fold to allow any number of dispositions
     return (
         alt.Chart(census.head(plot_projection_days))
-        .transform_fold(fold=["hospitalized", "icu", "ventilated"])
+        .transform_fold(fold=["total", "icu", "ventilators"])
         .mark_line(point=True)
         .encode(
             x=alt.X(**x_kwargs),

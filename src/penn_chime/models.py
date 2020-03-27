@@ -171,6 +171,7 @@ def build_census_df(
     census_df = pd.DataFrame(census_dict)
     census_df["day"] = census_df.index
     census_df = census_df[["day", *lengths_of_stay.keys()]]
+    census_df["total"] = census_df["hospitalized"] + census_df["icu"] + census_df["ventilated"]
     census_df = census_df.head(n_days)
     return census_df
 
@@ -196,7 +197,7 @@ def build_beds_df(
 
     beds_df["hospitalized"] = total_covid_beds - census_df["hospitalized"]
     beds_df["icu"] = covid_icu_beds - census_df["icu"]
-    beds_df["ventilated"] = covid_vents - census_df["ventilated"]
-    # beds_df = beds_df[["day", *lengths_of_stay.keys()]]
+    beds_df["ventilators"] = covid_vents - census_df["ventilated"]
+    beds_df["total"] = p.total_non_covid_beds - census_df["hospitalized"] - census_df["icu"]
     beds_df = beds_df.head(n_days)
     return beds_df
