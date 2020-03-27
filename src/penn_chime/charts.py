@@ -4,6 +4,7 @@ import datetime
 
 from altair import Chart  # type: ignore
 import pandas as pd  # type: ignore
+import numpy as np
 
 from .parameters import Parameters
 from .utils import add_date_column
@@ -216,4 +217,43 @@ def chart_descriptions(chart: Chart, labels, suffix: str = ""):
 
     if asterisk:
         messages.append("_* The max is at the upper bound of the data, and therefore may not be the actual max_")
+    return "\n\n".join(messages)
+
+def bed_chart_descriptions(chart: Chart, labels, str = ""):
+    """
+
+    :param chart: Chart: The alt chart to be used in finding 0 crossing points
+    :param suffix: str: The assumption is that the charts have similar column names.
+                   Make sure to include a space or underscore as appropriate
+    :return: str: Returns a multi-line string description of the results
+    """
+    messages = []
+
+    bed_label_suffix = {"total": "Total Beds", "icu": "ICU Beds", "ventilators": "Ventilators"}
+
+    cols = ["total", "icu", "ventilators"]
+    asterisk = False
+    day = "date" if "date" in chart.data.columns else "day"
+
+    for col in cols:
+        if np.nanmin(chart.data[col]) >= 0:
+            asterisk = True
+            messages.append("_{} do not cross zero._".format(bed_label_suffix[col]))
+            continue
+
+        on = chart.data[day][chart.data[col].lt(0).idxmax() - 1]
+#        messages.append("**** {} ****".format(on))
+        if day == "date":
+            on = datetime.datetime.strftime(on, "%b %d")  # todo: bring this to an optional arg / i18n
+        else:
+            on += 1  # 0 index issue
+
+        messages.append(
+            "{} run out on day {}".format(
+                bed_label_suffix[col],
+                on,
+                "*" if asterisk else "",
+            )
+        )
+
     return "\n\n".join(messages)

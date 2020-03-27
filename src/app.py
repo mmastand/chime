@@ -27,6 +27,7 @@ from penn_chime.charts import (
     new_admissions_chart,
     covid_beds_chart,
     chart_descriptions,
+    bed_chart_descriptions,
 )
 from penn_chime.utils import dataframe_to_base64
 
@@ -100,7 +101,7 @@ st.altair_chart(
     covid_beds_chart(alt=alt, census=m.beds_df, parameters=p),
     use_container_width=True,
 )
-st.markdown(chart_descriptions(beds_chart, p.labels, suffix=" Beds"))
+st.markdown(bed_chart_descriptions(beds_chart, p.labels))
 if st.checkbox("Show Projected Available COVID-19 Beds in tabular form"):
     if st.checkbox("Show Daily Available Bed Counts"):
         draw_beds_table(st, m.beds_df, p.labels, as_date=p.as_date, daily_count=True)

@@ -622,17 +622,17 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     df = admits_table.copy()
     df = df.rename(columns = {
         "date": "Date",
-        "hospitalized": "HospitalAdmissions", 
+        "total": "TotalAdmissions", 
         "icu": "ICUAdmissions", 
         "ventilated": "VentilatedAdmissions"}, )
     
-    df["HospitalCensus"] = census_table["hospitalized"]
+    df["TotalCensus"] = census_table["total"]
     df["ICUCensus"] = census_table["icu"]
     df["VentilatedCensus"] = census_table["ventilated"]
 
-    df["HospitalBeds"] = bed_table["hospitalized"]
+    df["TotalBeds"] = bed_table["total"]
     df["ICUBeds"] = bed_table["icu"]
-    df["Ventilators"] = bed_table["ventilated"]
+    df["Ventilators"] = bed_table["ventilators"]
 
     df["Susceptible"] = infect_table["susceptible"]
     df["Infections"] = infect_table["infected"]
@@ -696,15 +696,15 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         "TotalNumberOfVentsForNCPatients",
 
         "Date",
-        "HospitalAdmissions", 
+        "TotalAdmissions", 
         "ICUAdmissions", 
         "VentilatedAdmissions",
 
-        "HospitalCensus",
+        "TotalCensus",
         "ICUCensus",
         "VentilatedCensus",
         
-        "HospitalBeds",
+        "TotalBeds",
         "ICUBeds",
         "Ventilators", 
 
