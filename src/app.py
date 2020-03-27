@@ -51,7 +51,7 @@ if st.checkbox("Show more info about this tool"):
 
 st.subheader("New Admissions")
 st.markdown("Projected number of **daily** COVID-19 admissions")
-st.dataframe(m.census_df) #######
+st.dataframe(m.admits_df) #######
 new_admit_chart = new_admissions_chart(alt, m.admits_df, parameters=p)
 st.altair_chart(
     new_admissions_chart(alt, m.admits_df, parameters=p),
