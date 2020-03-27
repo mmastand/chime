@@ -251,6 +251,10 @@ def bed_chart_descriptions(chart: Chart, labels):
     cols = ["total", "icu", "ventilators"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
+    
+    # Add note if lines overlap.
+    if sum(np.where(chart.data["total"] == chart.data["icu"], 1, 0)) > 1:
+        messages.append("_The overlapping lines represent non-ICU patients being housed in the ICU._")
 
     for col in cols:
         if np.nanmin(chart.data[col]) > 0:
