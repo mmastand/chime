@@ -40,7 +40,7 @@ def new_admissions_chart(
         .mark_line(point=True)
         .encode(
             x=alt.X(**x_kwargs),
-            y=alt.Y("value:Q", title="Daily admissions", scale=y_scale),
+            y=alt.Y("value:Q", title="COVID-19 Daily admissions", scale=y_scale),
             color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
             tooltip=[
                 tooltip_dict[as_date],
@@ -127,7 +127,7 @@ def covid_beds_chart(
         .mark_line(point=True)
         .encode(
             x=alt.X(**x_kwargs),
-            y=alt.Y("value:Q", title="COVID Beds Available", scale=y_scale),
+            y=alt.Y("value:Q", title="COVID-19 Capacity", scale=y_scale),
             color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
             tooltip=[
                 idx,
@@ -180,7 +180,7 @@ def additional_projections_chart(
     )
 
 
-def chart_descriptions(chart: Chart, labels, suffix: str = ""):
+def chart_descriptions(chart: Chart, labels, suffix):
     """
 
     :param chart: Chart: The alt chart to be used in finding max points
@@ -190,8 +190,9 @@ def chart_descriptions(chart: Chart, labels, suffix: str = ""):
     :return: str: Returns a multi-line string description of the results
     """
     messages = []
-
-    cols = ["hospitalized", "icu", "ventilators"]
+    pre = {"total": "", "icu": "", "ventilators": "COVID "}
+    pk = {"total": "peaks", "icu": "peaks", "ventilators": "peak"}
+    cols = ["total", "icu", "ventilators"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
 
@@ -206,9 +207,11 @@ def chart_descriptions(chart: Chart, labels, suffix: str = ""):
             on += 1  # 0 index issue
 
         messages.append(
-            "{}{} peaks at {:,} on day {}{}".format(
+            "{}{}{} {} at {:,} on day {}{}".format(
+                pre[col],
                 labels[col],
-                suffix,
+                suffix[col],
+                pk[col],
                 ceil(chart.data[col].max()),
                 on,
                 "*" if asterisk else "",
@@ -219,7 +222,7 @@ def chart_descriptions(chart: Chart, labels, suffix: str = ""):
         messages.append("_* The max is at the upper bound of the data, and therefore may not be the actual max_")
     return "\n\n".join(messages)
 
-def bed_chart_descriptions(chart: Chart, labels, str = ""):
+def bed_chart_descriptions(chart: Chart, labels):
     """
 
     :param chart: Chart: The alt chart to be used in finding 0 crossing points
@@ -229,20 +232,19 @@ def bed_chart_descriptions(chart: Chart, labels, str = ""):
     """
     messages = []
 
-    bed_label_suffix = {"total": "Total Beds", "icu": "ICU Beds", "ventilators": "Ventilators"}
+    bed_label_suffix = {"total": "Total COVID Beds", "icu": "ICU COVID Beds", "ventilators": "COVID Ventilators"}
 
     cols = ["total", "icu", "ventilators"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
 
     for col in cols:
-        if np.nanmin(chart.data[col]) >= 0:
+        if np.nanmin(chart.data[col]) > 0:
             asterisk = True
-            messages.append("_{} do not cross zero._".format(bed_label_suffix[col]))
+            messages.append("_{} are never exhausted._".format(bed_label_suffix[col]))
             continue
 
-        on = chart.data[day][chart.data[col].lt(0).idxmax() - 1]
-#        messages.append("**** {} ****".format(on))
+        on = chart.data[day][chart.data[col].le(0).idxmax()]
         if day == "date":
             on = datetime.datetime.strftime(on, "%b %d")  # todo: bring this to an optional arg / i18n
         else:
