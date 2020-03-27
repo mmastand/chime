@@ -128,6 +128,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
     n_days = st.sidebar.number_input(
         "Number of days to project",
         min_value=30,
+        max_value=1000,
         value=d.n_days,
         step=10,
         format="%i",
