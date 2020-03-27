@@ -183,12 +183,12 @@ def display_sidebar(st, d: Constants) -> Parameters:
         )
         / 100.0
     )
-    ventilated_rate = (
+    ventilators_rate = (
         st.sidebar.number_input(
-            "Ventilated %(total infections)",
+            "ventilators %(total infections)",
             min_value=0.0,
             max_value=100.0,
-            value=d.ventilated.rate * 100,
+            value=d.ventilators.rate * 100,
             step=1.0,
             format="%f",
         )
@@ -209,10 +209,10 @@ def display_sidebar(st, d: Constants) -> Parameters:
         step=1,
         format="%i",
     )
-    ventilated_los = st.sidebar.number_input(
+    ventilators_los = st.sidebar.number_input(
         "Vent Length of Stay",
         min_value=0,
-        value=d.ventilated.length_of_stay,
+        value=d.ventilators.length_of_stay,
         step=1,
         format="%i",
     )
@@ -320,7 +320,7 @@ def display_sidebar(st, d: Constants) -> Parameters:
 
         hospitalized=RateLos(hospitalized_rate, hospitalized_los),
         icu=RateLos(icu_rate, icu_los),
-        ventilated=RateLos(ventilated_rate, ventilated_los),
+        ventilators=RateLos(ventilators_rate, ventilators_los),
 
         total_beds=total_beds,
         total_non_covid_beds= total_non_covid_beds,
@@ -624,11 +624,11 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         "date": "Date",
         "total": "TotalAdmissions", 
         "icu": "ICUAdmissions", 
-        "ventilated": "VentilatedAdmissions"}, )
+        "ventilators": "ventilatorsAdmissions"}, )
     
     df["TotalCensus"] = census_table["total"]
     df["ICUCensus"] = census_table["icu"]
-    df["VentilatedCensus"] = census_table["ventilated"]
+    df["ventilatorsCensus"] = census_table["ventilators"]
 
     df["TotalBeds"] = bed_table["total"]
     df["ICUBeds"] = bed_table["icu"]
@@ -648,11 +648,11 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     
     df["HospitalizationPercentage"] = parameters.hospitalized.rate
     df["ICUPercentage"] = parameters.icu.rate
-    df["VentilatedPercentage"] = parameters.ventilated.rate
+    df["ventilatorsPercentage"] = parameters.ventilators.rate
 
     df["HospitalLengthOfStay"] = parameters.hospitalized.length_of_stay
     df["ICULengthOfStay"] = parameters.icu.length_of_stay
-    df["VentLengthOfStay"] = parameters.ventilated.length_of_stay
+    df["VentLengthOfStay"] = parameters.ventilators.length_of_stay
 
     df["HospitalMarketShare"] = parameters.market_share
     df["RegionalPopulation"] = parameters.relative_contact_rate
@@ -678,7 +678,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
 
         "HospitalizationPercentage",
         "ICUPercentage",
-        "VentilatedPercentage",
+        "ventilatorsPercentage",
 
         "HospitalLengthOfStay",
         "ICULengthOfStay",
@@ -698,11 +698,11 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         "Date",
         "TotalAdmissions", 
         "ICUAdmissions", 
-        "VentilatedAdmissions",
+        "ventilatorsAdmissions",
 
         "TotalCensus",
         "ICUCensus",
-        "VentilatedCensus",
+        "ventilatorsCensus",
         
         "TotalBeds",
         "ICUBeds",

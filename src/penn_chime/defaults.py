@@ -37,7 +37,7 @@ class Constants:
 
         hospitalized: RateLos,
         icu: RateLos,
-        ventilated: RateLos,
+        ventilators: RateLos,
 
         as_date: bool = False,
         market_share: float = 1.0,
@@ -54,7 +54,7 @@ class Constants:
 
         self.hospitalized = hospitalized
         self.icu = icu
-        self.ventilated = ventilated
+        self.ventilators = ventilators
 
         self.as_date = as_date
         self.market_share = market_share

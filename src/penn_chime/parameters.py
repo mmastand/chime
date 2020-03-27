@@ -28,7 +28,7 @@ class Parameters:
 
         hospitalized: RateLos,
         icu: RateLos,
-        ventilated: RateLos,
+        ventilators: RateLos,
 
         as_date: bool = False,
         market_share: float = 1.0,
@@ -48,7 +48,7 @@ class Parameters:
 
         self.hospitalized = hospitalized
         self.icu = icu
-        self.ventilated = ventilated
+        self.ventilators = ventilators
 
         self.as_date = as_date
         self.market_share = market_share
@@ -71,7 +71,6 @@ class Parameters:
             "total": "Total",
             "hospitalized": "Hospitalized",
             "icu": "ICU",
-            "ventilated": "Ventilated",
             "ventilators": "Ventilators",
             "day": "Day",
             "date": "Date",
@@ -83,7 +82,7 @@ class Parameters:
         self.dispositions = {
             "hospitalized": hospitalized,
             "icu": icu,
-            "ventilated": ventilated,
+            "ventilators": ventilators,
         }
 
     def change_date(self):

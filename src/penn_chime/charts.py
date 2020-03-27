@@ -36,12 +36,12 @@ def new_admissions_chart(
     # TODO fix the fold to allow any number of dispositions
     return (
         alt.Chart(projection_admits.head(plot_projection_days))
-        .transform_fold(fold=["total", "icu", "ventilated"])
+        .transform_fold(fold=["total", "icu", "ventilators"])
         .mark_line(point=True)
         .encode(
             x=alt.X(**x_kwargs),
             y=alt.Y("value:Q", title="Daily admissions", scale=y_scale),
-            color=alt.Color("key:N", sort = ["total", "icu", "ventilated"]),
+            color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
             tooltip=[
                 tooltip_dict[as_date],
                 alt.Tooltip("value:Q", format=".0f", title="Admissions"),
@@ -78,12 +78,12 @@ def admitted_patients_chart(
     # TODO fix the fold to allow any number of dispositions
     return (
         alt.Chart(census.head(plot_projection_days))
-        .transform_fold(fold=["total", "icu", "ventilated"])
+        .transform_fold(fold=["total", "icu", "ventilators"])
         .mark_line(point=True)
         .encode(
             x=alt.X(**x_kwargs),
             y=alt.Y("value:Q", title="Census", scale=y_scale),
-            color=alt.Color("key:N", sort = ["total", "icu", "ventilated"]),
+            color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
             tooltip=[
                 idx,
                 alt.Tooltip("value:Q", format=".0f", title="Census"),
@@ -191,7 +191,7 @@ def chart_descriptions(chart: Chart, labels, suffix: str = ""):
     """
     messages = []
 
-    cols = ["hospitalized", "icu", "ventilated"]
+    cols = ["hospitalized", "icu", "ventilators"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
 
