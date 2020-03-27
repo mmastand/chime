@@ -509,7 +509,7 @@ def draw_projected_admissions_table(
         admits_table = projection_admits[np.mod(projection_admits.index, 7) == 0].copy()
     admits_table["day"] = admits_table.index
     admits_table.index = range(admits_table.shape[0])
-    admits_table = admits_table.fillna(0).astype(int)
+    admits_table = np.ceil(admits_table.fillna(0)).astype(int)
 
     if as_date:
         admits_table = add_date_column(

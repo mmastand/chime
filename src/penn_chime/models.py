@@ -151,6 +151,7 @@ def build_admits_df(n_days, dispositions) -> pd.DataFrame:
     # New cases
     admits_df = projection.iloc[:-1, :] - projection.shift(1)
     admits_df["day"] = range(admits_df.shape[0])
+    admits_df["total"] = admits_df["hospitalized"] + admits_df["icu"] + admits_df["ventilated"]
     return admits_df
 
 

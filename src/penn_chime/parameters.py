@@ -70,6 +70,7 @@ class Parameters:
         self.scenario = scenario
 
         self.labels = {
+            "total": "Total",
             "hospitalized": "Hospitalized",
             "icu": "ICU",
             "ventilated": "Ventilated",

@@ -63,7 +63,7 @@ st.altair_chart(
 )
 
 st.markdown(chart_descriptions(new_admit_chart, p.labels))
-
+st.dataframe(m.admits_df)
 if st.checkbox("Show Projected Admissions in tabular form"):
     if st.checkbox("Show Daily Counts"):
         draw_projected_admissions_table(st, m.admits_df, p.labels, as_date=p.as_date, daily_count=True)

@@ -35,12 +35,12 @@ def new_admissions_chart(
     # TODO fix the fold to allow any number of dispositions
     return (
         alt.Chart(projection_admits.head(plot_projection_days))
-        .transform_fold(fold=["hospitalized", "icu", "ventilated"])
+        .transform_fold(fold=["total", "icu", "ventilated"])
         .mark_line(point=True)
         .encode(
             x=alt.X(**x_kwargs),
             y=alt.Y("value:Q", title="Daily admissions", scale=y_scale),
-            color="key:N",
+            color=alt.Color("key:N", sort = ["total", "icu", "ventilated"]),
             tooltip=[
                 tooltip_dict[as_date],
                 alt.Tooltip("value:Q", format=".0f", title="Admissions"),
@@ -77,12 +77,12 @@ def admitted_patients_chart(
     # TODO fix the fold to allow any number of dispositions
     return (
         alt.Chart(census.head(plot_projection_days))
-        .transform_fold(fold=["hospitalized", "icu", "ventilated"])
+        .transform_fold(fold=["total", "icu", "ventilated"])
         .mark_line(point=True)
         .encode(
             x=alt.X(**x_kwargs),
             y=alt.Y("value:Q", title="Census", scale=y_scale),
-            color="key:N",
+            color=alt.Color("key:N", sort = ["total", "icu", "ventilated"]),
             tooltip=[
                 idx,
                 alt.Tooltip("value:Q", format=".0f", title="Census"),
@@ -127,7 +127,7 @@ def covid_beds_chart(
         .encode(
             x=alt.X(**x_kwargs),
             y=alt.Y("value:Q", title="COVID Beds Available", scale=y_scale),
-            color="key:N",
+            color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
             tooltip=[
                 idx,
                 alt.Tooltip("value:Q", format=".0f", title="Beds Available"),
