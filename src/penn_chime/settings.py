@@ -34,5 +34,5 @@ DEFAULTS = Constants(
     relative_contact_rate=0.3,
     hospitalized=RateLos(0.025, 7),
     icu=RateLos(0.0075, 9),
-    ventilated=RateLos(0.005, 10),
+    ventilators=RateLos(0.005, 10),
 )
