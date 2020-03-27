@@ -84,31 +84,21 @@ outbreak **{impact_statement:s} {doubling_time_t:.1f}** days, implying an effect
     return None
 
 def display_how_to_use(st):
-    st.subheader("How to Use This Tool")
+    st.subheader("Information About This Tool")
     st.markdown(
         """
         **This app is based on the [CHIME](https://github.com/CodeForPhilly/chime) app, developed by Penn Medicine.**
         It is designed to assist hospitals and public health officials with understanding hospital capacity needs as 
-        they relate to the COVID-19 pandemic. CHIME enables capacity planning by providing estimates of total daily (i.e. new) 
-        and running totals of (i.e. census) inpatient hospitalizations, ICU admissions, and patients requiring ventilation.
+        they relate to the COVID-19 pandemic. 
 
-        This tool has the ability to load and save parameters, as well as save parameters and calculations. Enable
-        these features by changing the *Author Name* and *Scenario Name* to values of your choosing. Rather than create the parameter file
-        from scratch we highly recommend using the "Save Parameters" button to create a parameter file which can then be edited by hand
-        if desired. Please note however that it is easy to inadvertently produce an invalid JSON file when editing by hand. If you wish
-        to update a set of existing parameters we recommend loading in the parameters, editing them in the UI, and re-exporting a new
-        version of the parameters.
+        The tool allows you to: 
+
+        * Input local epidemiology and capacity values 
+        * See admissions, census, and availability for total hospital beds, ICU beds, and ventilators
+        * Save and upload scenarios
+        * Download a table of input parameters and resulting calculations
         
-        **Saving Parameters:** At the bottom
-        of the left sidebar, a download link will appear to save your parameters as a file. Click to save the file. This file is .json and 
-        can be opened in a text editor.
-
-        **Loading Parameters:** At the top of the left sidebar, browse for a parameter file (in the same format as the exported parameters)
-        or drag and drop. Parameter values will update.
-
-        **Saving Calculations**: At the bottom of the main page, a link will appear to save all model parameters and calculations as a .csv
-        file. Click the link to save the file.
-        <br><br>
+        See **Application Guidance** section below for more information 
         """,
         unsafe_allow_html=True,)
 
@@ -302,11 +292,6 @@ def display_sidebar(st, d: Constants) -> Parameters:
        format="%i",
     )
 
-    infection_start = st.sidebar.date_input(
-        "Enter the date the infection started.",
-        value=d.infection_start  # d.infection_start,
-    )
-
     as_date_default = False if uploaded_file is None else raw_imported["PresentResultAsDates"]
     as_date = st.sidebar.checkbox(label="Present result as dates instead of days", value=as_date_default)
     
@@ -343,7 +328,6 @@ def display_sidebar(st, d: Constants) -> Parameters:
         total_non_covid_icu_beds=total_non_covid_icu_beds,
         total_vents=total_vents,
         total_non_covid_vents=total_non_covid_vents,
-        infection_start=infection_start,
 
         author = author,
         scenario = scenario,
@@ -460,10 +444,27 @@ $$\\beta = (g + \\gamma)$$.
 
 
 def write_definitions(st):
-    st.subheader("Guidance on Selecting Inputs")
+    st.subheader("Application Guidance")
+    st.markdown("""
+    This tool has the ability to load and save parameters, as well as save parameters and calculations. Enable
+    these features by changing the *Author Name* and *Scenario Name* to values of your choosing. Rather than create the parameter file
+    from scratch we highly recommend using the "Save Parameters" button to create a parameter file which can then be edited by hand
+    if desired. Please note however that it is easy to inadvertently produce an invalid JSON file when editing by hand. If you wish
+    to update a set of existing parameters we recommend loading in the parameters, editing them in the UI, and re-exporting a new
+    version of the parameters.
+    
+    **Saving Parameters:** At the bottom of the left sidebar, a download link will appear to save your 
+    parameters as a file. Click to save the file. This file is .json and can be opened in a text editor.
+    
+    **Loading Parameters:** At the top of the left sidebar, browse for a parameter file (in the same 
+    format as the exported parameters) or drag and drop. Parameter values will update.
+    
+    **Saving Calculations**: At the bottom of the main page, a link will appear to save all model 
+    parameters and calculations as a .csv file. Click the link to save the file.
+    """)
+
     st.markdown(
-        """**This information has been moved to the 
-[User Documentation](https://code-for-philly.gitbook.io/chime/what-is-chime/parameters#guidance-on-selecting-inputs)**"""
+        """**For more details on input selection, please refer here: [User Documentation](https://code-for-philly.gitbook.io/chime/what-is-chime/parameters#guidance-on-selecting-inputs)**"""
     )
 
 
@@ -663,7 +664,6 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     df["TotalNumberOfICUBedsForNCPatients"] = parameters.total_non_covid_icu_beds
     df["TotalNumberOfVents"] = parameters.total_vents
     df["TotalNumberOfVentsForNCPatients"] = parameters.total_non_covid_vents
-    df["InfectionStartDate"] = parameters.infection_start
 
     
     # Reorder columns
@@ -694,8 +694,6 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         "TotalNumberOfICUBedsForNCPatients",
         "TotalNumberOfVents",
         "TotalNumberOfVentsForNCPatients",
-
-        "InfectionStartDate",
 
         "Date",
         "HospitalAdmissions", 
