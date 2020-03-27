@@ -23,7 +23,14 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Constants, dict]:
         relative_contact_rate=float(imported_params["SocialDistancingPercentReduction"]),
         hospitalized=RateLos(float(imported_params["HospitalizationPercentage"]), imported_params["HospitalLengthOfStay"]),
         icu=RateLos(float(imported_params["ICUPercentage"]), imported_params["ICULengthOfStay"]),
-        ventilated=RateLos(float(imported_params["VentilatedPercentage"]),imported_params["VentLengthOfStay"]),
+        ventilators=RateLos(float(imported_params["VentilatorsPercentage"]),imported_params["VentLengthOfStay"]),
+
+        total_beds=imported_params["TotalNumberOfBeds"],
+        total_non_covid_beds=imported_params["TotalNumberOfBedsForNCPatients"],
+        total_icu_beds=imported_params["TotalNumberOfICUBeds"],
+        total_non_covid_icu_beds=imported_params["TotalNumberOfICUBedsForNCPatients"],
+        total_vents=imported_params["TotalNumberOfVents"],
+        total_non_covid_vents=imported_params["TotalNumberOfVentsForNCPatients"],
     )
     return constants, imported_params
 
@@ -42,16 +49,23 @@ def param_download_widget(st, parameters, as_date, max_y_axis_set, max_y_axis):
             "SocialDistancingPercentReduction": parameters.relative_contact_rate,
             "HospitalizationPercentage": parameters.hospitalized.rate,
             "ICUPercentage": parameters.icu.rate,
-            "VentilatedPercentage": parameters.ventilated.rate,
+            "VentilatorsPercentage": parameters.ventilators.rate,
             "HospitalLengthOfStay": parameters.hospitalized.length_of_stay,
             "ICULengthOfStay": parameters.icu.length_of_stay,
-            "VentLengthOfStay": parameters.ventilated.length_of_stay,
+            "VentLengthOfStay": parameters.ventilators.length_of_stay,
             "HospitalMarketShare": parameters.market_share,
             "RegionalPopulation": parameters.susceptible,
             "CurrentlyKnownRegionalInfections": parameters.known_infected,
             "PresentResultAsDates": as_date,
             "MaxYAxisSet":max_y_axis_set,
             "MaxYAxis":max_y_axis,
+            
+            "TotalNumberOfBeds": parameters.total_beds,
+            "TotalNumberOfBedsForNCPatients": parameters.total_non_covid_beds,
+            "TotalNumberOfICUBeds": parameters.total_icu_beds,
+            "TotalNumberOfICUBedsForNCPatients": parameters.total_non_covid_icu_beds,
+            "TotalNumberOfVents": parameters.total_vents,
+            "TotalNumberOfVentsForNCPatients": parameters.total_non_covid_vents,
         }
         out_json = json.dumps(out_obj)
         b64_json = base64.b64encode(out_json.encode()).decode()
