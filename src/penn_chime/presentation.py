@@ -55,7 +55,7 @@ def display_header(st, m, p):
         """
         The estimated number of currently infected individuals is **{total_infections:.0f}**. The **{initial_infections}**
     confirmed cases in the region imply a **{detection_prob_str}** rate of detection. This is based on current inputs for
-    Hospitalizations (**{current_hosp}**), Hospitalization rate (**{hosp_rate:.0%}**), Region size (**{S}**),
+    Hospitalizations (**{current_hosp}**), Hospitalization rate (**{hosp_rate:.1%}**), Region size (**{S}**),
     and Hospital market share (**{market_share:.0%}**).
 
 An initial doubling time of **{doubling_time}** days and a recovery time of **{recovery_days}** days imply an $R_0$ of
@@ -84,31 +84,21 @@ outbreak **{impact_statement:s} {doubling_time_t:.1f}** days, implying an effect
     return None
 
 def display_how_to_use(st):
-    st.subheader("How to Use This Tool")
+    st.subheader("Information About This Tool")
     st.markdown(
         """
         **This app is based on the [CHIME](https://github.com/CodeForPhilly/chime) app, developed by Penn Medicine.**
         It is designed to assist hospitals and public health officials with understanding hospital capacity needs as 
-        they relate to the COVID-19 pandemic. CHIME enables capacity planning by providing estimates of total daily (i.e. new) 
-        and running totals of (i.e. census) inpatient hospitalizations, ICU admissions, and patients requiring ventilation.
+        they relate to the COVID-19 pandemic. 
 
-        This tool has the ability to load and save parameters, as well as save parameters and calculations. Enable
-        these features by changing the *Author Name* and *Scenario Name* to values of your choosing. Rather than create the parameter file
-        from scratch we highly recommend using the "Save Parameters" button to create a parameter file which can then be edited by hand
-        if desired. Please note however that it is easy to inadvertently produce an invalid JSON file when editing by hand. If you wish
-        to update a set of existing parameters we recommend loading in the parameters, editing them in the UI, and re-exporting a new
-        version of the parameters.
+        The tool allows you to: 
+
+        * Input local epidemiology and capacity values 
+        * See admissions, census, and availability for total hospital beds, ICU beds, and ventilators
+        * Save and upload scenarios
+        * Download a table of input parameters and resulting calculations
         
-        **Saving Parameters:** At the bottom
-        of the left sidebar, a download link will appear to save your parameters as a file. Click to save the file. This file is .json and 
-        can be opened in a text editor.
-
-        **Loading Parameters:** At the top of the left sidebar, browse for a parameter file (in the same format as the exported parameters)
-        or drag and drop. Parameter values will update.
-
-        **Saving Calculations**: At the bottom of the main page, a link will appear to save all model parameters and calculations as a .csv
-        file. Click the link to save the file.
-        <br><br>
+        See **Application Guidance** section below for more information 
         """,
         unsafe_allow_html=True,)
 
@@ -193,12 +183,12 @@ def display_sidebar(st, d: Constants) -> Parameters:
         )
         / 100.0
     )
-    ventilated_rate = (
+    ventilators_rate = (
         st.sidebar.number_input(
-            "Ventilated %(total infections)",
+            "ventilators %(total infections)",
             min_value=0.0,
             max_value=100.0,
-            value=d.ventilated.rate * 100,
+            value=d.ventilators.rate * 100,
             step=1.0,
             format="%f",
         )
@@ -219,10 +209,10 @@ def display_sidebar(st, d: Constants) -> Parameters:
         step=1,
         format="%i",
     )
-    ventilated_los = st.sidebar.number_input(
+    ventilators_los = st.sidebar.number_input(
         "Vent Length of Stay",
         min_value=0,
-        value=d.ventilated.length_of_stay,
+        value=d.ventilators.length_of_stay,
         step=1,
         format="%i",
     )
@@ -257,15 +247,15 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_beds = st.sidebar.number_input(
         "Total # of Beds",
     #    min_value=0,
-       value=0,
+       value=d.total_beds,
     #    step=10,
        format="%i",
     )
 
     total_non_covid_beds = st.sidebar.number_input(
-        "Total # of Beds for Non-COVID Patients",
+        "Total # of Beds for COVID Patients",
     #    min_value=0,
-       value=0,
+       value=d.total_non_covid_beds,
     #    step=10,
        format="%i",
     )
@@ -273,15 +263,15 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_icu_beds = st.sidebar.number_input(
         "Total # of ICU Beds",
     #    min_value=0,
-       value=0,
+       value=d.total_icu_beds,
     #    step=10,
        format="%i",
     )
 
     total_non_covid_icu_beds = st.sidebar.number_input(
-        "Total # of ICU Beds for Non-COVID Patients",
+        "Total # of ICU Beds for COVID Patients",
     #    min_value=0,
-       value=0,
+       value=d.total_non_covid_icu_beds,
     #    step=10,
        format="%i",
     )
@@ -289,22 +279,17 @@ def display_sidebar(st, d: Constants) -> Parameters:
     total_vents = st.sidebar.number_input(
         "Total # of Ventilators",
     #    min_value=0,
-       value=0,
+       value=d.total_vents,
     #    step=10,
        format="%i",
     )
 
     total_non_covid_vents = st.sidebar.number_input(
-        "Total # of Ventilators for Non-COVID Patients",
+        "Total # of Ventilators for COVID Patients",
     #    min_value=0,
-       value=0,
+       value=d.total_non_covid_vents,
     #    step=10,
        format="%i",
-    )
-
-    infection_start = st.sidebar.date_input(
-        "Enter the date the infection started.",
-        value=datetime(2020, 3, 20)  # d.infection_start,
     )
 
     as_date_default = False if uploaded_file is None else raw_imported["PresentResultAsDates"]
@@ -335,7 +320,14 @@ def display_sidebar(st, d: Constants) -> Parameters:
 
         hospitalized=RateLos(hospitalized_rate, hospitalized_los),
         icu=RateLos(icu_rate, icu_los),
-        ventilated=RateLos(ventilated_rate, ventilated_los),
+        ventilators=RateLos(ventilators_rate, ventilators_los),
+
+        total_beds=total_beds,
+        total_non_covid_beds= total_non_covid_beds,
+        total_icu_beds=total_icu_beds,
+        total_non_covid_icu_beds=total_non_covid_icu_beds,
+        total_vents=total_vents,
+        total_non_covid_vents=total_non_covid_vents,
 
         author = author,
         scenario = scenario,
@@ -452,10 +444,27 @@ $$\\beta = (g + \\gamma)$$.
 
 
 def write_definitions(st):
-    st.subheader("Guidance on Selecting Inputs")
+    st.subheader("Application Guidance")
+    st.markdown("""
+    This tool has the ability to load and save parameters, as well as save parameters and calculations. Enable
+    these features by changing the *Author Name* and *Scenario Name* to values of your choosing. Rather than create the parameter file
+    from scratch we highly recommend using the "Save Parameters" button to create a parameter file which can then be edited by hand
+    if desired. Please note however that it is easy to inadvertently produce an invalid JSON file when editing by hand. If you wish
+    to update a set of existing parameters we recommend loading in the parameters, editing them in the UI, and re-exporting a new
+    version of the parameters.
+    
+    **Saving Parameters:** At the bottom of the left sidebar, a download link will appear to save your 
+    parameters as a file. Click to save the file. This file is .json and can be opened in a text editor.
+    
+    **Loading Parameters:** At the top of the left sidebar, browse for a parameter file (in the same 
+    format as the exported parameters) or drag and drop. Parameter values will update.
+    
+    **Saving Calculations**: At the bottom of the main page, a link will appear to save all model 
+    parameters and calculations as a .csv file. Click the link to save the file.
+    """)
+
     st.markdown(
-        """**This information has been moved to the 
-[User Documentation](https://code-for-philly.gitbook.io/chime/what-is-chime/parameters#guidance-on-selecting-inputs)**"""
+        """**For more details on input selection, please refer here: [User Documentation](https://code-for-philly.gitbook.io/chime/what-is-chime/parameters#guidance-on-selecting-inputs)**"""
     )
 
 
@@ -501,7 +510,7 @@ def draw_projected_admissions_table(
         admits_table = projection_admits[np.mod(projection_admits.index, 7) == 0].copy()
     admits_table["day"] = admits_table.index
     admits_table.index = range(admits_table.shape[0])
-    admits_table = admits_table.fillna(0).astype(int)
+    admits_table = np.ceil(admits_table.fillna(0)).astype(int)
 
     if as_date:
         admits_table = add_date_column(
@@ -530,6 +539,23 @@ def draw_census_table(st, census_df: pd.DataFrame, labels, as_date: bool = False
     st.table(census_table)
     return None
 
+def draw_beds_table(st, bed_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
+    if daily_count == True:
+        bed_table = bed_df[np.mod(bed_df.index, 1) == 0].copy()
+    else:
+        bed_table = bed_df[np.mod(bed_df.index, 7) == 0].copy()
+    bed_table.index = range(bed_table.shape[0])
+    bed_table.loc[0, :] = 0
+    bed_table = bed_table.dropna().astype(int)
+
+    if as_date:
+        bed_table = add_date_column(
+            bed_table, drop_day_column=True, date_format=DATE_FORMAT
+        )
+
+    bed_table.rename(labels)
+    st.table(bed_table)
+    return None
 
 def draw_raw_sir_simulation_table(st, model, parameters):
     as_date = parameters.as_date
@@ -559,7 +585,7 @@ def build_download_link(st, filename: str, df: pd.DataFrame, parameters: Paramet
         <a download="{filename}" href="data:file/csv;base64,{csv}">Download full table as CSV</a>
 """.format(csv=csv,filename=filename), unsafe_allow_html=True)
 
-def build_data_and_params(projection_admits, census_df, model, parameters):
+def build_data_and_params(projection_admits, census_df, beds_df, model, parameters):
     # taken from admissions table function:
     admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
     admits_table["day"] = admits_table.index
@@ -578,6 +604,14 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
     census_table = census_table.dropna().astype(int)
     census_table.rename(parameters.labels)
     
+    # taken from beds table function:
+
+    bed_table = beds_df[np.mod(beds_df.index, 1) == 0].copy()
+    bed_table.index = range(bed_table.shape[0])
+    bed_table.loc[0, :] = 0
+    bed_table = bed_table.dropna().astype(int)
+    bed_table.rename(parameters.labels)
+
     # taken from raw sir table function:
     projection_area = model.raw_df
     infect_table = (projection_area.iloc[::1, :]).apply(np.floor)
@@ -588,13 +622,17 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
     df = admits_table.copy()
     df = df.rename(columns = {
         "date": "Date",
-        "hospitalized": "HospitalAdmissions", 
+        "total": "TotalAdmissions", 
         "icu": "ICUAdmissions", 
-        "ventilated": "VentilatedAdmissions"}, )
+        "ventilators": "ventilatorsAdmissions"}, )
     
-    df["HospitalCensus"] = census_table["hospitalized"]
+    df["TotalCensus"] = census_table["total"]
     df["ICUCensus"] = census_table["icu"]
-    df["VentilatedCensus"] = census_table["ventilated"]
+    df["ventilatorsCensus"] = census_table["ventilators"]
+
+    df["TotalBeds"] = bed_table["total"]
+    df["ICUBeds"] = bed_table["icu"]
+    df["Ventilators"] = bed_table["ventilators"]
 
     df["Susceptible"] = infect_table["susceptible"]
     df["Infections"] = infect_table["infected"]
@@ -610,15 +648,23 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
     
     df["HospitalizationPercentage"] = parameters.hospitalized.rate
     df["ICUPercentage"] = parameters.icu.rate
-    df["VentilatedPercentage"] = parameters.ventilated.rate
+    df["ventilatorsPercentage"] = parameters.ventilators.rate
 
     df["HospitalLengthOfStay"] = parameters.hospitalized.length_of_stay
     df["ICULengthOfStay"] = parameters.icu.length_of_stay
-    df["VentLengthOfStay"] = parameters.ventilated.length_of_stay
+    df["VentLengthOfStay"] = parameters.ventilators.length_of_stay
 
     df["HospitalMarketShare"] = parameters.market_share
     df["RegionalPopulation"] = parameters.relative_contact_rate
     df["CurrentlyKnownRegionalInfections"] = parameters.known_infected
+    
+    df["TotalNumberOfBeds"] = parameters.total_beds
+    df["TotalNumberOfBedsForNCPatients"] = parameters.total_non_covid_beds
+    df["TotalNumberOfICUBeds"] = parameters.total_icu_beds
+    df["TotalNumberOfICUBedsForNCPatients"] = parameters.total_non_covid_icu_beds
+    df["TotalNumberOfVents"] = parameters.total_vents
+    df["TotalNumberOfVentsForNCPatients"] = parameters.total_non_covid_vents
+
     
     # Reorder columns
     df = df[[
@@ -632,7 +678,7 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
 
         "HospitalizationPercentage",
         "ICUPercentage",
-        "VentilatedPercentage",
+        "ventilatorsPercentage",
 
         "HospitalLengthOfStay",
         "ICULengthOfStay",
@@ -641,15 +687,26 @@ def build_data_and_params(projection_admits, census_df, model, parameters):
         "HospitalMarketShare",
         "RegionalPopulation",
         "CurrentlyKnownRegionalInfections",
+        
+        "TotalNumberOfBeds",
+        "TotalNumberOfBedsForNCPatients",
+        "TotalNumberOfICUBeds",
+        "TotalNumberOfICUBedsForNCPatients",
+        "TotalNumberOfVents",
+        "TotalNumberOfVentsForNCPatients",
 
         "Date",
-        "HospitalAdmissions", 
+        "TotalAdmissions", 
         "ICUAdmissions", 
-        "VentilatedAdmissions",
+        "ventilatorsAdmissions",
 
-        "HospitalCensus",
+        "TotalCensus",
         "ICUCensus",
-        "VentilatedCensus",
+        "ventilatorsCensus",
+        
+        "TotalBeds",
+        "ICUBeds",
+        "Ventilators", 
 
         "Susceptible",
         "Infections",

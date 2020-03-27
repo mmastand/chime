@@ -19,9 +19,16 @@ class Parameters:
         relative_contact_rate: float,
         susceptible: int,
 
+        total_beds: int,
+        total_non_covid_beds: int,
+        total_icu_beds: int,
+        total_non_covid_icu_beds: int,
+        total_vents: int,
+        total_non_covid_vents: int,
+
         hospitalized: RateLos,
         icu: RateLos,
-        ventilated: RateLos,
+        ventilators: RateLos,
 
         as_date: bool = False,
         market_share: float = 1.0,
@@ -31,6 +38,7 @@ class Parameters:
         recovery_days: int = 14,
         author: str = "Jane Doe",
         scenario: str = "COVID model"
+                
     ):
         self.current_hospitalized = current_hospitalized
         self.doubling_time = doubling_time
@@ -40,7 +48,7 @@ class Parameters:
 
         self.hospitalized = hospitalized
         self.icu = icu
-        self.ventilated = ventilated
+        self.ventilators = ventilators
 
         self.as_date = as_date
         self.market_share = market_share
@@ -49,13 +57,21 @@ class Parameters:
         self.n_days = n_days
         self.recovery_days = recovery_days
 
+        self.total_beds = total_beds
+        self.total_non_covid_beds = total_non_covid_beds
+        self.total_icu_beds = total_icu_beds
+        self.total_non_covid_icu_beds = total_non_covid_icu_beds
+        self.total_vents = total_vents
+        self.total_non_covid_vents = total_non_covid_vents
+
         self.author = author
         self.scenario = scenario
 
         self.labels = {
+            "total": "Total",
             "hospitalized": "Hospitalized",
             "icu": "ICU",
-            "ventilated": "Ventilated",
+            "ventilators": "Ventilators",
             "day": "Day",
             "date": "Date",
             "susceptible": "Susceptible",
@@ -66,7 +82,7 @@ class Parameters:
         self.dispositions = {
             "hospitalized": hospitalized,
             "icu": icu,
-            "ventilated": ventilated,
+            "ventilators": ventilators,
         }
 
     def change_date(self):

@@ -4,6 +4,7 @@ import datetime
 
 from altair import Chart  # type: ignore
 import pandas as pd  # type: ignore
+import numpy as np
 
 from .parameters import Parameters
 from .utils import add_date_column
@@ -14,7 +15,7 @@ def new_admissions_chart(
     alt, projection_admits: pd.DataFrame, parameters: Parameters
 ) -> Chart:
     """docstring"""
-    plot_projection_days = parameters.n_days - 10
+    plot_projection_days = parameters.n_days # - 10
     max_y_axis = parameters.max_y_axis
     max_y_axis_set = parameters.max_y_axis_set
     as_date = parameters.as_date
@@ -35,12 +36,12 @@ def new_admissions_chart(
     # TODO fix the fold to allow any number of dispositions
     return (
         alt.Chart(projection_admits.head(plot_projection_days))
-        .transform_fold(fold=["hospitalized", "icu", "ventilated"])
+        .transform_fold(fold=["total", "icu", "ventilators"])
         .mark_line(point=True)
         .encode(
             x=alt.X(**x_kwargs),
             y=alt.Y("value:Q", title="Daily admissions", scale=y_scale),
-            color="key:N",
+            color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
             tooltip=[
                 tooltip_dict[as_date],
                 alt.Tooltip("value:Q", format=".0f", title="Admissions"),
@@ -56,7 +57,7 @@ def admitted_patients_chart(
 ) -> Chart:
     """docstring"""
 
-    plot_projection_days = parameters.n_days - 10
+    plot_projection_days = parameters.n_days # - 10
     max_y_axis = parameters.max_y_axis
     max_y_axis_set = parameters.max_y_axis_set
     as_date = parameters.as_date
@@ -77,12 +78,12 @@ def admitted_patients_chart(
     # TODO fix the fold to allow any number of dispositions
     return (
         alt.Chart(census.head(plot_projection_days))
-        .transform_fold(fold=["hospitalized", "icu", "ventilated"])
+        .transform_fold(fold=["total", "icu", "ventilators"])
         .mark_line(point=True)
         .encode(
             x=alt.X(**x_kwargs),
             y=alt.Y("value:Q", title="Census", scale=y_scale),
-            color="key:N",
+            color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
             tooltip=[
                 idx,
                 alt.Tooltip("value:Q", format=".0f", title="Census"),
@@ -92,6 +93,50 @@ def admitted_patients_chart(
         .interactive()
     )
 
+
+ # Total covid med/surg beds = total beds - nc beds - icu
+ # covid_icu_beds  = total icu - nc_icu
+ # covid_vents = total_vents - nc_vents
+def covid_beds_chart(
+    alt, census: pd.DataFrame, parameters: Parameters
+) -> Chart:
+    """docstring"""
+
+    plot_projection_days = parameters.n_days # - 10
+    max_y_axis = parameters.max_y_axis
+    max_y_axis_set = parameters.max_y_axis_set
+    as_date = parameters.as_date
+    if as_date:
+        census = add_date_column(census)
+        x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
+        idx = "date:T"
+    else:
+        x_kwargs = {"shorthand": "day", "title": "Days from today"}
+        idx = "day"
+
+    y_scale = alt.Scale()
+
+    if max_y_axis_set and max_y_axis is not None:
+        y_scale.domain = (0, max_y_axis)
+        y_scale.clamp = True
+
+    # TODO fix the fold to allow any number of dispositions
+    return (
+        alt.Chart(census.head(plot_projection_days))
+        .transform_fold(fold=["total", "icu", "ventilators"])
+        .mark_line(point=True)
+        .encode(
+            x=alt.X(**x_kwargs),
+            y=alt.Y("value:Q", title="COVID Beds Available", scale=y_scale),
+            color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
+            tooltip=[
+                idx,
+                alt.Tooltip("value:Q", format=".0f", title="Beds Available"),
+                "key:N",
+            ],
+        )
+        .interactive()
+    )
 
 def additional_projections_chart(
     alt, model, parameters
@@ -146,7 +191,7 @@ def chart_descriptions(chart: Chart, labels, suffix: str = ""):
     """
     messages = []
 
-    cols = ["hospitalized", "icu", "ventilated"]
+    cols = ["hospitalized", "icu", "ventilators"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
 
@@ -172,4 +217,43 @@ def chart_descriptions(chart: Chart, labels, suffix: str = ""):
 
     if asterisk:
         messages.append("_* The max is at the upper bound of the data, and therefore may not be the actual max_")
+    return "\n\n".join(messages)
+
+def bed_chart_descriptions(chart: Chart, labels, str = ""):
+    """
+
+    :param chart: Chart: The alt chart to be used in finding 0 crossing points
+    :param suffix: str: The assumption is that the charts have similar column names.
+                   Make sure to include a space or underscore as appropriate
+    :return: str: Returns a multi-line string description of the results
+    """
+    messages = []
+
+    bed_label_suffix = {"total": "Total Beds", "icu": "ICU Beds", "ventilators": "Ventilators"}
+
+    cols = ["total", "icu", "ventilators"]
+    asterisk = False
+    day = "date" if "date" in chart.data.columns else "day"
+
+    for col in cols:
+        if np.nanmin(chart.data[col]) >= 0:
+            asterisk = True
+            messages.append("_{} do not cross zero._".format(bed_label_suffix[col]))
+            continue
+
+        on = chart.data[day][chart.data[col].lt(0).idxmax() - 1]
+#        messages.append("**** {} ****".format(on))
+        if day == "date":
+            on = datetime.datetime.strftime(on, "%b %d")  # todo: bring this to an optional arg / i18n
+        else:
+            on += 1  # 0 index issue
+
+        messages.append(
+            "{} run out on day {}".format(
+                bed_label_suffix[col],
+                on,
+                "*" if asterisk else "",
+            )
+        )
+
     return "\n\n".join(messages)
