@@ -153,7 +153,6 @@ def build_admits_df(n_days, dispositions) -> pd.DataFrame:
     admits_df = admits_df.apply(np.ceil)
     admits_df["day"] = range(admits_df.shape[0])
     admits_df["total"] = admits_df["hospitalized"] + admits_df["icu"]
-    # admits_df = admits_df.rename(columns = {"ventilated": "ventilators"})
     return admits_df
 
 
@@ -194,9 +193,25 @@ def build_beds_df(
     covid_non_icu_beds = total_covid_beds - covid_icu_beds
     covid_vents = p.total_non_covid_vents
 
+    # TODO if hospitalized < 0 and there's space in icu, start borrowing if possible
+    # If ICU < 0, raise alarms. No changes.
     beds_df["hospitalized"] = covid_non_icu_beds - census_df["hospitalized"]
     beds_df["icu"] = covid_icu_beds - census_df["icu"]
     beds_df["ventilators"] = covid_vents - census_df["ventilators"]
     beds_df["total"] = total_covid_beds - census_df["hospitalized"] - census_df["icu"]
     beds_df = beds_df.head(n_days)
+
+    # Shift people to ICU if main hospital is full and ICU is not.
+    new_hosp = []
+    new_icu = []
+    for row in beds_df.itertuples():
+        if row.hospitalized < 0 and row.icu > 0:
+            needed = min(abs(row.hospitalized), row.icu)
+            new_hosp.append(row.hospitalized + needed)
+            new_icu.append(row.icu - needed)
+        else: 
+            new_hosp.append(row.hospitalized)
+            new_icu.append(row.icu)
+    beds_df["hospitalized"] = new_hosp
+    beds_df["icu"] = new_icu
     return beds_df
