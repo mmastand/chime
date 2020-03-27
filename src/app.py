@@ -98,11 +98,8 @@ st.markdown(
     "Projected **number** of available COVID-19 beds, accounting for admits and discharges"
 )  
 # st.dataframe(m.beds_df)##########
-beds_chart = covid_beds_chart(alt=alt, census=m.beds_df, parameters=p)
-st.altair_chart(
-    covid_beds_chart(alt=alt, census=m.beds_df, parameters=p),
-    use_container_width=True,
-)
+beds_chart_dash, beds_chart = covid_beds_chart(alt=alt, census=m.beds_df, parameters=p)
+st.altair_chart(beds_chart_dash, use_container_width=True)
 st.markdown(bed_chart_descriptions(beds_chart, p.labels))
 if st.checkbox("Show Projected Available COVID-19 Beds in tabular form"):
     if st.checkbox("Show Daily Available Bed Counts"):
