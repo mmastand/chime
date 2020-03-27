@@ -162,11 +162,16 @@ def build_census_df(
     n_days = np.shape(admits_df)[0]
     census_dict = {}
     for key, los in lengths_of_stay.items():
-        census = (
-            admits_df.cumsum().iloc[:-los, :]
-            - admits_df.cumsum().shift(los).fillna(0)
+        disposition_admits = admits_df[key]
+        disposition_census = (
+            disposition_admits.cumsum()
+            - disposition_admits.cumsum().shift(los).fillna(0)
         ).apply(np.ceil)
-        census_dict[key] = census[key]
+        # census = (
+        #     admits_df.cumsum().iloc[:-los, :]
+        #     - admits_df.cumsum().shift(los).fillna(0)
+        # ).apply(np.ceil)
+        census_dict[key] = disposition_census
 
     census_df = pd.DataFrame(census_dict)
     census_df["day"] = census_df.index
