@@ -120,23 +120,37 @@ def covid_beds_chart(
         y_scale.domain = (0, max_y_axis)
         y_scale.clamp = True
 
+    census["line"] = 0
     # TODO fix the fold to allow any number of dispositions
-    return (
-        alt.Chart(census.head(plot_projection_days))
-        .transform_fold(fold=["total", "icu", "ventilators"])
-        .mark_line(point=True)
-        .encode(
-            x=alt.X(**x_kwargs),
-            y=alt.Y("value:Q", title="COVID-19 Capacity", scale=y_scale),
-            color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
-            tooltip=[
-                idx,
-                alt.Tooltip("value:Q", format=".0f", title="Beds Available"),
-                "key:N",
-            ],
-        )
-        .interactive()
+    p1 = alt.Chart(census.head(plot_projection_days)
+    ).transform_fold(
+        fold=["total", "icu", "ventilators"]
+    ).mark_line(point=True
+    ).encode(
+        x=alt.X(**x_kwargs),
+        y=alt.Y("value:Q", title="COVID-19 Capacity", scale=y_scale),
+        color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
+        tooltip=[
+            idx,
+            alt.Tooltip("value:Q", format=".0f", title="Beds Available"),
+            "key:N",
+        ],
+    ).interactive()
+    
+    p2 = alt.Chart(census.head(plot_projection_days)
+    ).transform_fold(
+        fold=["line"]
+    ).mark_line(
+        point=False,
+        color="black",
+        strokeDash=[5,3],
+        opacity=.5,
+    ).encode(
+        x=alt.X(**x_kwargs),
+        y=alt.Y("value:Q"),
     )
+
+    return p1 + p2, p1
 
 def additional_projections_chart(
     alt, model, parameters
@@ -251,7 +265,7 @@ def bed_chart_descriptions(chart: Chart, labels):
             on += 1  # 0 index issue
 
         messages.append(
-            "{} run out on day {}".format(
+            "{} are exhausted on day {}".format(
                 bed_label_suffix[col],
                 on,
                 "*" if asterisk else "",
