@@ -17,7 +17,7 @@ RateLos = namedtuple("RateLos", ("rate", "length_of_stay"))
 
 
 def add_date_column(
-    df: pd.DataFrame, drop_day_column: bool = False, date_format: Optional[str] = None,
+    df: pd.DataFrame, p: "Parameters", drop_day_column: bool = False, date_format: Optional[str] = None, daily_count: bool = True
 ) -> pd.DataFrame:
     """Copies input data frame and converts "day" column to "date" column
 
@@ -45,16 +45,16 @@ def add_date_column(
     non_date_columns = [col for col in df.columns if not col == "day"]
 
     # Allocate (day) continous range for dates
-    n_days = int(df.day.max())
-    start = datetime.now()
-    end = start + timedelta(days=n_days + 1)
+    today = datetime.now().date()
+    start_date = today - timedelta(days=(p.days_elapsed + int(p.selected_offset)))
+    end_date = today + timedelta(days=p.n_days - 1)
     # And pick dates present in frame
-    dates = pd.date_range(start=start, end=end, freq="D")[df.day.tolist()]
-
+    dates = pd.date_range(start=start_date, end=end_date, freq="D")
     if date_format is not None:
         dates = dates.strftime(date_format)
-
-    df["date"] = dates
+    if not daily_count:
+        dates = pd.Series(dates).iloc[np.mod(pd.Series(dates).index, 7) == 0]
+    df["date"] = dates.values
 
     if drop_day_column:
         df.pop("day")
@@ -78,3 +78,28 @@ def dataframe_to_base64(df: pd.DataFrame) -> str:
     csv = df.to_csv(index=False)
     b64 = b64encode(csv.encode()).decode()
     return b64
+
+def calc_offset(df, p):
+    offset = np.nanargmin(abs(p.current_hospitalized - df.iloc[:df.total.idxmax()]["total"])) # Limit to all points to the "left" of the max so we don't select a point past the peak infections
+    return(offset)
+
+def shift_truncate_tables(m, p, selected_offset):
+    elapsed_days_from_census_date = (datetime.now().date() - p.census_date).days
+    p.days_elapsed = elapsed_days_from_census_date
+    day_range_start = - (selected_offset + elapsed_days_from_census_date)
+    truncation_index = p.n_days + selected_offset + elapsed_days_from_census_date
+
+    m.admits_df = m.admits_df.iloc[0:truncation_index]
+    m.admits_df["day"] = np.arange(day_range_start, p.n_days)
+    m.admits_df = m.admits_df.set_index("day", drop=False)
+
+    m.census_df = m.census_df.iloc[0:truncation_index]
+    m.census_df["day"] = np.arange(day_range_start, p.n_days)
+
+    m.beds_df = m.beds_df.iloc[0:truncation_index]
+    m.beds_df["day"] = np.arange(day_range_start, p.n_days)
+
+    m.raw_df = m.raw_df.iloc[0:truncation_index]
+    m.raw_df["day"] = np.arange(day_range_start, p.n_days)
+    m.raw_df = m.raw_df.set_index("day")
+    return(m)

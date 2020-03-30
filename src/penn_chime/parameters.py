@@ -3,8 +3,10 @@
 Changes affecting results or their presentation should also update
 `change_date`, so users can see when results have last changed
 """
+import datetime
 
 from .utils import RateLos
+
 
 
 class Parameters:
@@ -37,7 +39,11 @@ class Parameters:
         n_days: int = 60,
         recovery_days: int = 14,
         author: str = "Jane Doe",
-        scenario: str = "COVID model"
+        scenario: str = "COVID model",
+        
+        census_date: datetime.date = datetime.datetime.today(),
+        selected_offset: int = -1,
+        days_elapsed: datetime.date = 0,
                 
     ):
         self.current_hospitalized = current_hospitalized
@@ -67,6 +73,10 @@ class Parameters:
         self.author = author
         self.scenario = scenario
 
+        self.census_date = census_date
+        self.selected_offset = selected_offset
+        self.days_elapsed = days_elapsed
+
         self.labels = {
             "total": "Total",
             "hospitalized": "Hospitalized",
@@ -86,17 +96,17 @@ class Parameters:
         }
 
         self.patient_chart_desc = {
-            "hospitalized": "Hospitalized COVID peaks at",
-            "icu": "ICU COVID peaks at",
-            "ventilators": "COVID Ventilators peak at",
-            "total": "Total COVID peaks at"
+            "hospitalized": "Hospitalized COVID-19 peaks at",
+            "icu": "ICU COVID-19 peaks at",
+            "ventilators": "COVID-19 Ventilators peak at",
+            "total": "Total COVID-19 peaks at"
         }
         
         self.bed_chart_desc = {
-            "hospitalized": "Hospitalized COVID Beds",
-            "icu": "Total ICU COVID Beds",
-            "ventilators": "COVID Ventilators",
-            "total": "Total COVID Beds"
+            "hospitalized": "Hospitalized COVID-19 Beds",
+            "icu": "Total ICU COVID-19 Beds",
+            "ventilators": "COVID-19 Ventilators",
+            "total": "Total COVID-19 Beds"
         }
 
     def change_date(self):
