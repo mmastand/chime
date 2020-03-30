@@ -14,6 +14,7 @@ import pandas as pd  # type: ignore
 
 from .parameters import Parameters
 
+HORIZON = 1100
 
 class SimSirModel:
 
@@ -63,7 +64,7 @@ class SimSirModel:
             recovered,
             beta,
             gamma,
-            p.n_days,
+            HORIZON, # p.n_days,
         )
 
         rates = {
@@ -85,7 +86,7 @@ class SimSirModel:
         }
 
         self.dispositions_df = pd.DataFrame(self.dispositions)
-        self.admits_df = admits_df = build_admits_df(p.n_days, self.dispositions)
+        self.admits_df = admits_df = build_admits_df(HORIZON, self.dispositions)
         self.census_df = build_census_df(admits_df, lengths_of_stay)
         self.beds_df = build_beds_df(self.census_df, lengths_of_stay, p)
 

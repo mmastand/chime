@@ -15,7 +15,7 @@ def new_admissions_chart(
     alt, projection_admits: pd.DataFrame, parameters: Parameters
 ) -> Chart:
     """docstring"""
-    plot_projection_days = parameters.n_days # - 10
+    plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
     max_y_axis = parameters.max_y_axis
     max_y_axis_set = parameters.max_y_axis_set
     as_date = parameters.as_date
@@ -28,13 +28,13 @@ def new_admissions_chart(
 
     tooltip_dict = {False: "day", True: "date:T"}
     if as_date:
-        projection_admits = add_date_column(projection_admits)
+        projection_admits = add_date_column(projection_admits, parameters)
         x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
     else:
         x_kwargs = {"shorthand": "day", "title": "Days from today"}
 
     # TODO fix the fold to allow any number of dispositions
-    return (
+    p1 = (
         alt.Chart(projection_admits.head(plot_projection_days))
         .transform_fold(fold=["total", "icu", "ventilators"])
         .mark_line(point=True)
@@ -51,18 +51,22 @@ def new_admissions_chart(
         .interactive()
     )
 
+    p2 = get_vertical_line(alt, parameters, projection_admits, plot_projection_days)
+
+    return p1 + p2, p1
+
 
 def admitted_patients_chart(
     alt, census: pd.DataFrame, parameters: Parameters
 ) -> Chart:
     """docstring"""
 
-    plot_projection_days = parameters.n_days # - 10
+    plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
     max_y_axis = parameters.max_y_axis
     max_y_axis_set = parameters.max_y_axis_set
     as_date = parameters.as_date
     if as_date:
-        census = add_date_column(census)
+        census = add_date_column(census, parameters)
         x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
         idx = "date:T"
     else:
@@ -76,7 +80,7 @@ def admitted_patients_chart(
         y_scale.clamp = True
 
     # TODO fix the fold to allow any number of dispositions
-    return (
+    p1 = (
         alt.Chart(census.head(plot_projection_days))
         .transform_fold(fold=["total", "icu", "ventilators"])
         .mark_line(point=True)
@@ -93,21 +97,25 @@ def admitted_patients_chart(
         .interactive()
     )
 
+    p2 = get_vertical_line(alt, parameters, census, plot_projection_days)
+
+    return p1 + p2, p1
+
 
  # Total covid med/surg beds = total beds - nc beds - icu
  # covid_icu_beds  = total icu - nc_icu
  # covid_vents = total_vents - nc_vents
 def covid_beds_chart(
-    alt, census: pd.DataFrame, parameters: Parameters
+    alt, census: pd.DataFrame, parameters: Parameters, st
 ) -> Chart:
     """docstring"""
 
-    plot_projection_days = parameters.n_days # - 10
+    plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
     max_y_axis = parameters.max_y_axis
     max_y_axis_set = parameters.max_y_axis_set
     as_date = parameters.as_date
     if as_date:
-        census = add_date_column(census)
+        census = add_date_column(census, parameters)
         x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
         idx = "date:T"
     else:
@@ -150,7 +158,9 @@ def covid_beds_chart(
         y=alt.Y("value:Q"),
     )
 
-    return p1 + p2, p1
+    p3 = get_vertical_line(alt, parameters, census, plot_projection_days)
+
+    return p1 + p2 + p3, p1
 
 def additional_projections_chart(
     alt, model, parameters
@@ -169,7 +179,7 @@ def additional_projections_chart(
     max_y_axis_set = parameters.max_y_axis_set
 
     if as_date:
-        dat = add_date_column(dat)
+        dat = add_date_column(dat, parameters)
         x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
     else:
         x_kwargs = {"shorthand": "day", "title": "Days from today"}
@@ -180,7 +190,7 @@ def additional_projections_chart(
         y_scale.domain = (0, max_y_axis)
         y_scale.clamp = True
 
-    return (
+    p1 = (
         alt.Chart(dat)
         .transform_fold(fold=["infected", "recovered"])
         .mark_line()
@@ -192,6 +202,11 @@ def additional_projections_chart(
         )
         .interactive()
     )
+
+    plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
+    p2 = get_vertical_line(alt, parameters, dat, plot_projection_days)
+
+    return p1 + p2
 
 
 def chart_descriptions(chart: Chart, labels):
@@ -276,3 +291,18 @@ def bed_chart_descriptions(chart: Chart, labels):
         )
 
     return "\n\n".join(messages)
+
+def get_vertical_line(alt, parameters, df, plot_projection_days):
+    v_line_location = "0"
+    if parameters.as_date:
+        today = datetime.date.today()
+        v_line_location = f"datetime({today.year}, {today.month - 1}, {today.day})" # Because Altair uses vega which has 0-based month indexes
+    p3 = alt.Chart(df.head(plot_projection_days)
+    ).mark_rule(
+        strokeDash=[5,3],
+        opacity=.05, # This doesn't seem to do anything
+    ).encode(
+        x="v_line_location:T" if parameters.as_date else "v_line_location:Q"
+    ).transform_calculate(v_line_location=v_line_location)
+
+    return p3

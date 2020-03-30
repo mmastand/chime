@@ -27,7 +27,7 @@ DEFAULTS = Constants(
     total_non_covid_vents=10,
 
     current_hospitalized=14,
-    doubling_time=4,
+    doubling_time=4.0,
     known_infected=510,
     n_days=60,
     market_share=0.15,
@@ -35,4 +35,7 @@ DEFAULTS = Constants(
     hospitalized=RateLos(0.025, 7),
     icu=RateLos(0.0075, 9),
     ventilators=RateLos(0.005, 10),
+
+    census_date=datetime.today(),
+    selected_offset=-1
 )

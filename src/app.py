@@ -29,7 +29,12 @@ from penn_chime.charts import (
     chart_descriptions,
     bed_chart_descriptions,
 )
-from penn_chime.utils import dataframe_to_base64
+from penn_chime.utils import (
+    dataframe_to_base64,
+    calc_offset,
+    shift_truncate_tables,
+)
+from penn_chime.hc_param_import_export import param_download_widget
 
 # This is somewhat dangerous:
 # Hide the main menu with "Rerun", "run on Save", "clear cache", and "record a screencast"
@@ -39,7 +44,8 @@ st.markdown(hide_menu_style, unsafe_allow_html=True)
 
 p = display_sidebar(st, DEFAULTS)
 m = SimSirModel(p)
-
+# Calculate offset.
+# p = display_sidebar(st, p)
 display_how_to_use(st)
 
 display_header(st, m, p)
@@ -51,19 +57,28 @@ if st.checkbox("Show more info about this tool"):
 
 st.subheader("New Admissions")
 st.markdown("Projected number of **daily** COVID-19 admissions")
-# st.dataframe(m.admits_df) #######
-new_admit_chart = new_admissions_chart(alt, m.admits_df, parameters=p)
+
+off = calc_offset(m.admits_df, p)
+st.markdown(f"Calculated Days Since First Infection: {off}")
+selected_offset = st.number_input(
+    "Days Since First Infection, Manual Override",
+    value = off if p.selected_offset == -1 else p.selected_offset)
+p.selected_offset = selected_offset
+m = shift_truncate_tables(m, p, selected_offset)
+
+st.dataframe(m.admits_df) #######
+new_admit_chart_dash, new_admit_chart = new_admissions_chart(alt, m.admits_df, parameters=p)
 st.altair_chart(
-    new_admissions_chart(alt, m.admits_df, parameters=p),
+    new_admit_chart_dash,
     use_container_width=True,
 )
 suf = {"total": " COVID", "icu": " COVID", "ventilators": ""}
 st.markdown(chart_descriptions(new_admit_chart, p.patient_chart_desc))
 if st.checkbox("Show Projected Admissions in tabular form"):
     if st.checkbox("Show Daily Counts"):
-        draw_projected_admissions_table(st, m.admits_df, p.labels, as_date=p.as_date, daily_count=True)
+        draw_projected_admissions_table(st, p, m.admits_df, p.labels, as_date=p.as_date, daily_count=True)
     else:
-        draw_projected_admissions_table(st, m.admits_df, p.labels, as_date=p.as_date, daily_count=False)
+        draw_projected_admissions_table(st, p, m.admits_df, p.labels, as_date=p.as_date, daily_count=False)
     build_download_link(st,
         filename="projected_admissions.csv",
         df=m.admits_df,
@@ -74,19 +89,18 @@ st.markdown(
     "Projected **census** of COVID-19 patients, accounting for arrivals and discharges"
 )
 # st.dataframe(m.census_df)#########
-census_chart = admitted_patients_chart(alt=alt, census=m.census_df, parameters=p)
+census_chart_dash, census_chart = admitted_patients_chart(alt=alt, census=m.census_df, parameters=p)
 st.altair_chart(
-    admitted_patients_chart(alt=alt, census=m.census_df, parameters=p),
+    census_chart_dash,
     use_container_width=True,
 )
 
-suf = {"total": " COVID Census", "icu": " COVID Census", "ventilators": ""}
 st.markdown(chart_descriptions(census_chart, p.patient_chart_desc))
 if st.checkbox("Show Projected Census in tabular form"):
     if st.checkbox("Show Daily Census Counts"):
-        draw_census_table(st, m.census_df, p.labels, as_date=p.as_date, daily_count=True)
+        draw_census_table(st, p, m.census_df, p.labels, as_date=p.as_date, daily_count=True)
     else:
-        draw_census_table(st, m.census_df, p.labels, as_date=p.as_date, daily_count=False)
+        draw_census_table(st, p, m.census_df, p.labels, as_date=p.as_date, daily_count=False)
     build_download_link(st,
         filename="projected_census.csv",
         df=m.census_df,
@@ -98,14 +112,14 @@ st.markdown(
     "Projected **number** of available COVID-19 beds, accounting for admits and discharges"
 )  
 # st.dataframe(m.beds_df)##########
-beds_chart_dash, beds_chart = covid_beds_chart(alt=alt, census=m.beds_df, parameters=p)
+beds_chart_dash, beds_chart = covid_beds_chart(alt=alt, census=m.beds_df, parameters=p, st=st)
 st.altair_chart(beds_chart_dash, use_container_width=True)
 st.markdown(bed_chart_descriptions(beds_chart, p.bed_chart_desc))
 if st.checkbox("Show Projected Available COVID-19 Beds in tabular form"):
     if st.checkbox("Show Daily Available Bed Counts"):
-        draw_beds_table(st, m.beds_df, p.labels, as_date=p.as_date, daily_count=True)
+        draw_beds_table(st, p, m.beds_df, p.labels, as_date=p.as_date, daily_count=True)
     else:
-        draw_beds_table(st, m.beds_df, p.labels, as_date=p.as_date, daily_count=False)
+        draw_beds_table(st, p, m.beds_df, p.labels, as_date=p.as_date, daily_count=False)
     build_download_link(st,
         filename="projected_beds.csv",
         df=m.beds_df,
@@ -145,3 +159,11 @@ else:
 
 write_definitions(st)
 write_footer(st)
+
+param_download_widget(
+    st,
+    p, 
+    as_date=p.as_date, 
+    max_y_axis_set=p.max_y_axis_set, 
+    max_y_axis=p.max_y_axis
+)

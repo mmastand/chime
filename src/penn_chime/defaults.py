@@ -1,5 +1,5 @@
 """Defaults."""
-
+import datetime
 from .utils import RateLos
 
 
@@ -45,6 +45,9 @@ class Constants:
         n_days: int = 60,
         recovery_days: int = 14,
 
+        census_date: datetime.date = datetime.datetime.today(),
+        selected_offset: int = -1
+
     ):
         self.region = region
         self.current_hospitalized = current_hospitalized
@@ -68,7 +71,9 @@ class Constants:
         self.total_non_covid_icu_beds = total_non_covid_icu_beds
         self.total_vents = total_vents
         self.total_non_covid_vents = total_non_covid_vents
-        
+
+        self.census_date = census_date
+        self.selected_offset = selected_offset
 
     def __repr__(self) -> str:
         return f"Constants(susceptible_default: {self.region.susceptible}, known_infected: {self.known_infected})"
