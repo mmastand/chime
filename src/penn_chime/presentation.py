@@ -346,15 +346,6 @@ def display_sidebar(st, d: Constants) -> Parameters:
         census_date = census_date,
         selected_offset = d.selected_offset,
     )
-
-    # param_download_widget(
-    #     st,
-    #     parameters, 
-    #     as_date=as_date, 
-    #     max_y_axis_set=max_y_axis_set, 
-    #     max_y_axis=max_y_axis
-    # )
-
     return parameters
 
 

@@ -82,3 +82,19 @@ def dataframe_to_base64(df: pd.DataFrame) -> str:
 def calc_offset(df, p):
     offset = np.nanargmin(abs(p.current_hospitalized - df["total"]))
     return(offset)
+
+def shift_truncate_tables(m, p, selected_offset):
+    m.admits_df = m.admits_df.iloc[0:(p.n_days+selected_offset)]
+    m.admits_df["day"] = np.arange(-selected_offset, p.n_days)
+    m.admits_df = m.admits_df.set_index("day")
+
+    m.census_df = m.census_df.iloc[0:(p.n_days+selected_offset)]
+    m.census_df["day"] = np.arange(-selected_offset, p.n_days)
+
+    m.beds_df = m.beds_df.iloc[0:(p.n_days+selected_offset)]
+    m.beds_df["day"] = np.arange(-selected_offset, p.n_days)
+
+    m.raw_df = m.raw_df.iloc[0:(p.n_days+selected_offset)]
+    m.raw_df["day"] = np.arange(-selected_offset, p.n_days)
+    m.raw_df = m.raw_df.set_index("day")
+    return(m)

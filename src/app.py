@@ -32,6 +32,7 @@ from penn_chime.charts import (
 from penn_chime.utils import (
     dataframe_to_base64,
     calc_offset,
+    shift_truncate_tables,
 )
 from penn_chime.hc_param_import_export import param_download_widget
 
@@ -63,6 +64,7 @@ selected_offset = st.number_input(
     "selected offset to use",
     value = off if p.selected_offset == -1 else p.selected_offset)
 p.selected_offset = selected_offset
+m = shift_truncate_tables(m, p, selected_offset)
 
 st.dataframe(m.admits_df) #######
 new_admit_chart = new_admissions_chart(alt, m.admits_df, parameters=p)
