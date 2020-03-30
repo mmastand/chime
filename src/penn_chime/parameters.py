@@ -85,6 +85,20 @@ class Parameters:
             "ventilators": ventilators,
         }
 
+        self.patient_chart_desc = {
+            "hospitalized": "Hospitalized COVID peaks at",
+            "icu": "ICU COVID peaks at",
+            "ventilators": "COVID Ventilators peak at",
+            "total": "Total COVID peaks at"
+        }
+        
+        self.bed_chart_desc = {
+            "hospitalized": "Hospitalized COVID Beds",
+            "icu": "Total ICU COVID Beds",
+            "ventilators": "COVID Ventilators",
+            "total": "Total COVID Beds"
+        }
+
     def change_date(self):
         """
         This reflects a date from which previously-run reports will no
