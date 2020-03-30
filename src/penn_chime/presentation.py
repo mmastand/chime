@@ -85,6 +85,7 @@ outbreak **{impact_statement:s} {doubling_time_t:.1f}** days, implying an effect
 
 def display_how_to_use(st):
     BUILD_TIME = os.environ['BUILD_TIME'] # == "`date`"
+    VERSION_NUMBER = os.environ['VERSION_NUMBER']
     st.subheader("Information About This Tool")
     st.markdown(
         f"""
@@ -101,8 +102,8 @@ def display_how_to_use(st):
         are no major problems or errors in the model, and we are comfortable in advocating it for its intended use. That said, we expect that 
         we've missed minor errors in functionality, not output, and encourage you to report those to us [here] (mailto:jason.jones@healthcatalyst.com). In addition, we encourage you 
         to suggest enhancements [here] (mailto:jason.jones@healthcatalyst.com).
-        
-        Last Changed: **{BUILD_TIME}**
+
+        Version: **{VERSION_NUMBER}** (Released **{BUILD_TIME}**)
 
         See **Application Guidance** section below for more information 
         """,
@@ -154,10 +155,10 @@ def display_sidebar(st, d: Constants) -> Parameters:
 
     doubling_time = st.sidebar.number_input(
         "Doubling time before social distancing (days)",
-        min_value=0,
+        min_value=0.0,
         value=d.doubling_time,
-        step=1,
-        format="%i",
+        step=0.1,
+        format="%.2f",
     )
 
     relative_contact_rate = (
