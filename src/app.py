@@ -58,7 +58,7 @@ st.altair_chart(
     use_container_width=True,
 )
 suf = {"total": " COVID", "icu": " COVID", "ventilators": ""}
-st.markdown(chart_descriptions(new_admit_chart, p.labels, suf))
+st.markdown(chart_descriptions(new_admit_chart, p.patient_chart_desc))
 if st.checkbox("Show Projected Admissions in tabular form"):
     if st.checkbox("Show Daily Counts"):
         draw_projected_admissions_table(st, m.admits_df, p.labels, as_date=p.as_date, daily_count=True)
@@ -81,7 +81,7 @@ st.altair_chart(
 )
 
 suf = {"total": " COVID Census", "icu": " COVID Census", "ventilators": ""}
-st.markdown(chart_descriptions(census_chart, p.labels, suf))
+st.markdown(chart_descriptions(census_chart, p.patient_chart_desc))
 if st.checkbox("Show Projected Census in tabular form"):
     if st.checkbox("Show Daily Census Counts"):
         draw_census_table(st, m.census_df, p.labels, as_date=p.as_date, daily_count=True)
@@ -100,7 +100,7 @@ st.markdown(
 # st.dataframe(m.beds_df)##########
 beds_chart_dash, beds_chart = covid_beds_chart(alt=alt, census=m.beds_df, parameters=p)
 st.altair_chart(beds_chart_dash, use_container_width=True)
-st.markdown(bed_chart_descriptions(beds_chart, p.labels))
+st.markdown(bed_chart_descriptions(beds_chart, p.bed_chart_desc))
 if st.checkbox("Show Projected Available COVID-19 Beds in tabular form"):
     if st.checkbox("Show Daily Available Bed Counts"):
         draw_beds_table(st, m.beds_df, p.labels, as_date=p.as_date, daily_count=True)

@@ -194,7 +194,7 @@ def additional_projections_chart(
     )
 
 
-def chart_descriptions(chart: Chart, labels, suffix):
+def chart_descriptions(chart: Chart, labels):
     """
 
     :param chart: Chart: The alt chart to be used in finding max points
@@ -204,8 +204,6 @@ def chart_descriptions(chart: Chart, labels, suffix):
     :return: str: Returns a multi-line string description of the results
     """
     messages = []
-    pre = {"total": "", "icu": "", "ventilators": "COVID "}
-    pk = {"total": "peaks", "icu": "peaks", "ventilators": "peak"}
     cols = ["total", "icu", "ventilators"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
@@ -215,23 +213,22 @@ def chart_descriptions(chart: Chart, labels, suffix):
             asterisk = True
 
         on = chart.data[day][chart.data[col].idxmax()]
+        day_string = "day "
         if day == "date":
-            on = datetime.datetime.strftime(on, "%b %d")  # todo: bring this to an optional arg / i18n
+            on = datetime.datetime.strftime(on, "%b %d")
+            day_string = " "
         else:
             on += 1  # 0 index issue
 
         messages.append(
-            "{}{}{} {} at {:,} on day {}{}".format(
-                pre[col],
+            "{} {:,} on {}{}{}".format(
                 labels[col],
-                suffix[col],
-                pk[col],
                 ceil(chart.data[col].max()),
+                day_string,
                 on,
                 "*" if asterisk else "",
             )
         )
-
     if asterisk:
         messages.append("_* The max is at the upper bound of the data, and therefore may not be the actual max_")
     return "\n\n".join(messages)
@@ -246,7 +243,6 @@ def bed_chart_descriptions(chart: Chart, labels):
     """
     messages = []
 
-    bed_label_suffix = {"total": "Total COVID Beds", "icu": "ICU COVID Beds", "ventilators": "COVID Ventilators"}
 
     cols = ["total", "icu", "ventilators"]
     asterisk = False
@@ -256,21 +252,24 @@ def bed_chart_descriptions(chart: Chart, labels):
     if sum(np.where(chart.data["total"] == chart.data["icu"], 1, 0)) > 1:
         messages.append("_The overlapping lines represent non-ICU patients being housed in the ICU._")
 
+    day_string = "day "
     for col in cols:
         if np.nanmin(chart.data[col]) > 0:
             asterisk = True
-            messages.append("_{} are never exhausted._".format(bed_label_suffix[col]))
+            messages.append("_{} are never exhausted._".format(labels[col]))
             continue
 
         on = chart.data[day][chart.data[col].le(0).idxmax()]
         if day == "date":
             on = datetime.datetime.strftime(on, "%b %d")  # todo: bring this to an optional arg / i18n
+            day_string = " "
         else:
             on += 1  # 0 index issue
 
         messages.append(
-            "{} are exhausted on day {}".format(
-                bed_label_suffix[col],
+            "{} are exhausted on {}{}".format(
+                labels[col],
+                day_string,
                 on,
                 "*" if asterisk else "",
             )
