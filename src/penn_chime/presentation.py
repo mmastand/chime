@@ -141,16 +141,17 @@ def display_sidebar(st, d: Constants) -> Parameters:
         format="%i",
     )
 
+    census_date = st.sidebar.date_input(
+        "COVID-19 Census Sampling Date",
+        value = d.census_date,
+    )
+
     current_hospitalized = st.sidebar.number_input(
-        "Number of Hospitalized COVID-19 Patients on Following Date.",
+        "COVID-19 Census (From Date Above)",
         min_value=0,
         value=d.current_hospitalized,
         step=1,
         format="%i",
-    )
-    census_date = st.sidebar.date_input(
-        "Date of reported cases",
-        value = d.census_date,
     )
 
     doubling_time = st.sidebar.number_input(
@@ -508,7 +509,7 @@ def show_additional_projections(
 
 
 def draw_projected_admissions_table(
-    st, projection_admits: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False,
+    st, parameters, projection_admits: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False,
 ):
     if daily_count == True:
         admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
@@ -520,14 +521,14 @@ def draw_projected_admissions_table(
 
     if as_date:
         admits_table = add_date_column(
-            admits_table, parameters, drop_day_column=True, date_format=DATE_FORMAT
+            admits_table, parameters, drop_day_column=True, date_format=DATE_FORMAT, daily_count=daily_count
         )
     admits_table.rename(labels)
     st.table(admits_table)
     return None
 
 
-def draw_census_table(st, census_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
+def draw_census_table(st, parameters, census_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
     if daily_count == True:
         census_table = census_df[np.mod(census_df.index, 1) == 0].copy()
     else:
@@ -538,14 +539,14 @@ def draw_census_table(st, census_df: pd.DataFrame, labels, as_date: bool = False
 
     if as_date:
         census_table = add_date_column(
-            census_table, parameters, drop_day_column=True, date_format=DATE_FORMAT
+            census_table, parameters, drop_day_column=True, date_format=DATE_FORMAT, daily_count=daily_count
         )
 
     census_table.rename(labels)
     st.table(census_table)
     return None
 
-def draw_beds_table(st, bed_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
+def draw_beds_table(st, parameters, bed_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
     if daily_count == True:
         bed_table = bed_df[np.mod(bed_df.index, 1) == 0].copy()
     else:
@@ -556,14 +557,14 @@ def draw_beds_table(st, bed_df: pd.DataFrame, labels, as_date: bool = False, dai
 
     if as_date:
         bed_table = add_date_column(
-            bed_table, parameters, drop_day_column=True, date_format=DATE_FORMAT
+            bed_table, parameters, drop_day_column=True, date_format=DATE_FORMAT, daily_count=daily_count
         )
 
     bed_table.rename(labels)
     st.table(bed_table)
     return None
 
-def draw_raw_sir_simulation_table(st, model, parameters):
+def draw_raw_sir_simulation_table(st, parameters, model):
     as_date = parameters.as_date
     projection_area = model.raw_df
     infect_table = (projection_area.iloc[::7, :]).apply(np.floor)
@@ -572,7 +573,7 @@ def draw_raw_sir_simulation_table(st, model, parameters):
 
     if as_date:
         infect_table = add_date_column(
-            infect_table, parameters, drop_day_column=True, date_format=DATE_FORMAT
+            infect_table, parameters, drop_day_column=True, date_format=DATE_FORMAT, daily_count=False
         )
 
     st.table(infect_table)
@@ -649,6 +650,8 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     df["DateGenerated"] = datetime.now().isoformat()
 
     df["CurrentlyHospitalizedCovidPatients"] = parameters.current_hospitalized
+    df["CurrentlyHospitalizedCovidPatientsDate"] = parameters.census_date
+    df["SelectedOffsetDays"] = parameters.selected_offset
     df["DoublingTimeBeforeSocialDistancing"] = parameters.doubling_time
     df["SocialDistancingPercentReduction"] = parameters.relative_contact_rate
     
@@ -661,7 +664,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     df["VentLengthOfStay"] = parameters.ventilators.length_of_stay
 
     df["HospitalMarketShare"] = parameters.market_share
-    df["RegionalPopulation"] = parameters.relative_contact_rate
+    df["RegionalPopulation"] = parameters.susceptible
     df["CurrentlyKnownRegionalInfections"] = parameters.known_infected
     
     df["TotalNumberOfBeds"] = parameters.total_beds
@@ -679,6 +682,8 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         "DateGenerated",
 
         "CurrentlyHospitalizedCovidPatients",
+        "CurrentlyHospitalizedCovidPatientsDate",
+        "SelectedOffsetDays",
         "DoublingTimeBeforeSocialDistancing",
         "SocialDistancingPercentReduction",
 

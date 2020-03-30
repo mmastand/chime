@@ -96,17 +96,17 @@ class Parameters:
         }
 
         self.patient_chart_desc = {
-            "hospitalized": "Hospitalized COVID peaks at",
-            "icu": "ICU COVID peaks at",
-            "ventilators": "COVID Ventilators peak at",
-            "total": "Total COVID peaks at"
+            "hospitalized": "Hospitalized COVID-19 peaks at",
+            "icu": "ICU COVID-19 peaks at",
+            "ventilators": "COVID-19 Ventilators peak at",
+            "total": "Total COVID-19 peaks at"
         }
         
         self.bed_chart_desc = {
-            "hospitalized": "Hospitalized COVID Beds",
-            "icu": "Total ICU COVID Beds",
-            "ventilators": "COVID Ventilators",
-            "total": "Total COVID Beds"
+            "hospitalized": "Hospitalized COVID-19 Beds",
+            "icu": "Total ICU COVID-19 Beds",
+            "ventilators": "COVID-19 Ventilators",
+            "total": "Total COVID-19 Beds"
         }
 
     def change_date(self):

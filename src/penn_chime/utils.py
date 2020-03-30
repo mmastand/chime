@@ -17,7 +17,7 @@ RateLos = namedtuple("RateLos", ("rate", "length_of_stay"))
 
 
 def add_date_column(
-    df: pd.DataFrame, p: "Parameters", drop_day_column: bool = False, date_format: Optional[str] = None,
+    df: pd.DataFrame, p: "Parameters", drop_day_column: bool = False, date_format: Optional[str] = None, daily_count: bool = True
 ) -> pd.DataFrame:
     """Copies input data frame and converts "day" column to "date" column
 
@@ -52,8 +52,9 @@ def add_date_column(
     dates = pd.date_range(start=start_date, end=end_date, freq="D")
     if date_format is not None:
         dates = dates.strftime(date_format)
-
-    df["date"] = dates
+    if not daily_count:
+        dates = pd.Series(dates).iloc[np.mod(pd.Series(dates).index, 7) == 0]
+    df["date"] = dates.values
 
     if drop_day_column:
         df.pop("day")
@@ -79,7 +80,7 @@ def dataframe_to_base64(df: pd.DataFrame) -> str:
     return b64
 
 def calc_offset(df, p):
-    offset = np.nanargmin(abs(p.current_hospitalized - df["total"]))
+    offset = np.nanargmin(abs(p.current_hospitalized - df.iloc[:df.total.idxmax()]["total"])) # Limit to all points to the "left" of the max so we don't select a point past the peak infections
     return(offset)
 
 def shift_truncate_tables(m, p, selected_offset):
