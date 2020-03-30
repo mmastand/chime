@@ -43,6 +43,7 @@ class Parameters:
         
         census_date: datetime.date = datetime.datetime.today(),
         selected_offset: int = -1,
+        days_elapsed: datetime.date = 0,
                 
     ):
         self.current_hospitalized = current_hospitalized
@@ -74,6 +75,7 @@ class Parameters:
 
         self.census_date = census_date
         self.selected_offset = selected_offset
+        self.days_elapsed = days_elapsed
 
         self.labels = {
             "total": "Total",

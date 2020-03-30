@@ -17,7 +17,7 @@ RateLos = namedtuple("RateLos", ("rate", "length_of_stay"))
 
 
 def add_date_column(
-    df: pd.DataFrame, drop_day_column: bool = False, date_format: Optional[str] = None,
+    df: pd.DataFrame, p: "Parameters", drop_day_column: bool = False, date_format: Optional[str] = None,
 ) -> pd.DataFrame:
     """Copies input data frame and converts "day" column to "date" column
 
@@ -45,12 +45,11 @@ def add_date_column(
     non_date_columns = [col for col in df.columns if not col == "day"]
 
     # Allocate (day) continous range for dates
-    n_days = int(df.day.max())
-    start = datetime.now()
-    end = start + timedelta(days=n_days + 1)
+    today = datetime.now().date()
+    start_date = today - timedelta(days=(p.days_elapsed + p.selected_offset))
+    end_date = today + timedelta(days=p.n_days - 1)
     # And pick dates present in frame
-    dates = pd.date_range(start=start, end=end, freq="D")[df.day.tolist()]
-
+    dates = pd.date_range(start=start_date, end=end_date, freq="D")
     if date_format is not None:
         dates = dates.strftime(date_format)
 
@@ -84,17 +83,22 @@ def calc_offset(df, p):
     return(offset)
 
 def shift_truncate_tables(m, p, selected_offset):
-    m.admits_df = m.admits_df.iloc[0:(p.n_days+selected_offset)]
-    m.admits_df["day"] = np.arange(-selected_offset, p.n_days)
-    m.admits_df = m.admits_df.set_index("day")
+    elapsed_days_from_census_date = (datetime.now().date() - p.census_date).days
+    p.days_elapsed = elapsed_days_from_census_date
+    day_range_start = - (selected_offset + elapsed_days_from_census_date)
+    truncation_index = p.n_days + selected_offset + elapsed_days_from_census_date
 
-    m.census_df = m.census_df.iloc[0:(p.n_days+selected_offset)]
-    m.census_df["day"] = np.arange(-selected_offset, p.n_days)
+    m.admits_df = m.admits_df.iloc[0:truncation_index]
+    m.admits_df["day"] = np.arange(day_range_start, p.n_days)
+    m.admits_df = m.admits_df.set_index("day", drop=False)
 
-    m.beds_df = m.beds_df.iloc[0:(p.n_days+selected_offset)]
-    m.beds_df["day"] = np.arange(-selected_offset, p.n_days)
+    m.census_df = m.census_df.iloc[0:truncation_index]
+    m.census_df["day"] = np.arange(day_range_start, p.n_days)
 
-    m.raw_df = m.raw_df.iloc[0:(p.n_days+selected_offset)]
-    m.raw_df["day"] = np.arange(-selected_offset, p.n_days)
+    m.beds_df = m.beds_df.iloc[0:truncation_index]
+    m.beds_df["day"] = np.arange(day_range_start, p.n_days)
+
+    m.raw_df = m.raw_df.iloc[0:truncation_index]
+    m.raw_df["day"] = np.arange(day_range_start, p.n_days)
     m.raw_df = m.raw_df.set_index("day")
     return(m)

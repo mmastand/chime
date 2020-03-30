@@ -15,7 +15,7 @@ def new_admissions_chart(
     alt, projection_admits: pd.DataFrame, parameters: Parameters
 ) -> Chart:
     """docstring"""
-    plot_projection_days = parameters.n_days # - 10
+    plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
     max_y_axis = parameters.max_y_axis
     max_y_axis_set = parameters.max_y_axis_set
     as_date = parameters.as_date
@@ -28,7 +28,7 @@ def new_admissions_chart(
 
     tooltip_dict = {False: "day", True: "date:T"}
     if as_date:
-        projection_admits = add_date_column(projection_admits)
+        projection_admits = add_date_column(projection_admits, parameters)
         x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
     else:
         x_kwargs = {"shorthand": "day", "title": "Days from today"}
@@ -57,12 +57,12 @@ def admitted_patients_chart(
 ) -> Chart:
     """docstring"""
 
-    plot_projection_days = parameters.n_days # - 10
+    plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
     max_y_axis = parameters.max_y_axis
     max_y_axis_set = parameters.max_y_axis_set
     as_date = parameters.as_date
     if as_date:
-        census = add_date_column(census)
+        census = add_date_column(census, parameters)
         x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
         idx = "date:T"
     else:
@@ -102,12 +102,12 @@ def covid_beds_chart(
 ) -> Chart:
     """docstring"""
 
-    plot_projection_days = parameters.n_days # - 10
+    plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
     max_y_axis = parameters.max_y_axis
     max_y_axis_set = parameters.max_y_axis_set
     as_date = parameters.as_date
     if as_date:
-        census = add_date_column(census)
+        census = add_date_column(census, parameters)
         x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
         idx = "date:T"
     else:
@@ -169,7 +169,7 @@ def additional_projections_chart(
     max_y_axis_set = parameters.max_y_axis_set
 
     if as_date:
-        dat = add_date_column(dat)
+        dat = add_date_column(dat, parameters)
         x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
     else:
         x_kwargs = {"shorthand": "day", "title": "Days from today"}
