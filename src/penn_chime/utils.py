@@ -46,7 +46,7 @@ def add_date_column(
 
     # Allocate (day) continous range for dates
     today = datetime.now().date()
-    start_date = today - timedelta(days=(p.days_elapsed + p.selected_offset))
+    start_date = today - timedelta(days=(p.days_elapsed + int(p.selected_offset)))
     end_date = today + timedelta(days=p.n_days - 1)
     # And pick dates present in frame
     dates = pd.date_range(start=start_date, end=end_date, freq="D")

@@ -150,7 +150,7 @@ def covid_beds_chart(
         y=alt.Y("value:Q"),
     )
 
-    return p1 + p2, p1
+    return p1 + p2 + p3, p1
 
 def additional_projections_chart(
     alt, model, parameters

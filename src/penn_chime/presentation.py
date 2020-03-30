@@ -520,7 +520,7 @@ def draw_projected_admissions_table(
 
     if as_date:
         admits_table = add_date_column(
-            admits_table, drop_day_column=True, date_format=DATE_FORMAT
+            admits_table, parameters, drop_day_column=True, date_format=DATE_FORMAT
         )
     admits_table.rename(labels)
     st.table(admits_table)
@@ -538,7 +538,7 @@ def draw_census_table(st, census_df: pd.DataFrame, labels, as_date: bool = False
 
     if as_date:
         census_table = add_date_column(
-            census_table, drop_day_column=True, date_format=DATE_FORMAT
+            census_table, parameters, drop_day_column=True, date_format=DATE_FORMAT
         )
 
     census_table.rename(labels)
@@ -556,7 +556,7 @@ def draw_beds_table(st, bed_df: pd.DataFrame, labels, as_date: bool = False, dai
 
     if as_date:
         bed_table = add_date_column(
-            bed_table, drop_day_column=True, date_format=DATE_FORMAT
+            bed_table, parameters, drop_day_column=True, date_format=DATE_FORMAT
         )
 
     bed_table.rename(labels)
@@ -572,7 +572,7 @@ def draw_raw_sir_simulation_table(st, model, parameters):
 
     if as_date:
         infect_table = add_date_column(
-            infect_table, drop_day_column=True, date_format=DATE_FORMAT
+            infect_table, parameters, drop_day_column=True, date_format=DATE_FORMAT
         )
 
     st.table(infect_table)
@@ -584,7 +584,7 @@ def draw_raw_sir_simulation_table(st, model, parameters):
 
 def build_download_link(st, filename: str, df: pd.DataFrame, parameters: Parameters):
     if parameters.as_date:
-        df = add_date_column(df, drop_day_column=True, date_format="%Y-%m-%d")
+        df = add_date_column(df, parameters, drop_day_column=True, date_format="%Y-%m-%d")
 
     csv = dataframe_to_base64(df)
     st.markdown("""
@@ -599,7 +599,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     admits_table = admits_table.fillna(0).astype(int)
     # Add date info
     admits_table = add_date_column(
-        admits_table, drop_day_column=True, date_format="%Y-%m-%d"
+        admits_table, parameters, drop_day_column=True, date_format="%Y-%m-%d"
     )
     admits_table.rename(parameters.labels)
 
@@ -622,7 +622,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     projection_area = model.raw_df
     infect_table = (projection_area.iloc[::1, :]).apply(np.floor)
     infect_table.index = range(infect_table.shape[0])
-    infect_table["day"] = infect_table.day.astype(int)
+    infect_table["day"] = infect_table.index.astype(int)
 
     # Build full dataset
     df = admits_table.copy()
