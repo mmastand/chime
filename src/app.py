@@ -33,6 +33,7 @@ from penn_chime.utils import (
     dataframe_to_base64,
     calc_offset,
 )
+from penn_chime.hc_param_import_export import param_download_widget
 
 # This is somewhat dangerous:
 # Hide the main menu with "Rerun", "run on Save", "clear cache", and "record a screencast"
@@ -42,7 +43,8 @@ st.markdown(hide_menu_style, unsafe_allow_html=True)
 
 p = display_sidebar(st, DEFAULTS)
 m = SimSirModel(p)
-
+# Calculate offset.
+# p = display_sidebar(st, p)
 display_how_to_use(st)
 
 display_header(st, m, p)
@@ -55,10 +57,12 @@ if st.checkbox("Show more info about this tool"):
 st.subheader("New Admissions")
 st.markdown("Projected number of **daily** COVID-19 admissions")
 
-# Calculate offset.
 off = calc_offset(m.admits_df, p)
 st.markdown(f"===== offset {off} ======")
-
+selected_offset = st.number_input(
+    "selected offset to use",
+    value = off if p.selected_offset == -1 else p.selected_offset)
+p.selected_offset = selected_offset
 
 st.dataframe(m.admits_df) #######
 new_admit_chart = new_admissions_chart(alt, m.admits_df, parameters=p)
@@ -154,3 +158,11 @@ else:
 
 write_definitions(st)
 write_footer(st)
+
+param_download_widget(
+    st,
+    p, 
+    as_date=p.as_date, 
+    max_y_axis_set=p.max_y_axis_set, 
+    max_y_axis=p.max_y_axis
+)

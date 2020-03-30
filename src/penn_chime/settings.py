@@ -35,4 +35,7 @@ DEFAULTS = Constants(
     hospitalized=RateLos(0.025, 7),
     icu=RateLos(0.0075, 9),
     ventilators=RateLos(0.005, 10),
+
+    census_date=datetime.today(),
+    selected_offset=-1
 )

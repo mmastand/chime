@@ -3,8 +3,10 @@
 Changes affecting results or their presentation should also update
 `change_date`, so users can see when results have last changed
 """
+import datetime
 
 from .utils import RateLos
+
 
 
 class Parameters:
@@ -37,7 +39,10 @@ class Parameters:
         n_days: int = 60,
         recovery_days: int = 14,
         author: str = "Jane Doe",
-        scenario: str = "COVID model"
+        scenario: str = "COVID model",
+        
+        census_date: datetime.date = datetime.datetime.today(),
+        selected_offset: int = -1,
                 
     ):
         self.current_hospitalized = current_hospitalized
@@ -66,6 +71,9 @@ class Parameters:
 
         self.author = author
         self.scenario = scenario
+
+        self.census_date = census_date
+        self.selected_offset = selected_offset
 
         self.labels = {
             "total": "Total",

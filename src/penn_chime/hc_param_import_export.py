@@ -1,5 +1,8 @@
 import base64
-from datetime import datetime
+from datetime import (
+    datetime, 
+    date,
+)
 import json
 import io
 from typing import Tuple
@@ -15,7 +18,6 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Constants, dict]:
     imported_params = json.loads(file.read())
     constants = Constants(
         region=Regions(area=imported_params["RegionalPopulation"]),
-        current_hospitalized=imported_params["CurrentlyHospitalizedCovidPatients"],
         doubling_time=imported_params["DoublingTimeBeforeSocialDistancing"],
         known_infected=imported_params["CurrentlyKnownRegionalInfections"],
         n_days=imported_params["NumberOfDaysToProject"],
@@ -31,6 +33,10 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Constants, dict]:
         total_non_covid_icu_beds=imported_params["TotalNumberOfICUBedsForNCPatients"],
         total_vents=imported_params["TotalNumberOfVents"],
         total_non_covid_vents=imported_params["TotalNumberOfVentsForNCPatients"],
+
+        current_hospitalized=imported_params["CurrentlyHospitalizedCovidPatients"],
+        census_date = date.fromisoformat(imported_params.get("CurrentlyHospitalizedCovidPatientsDate", date.today().isoformat())),
+        selected_offset = imported_params.get("SelectedOffsetDays", -1)
     )
     return constants, imported_params
 
@@ -44,7 +50,6 @@ def param_download_widget(st, parameters, as_date, max_y_axis_set, max_y_axis):
             "Author": parameters.author,
             "Scenario": parameters.scenario,
             "NumberOfDaysToProject": parameters.n_days,
-            "CurrentlyHospitalizedCovidPatients": parameters.current_hospitalized,
             "DoublingTimeBeforeSocialDistancing": parameters.doubling_time,
             "SocialDistancingPercentReduction": parameters.relative_contact_rate,
             "HospitalizationPercentage": parameters.hospitalized.rate,
@@ -66,6 +71,10 @@ def param_download_widget(st, parameters, as_date, max_y_axis_set, max_y_axis):
             "TotalNumberOfICUBedsForNCPatients": parameters.total_non_covid_icu_beds,
             "TotalNumberOfVents": parameters.total_vents,
             "TotalNumberOfVentsForNCPatients": parameters.total_non_covid_vents,
+
+            "CurrentlyHospitalizedCovidPatients": parameters.current_hospitalized,
+            "CurrentlyHospitalizedCovidPatientsDate": parameters.census_date.isoformat(),
+            "SelectedOffsetDays": parameters.selected_offset,
         }
         out_json = json.dumps(out_obj)
         b64_json = base64.b64encode(out_json.encode()).decode()

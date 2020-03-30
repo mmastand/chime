@@ -141,11 +141,15 @@ def display_sidebar(st, d: Constants) -> Parameters:
     )
 
     current_hospitalized = st.sidebar.number_input(
-        "Currently Hospitalized COVID-19 Patients",
+        "Number of Hospitalized COVID-19 Patients on Following Date.",
         min_value=0,
         value=d.current_hospitalized,
         step=1,
         format="%i",
+    )
+    census_date = st.sidebar.date_input(
+        "Date of reported cases",
+        value = d.census_date,
     )
 
     doubling_time = st.sidebar.number_input(
@@ -338,15 +342,18 @@ def display_sidebar(st, d: Constants) -> Parameters:
 
         author = author,
         scenario = scenario,
+
+        census_date = census_date,
+        selected_offset = d.selected_offset,
     )
 
-    param_download_widget(
-        st,
-        parameters, 
-        as_date=as_date, 
-        max_y_axis_set=max_y_axis_set, 
-        max_y_axis=max_y_axis
-    )
+    # param_download_widget(
+    #     st,
+    #     parameters, 
+    #     as_date=as_date, 
+    #     max_y_axis_set=max_y_axis_set, 
+    #     max_y_axis=max_y_axis
+    # )
 
     return parameters
 
