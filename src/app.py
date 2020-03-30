@@ -29,7 +29,10 @@ from penn_chime.charts import (
     chart_descriptions,
     bed_chart_descriptions,
 )
-from penn_chime.utils import dataframe_to_base64
+from penn_chime.utils import (
+    dataframe_to_base64,
+    calc_offset,
+)
 
 # This is somewhat dangerous:
 # Hide the main menu with "Rerun", "run on Save", "clear cache", and "record a screencast"
@@ -51,7 +54,13 @@ if st.checkbox("Show more info about this tool"):
 
 st.subheader("New Admissions")
 st.markdown("Projected number of **daily** COVID-19 admissions")
-# st.dataframe(m.admits_df) #######
+
+# Calculate offset.
+off = calc_offset(m.admits_df, p)
+st.markdown(f"===== offset {off} ======")
+
+
+st.dataframe(m.admits_df) #######
 new_admit_chart = new_admissions_chart(alt, m.admits_df, parameters=p)
 st.altair_chart(
     new_admissions_chart(alt, m.admits_df, parameters=p),

@@ -78,3 +78,7 @@ def dataframe_to_base64(df: pd.DataFrame) -> str:
     csv = df.to_csv(index=False)
     b64 = b64encode(csv.encode()).decode()
     return b64
+
+def calc_offset(df, p):
+    offset = np.nanargmin(abs(p.current_hospitalized - df["total"]))
+    return(offset)
