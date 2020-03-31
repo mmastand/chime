@@ -567,10 +567,10 @@ def draw_beds_table(st, parameters, bed_df: pd.DataFrame, labels, as_date: bool 
 def draw_raw_sir_simulation_table(st, parameters, model):
     as_date = parameters.as_date
     projection_area = model.raw_df
+    projection_area["day"] = projection_area.index.astype(int)
     infect_table = (projection_area.iloc[::7, :]).apply(np.floor)
     infect_table.index = range(infect_table.shape[0])
-    infect_table["day"] = infect_table.day.astype(int)
-
+   
     if as_date:
         infect_table = add_date_column(
             infect_table, parameters, drop_day_column=True, date_format=DATE_FORMAT, daily_count=False
@@ -595,7 +595,7 @@ def build_download_link(st, filename: str, df: pd.DataFrame, parameters: Paramet
 def build_data_and_params(projection_admits, census_df, beds_df, model, parameters):
     # taken from admissions table function:
     admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
-    admits_table["day"] = admits_table.index
+    admits_table["day"] = admits_table.index.astype(int)
     admits_table.index = range(admits_table.shape[0])
     admits_table = admits_table.fillna(0).astype(int)
     # Add date info

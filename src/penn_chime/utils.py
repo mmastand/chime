@@ -7,6 +7,7 @@ from base64 import b64encode
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
+import streamlit as st
 # from .parameters import Parameters
 
 
@@ -36,8 +37,8 @@ def add_date_column(
     """
     if not "day" in df:
         raise KeyError("Input data frame for converting dates has no 'day column'.")
-    if not pd.api.types.is_integer_dtype(df.day):
-        raise KeyError("Column 'day' for dates converting data frame is not integer.")
+    # if not pd.api.types.is_integer_dtype(df.day):
+    #    raise KeyError("Column 'day' for dates converting data frame is not integer.")
 
     df = df.copy()
     # Prepare columns for sorting
@@ -83,7 +84,7 @@ def calc_offset(df, p):
     return(offset)
 
 def shift_truncate_tables(m, p, selected_offset):
-    elapsed_days_from_census_date = (datetime.now().date() - p.census_date).days
+    elapsed_days_from_census_date = ((datetime.utcnow() - timedelta(hours = 6)).date() - p.census_date).days
     p.days_elapsed = elapsed_days_from_census_date
     day_range_start = - (selected_offset + elapsed_days_from_census_date)
     truncation_index = p.n_days + selected_offset + elapsed_days_from_census_date + 1
