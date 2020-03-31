@@ -55,16 +55,17 @@ if st.checkbox("Show more info about this tool"):
     notes = "The total size of the susceptible population will be the entire catchment area"
     show_more_info_about_this_tool(st=st, model=m, parameters=p, defaults=DEFAULTS, notes=notes)
 
-st.subheader("New Admissions")
-st.markdown("Projected number of **daily** COVID-19 admissions")
-
 off = calc_offset(m.census_df, p)
-st.markdown(f"Calculated Days Since First Infection: {off}")
+st.markdown(f"Calculated Days Since First Hospital Admission: {off}")
 selected_offset = st.number_input(
-    "Days Since First Infection, Manual Override",
+    "Days Since First Hospital Admission, Manual Override",
     value = off if p.selected_offset == -1 else p.selected_offset)
 p.selected_offset = selected_offset
 m = shift_truncate_tables(m, p, selected_offset)
+
+st.subheader("New Hospital Admissions")
+st.markdown("Projected number of **daily** COVID-19 admissions")
+
 
 # st.dataframe(m.admits_df) #######
 new_admit_chart_dash, new_admit_chart = new_admissions_chart(alt, m.admits_df, parameters=p)
@@ -84,7 +85,7 @@ if st.checkbox("Show Projected Admissions in tabular form"):
         df=m.admits_df,
         parameters=p
     )
-st.subheader("Admitted Patients (Census)")
+st.subheader("Hospital Census")
 st.markdown(
     "Projected **census** of COVID-19 patients, accounting for arrivals and discharges"
 )

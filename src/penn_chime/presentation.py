@@ -111,12 +111,12 @@ def display_sidebar(st, d: Constants) -> Parameters:
         unsafe_allow_html=True,)
     
     st.sidebar.subheader("Scenario")
-    uploaded_file = st.sidebar.file_uploader("Load Parameters", type=['json'])
+    uploaded_file = st.sidebar.file_uploader("Load Scenario", type=['json'])
     if uploaded_file is not None:
         d, raw_imported = constants_from_uploaded_file(uploaded_file)
 
     st.sidebar.markdown("""
-        <span style="color:red;font-size:small;">Known Limitation: You must refresh your browser window before loading parameters, otherwise the projections will not be updated.</span> 
+        <span style="color:red;font-size:small;">Known Limitation: You must refresh your browser window before loading scenario, otherwise the projections will not be updated.</span> 
     """, unsafe_allow_html=True)
 
     author = st.sidebar.text_input("Author Name", 
@@ -659,13 +659,13 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
 
         "HospitalMarketShare",
         "RegionalPopulation",
-        "CurrentlyKnownRegionalInfections",
+        # "CurrentlyKnownRegionalInfections",
         
-        "TotalNumberOfBeds",
+        # "TotalNumberOfBeds",
         "TotalNumberOfBedsForNCPatients",
-        "TotalNumberOfICUBeds",
+        # "TotalNumberOfICUBeds",
         "TotalNumberOfICUBedsForNCPatients",
-        "TotalNumberOfVents",
+        # "TotalNumberOfVents",
         "TotalNumberOfVentsForNCPatients",
 
         "Date",

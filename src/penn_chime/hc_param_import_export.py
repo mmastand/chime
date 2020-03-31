@@ -19,7 +19,7 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Constants, dict]:
     constants = Constants(
         region=Regions(area=imported_params["RegionalPopulation"]),
         doubling_time=float(imported_params["DoublingTimeBeforeSocialDistancing"]),
-        known_infected=imported_params.get("CurrentlyKnownRegionalInfections", 510),
+        # known_infected=imported_params.get("CurrentlyKnownRegionalInfections", 510),
         n_days=imported_params["NumberOfDaysToProject"],
         market_share=float(imported_params["HospitalMarketShare"]),
         relative_contact_rate=float(imported_params["SocialDistancingPercentReduction"]),
@@ -27,11 +27,11 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Constants, dict]:
         icu=RateLos(float(imported_params["ICUPercentage"]), imported_params["ICULengthOfStay"]),
         ventilators=RateLos(float(imported_params["VentilatorsPercentage"]),imported_params["VentLengthOfStay"]),
 
-        total_beds=imported_params.get("TotalNumberOfBeds", 10),
+        # total_beds=imported_params.get("TotalNumberOfBeds", 10),
         total_non_covid_beds=imported_params["TotalNumberOfBedsForNCPatients"],
-        total_icu_beds=imported_params.get("TotalNumberOfICUBeds", 10),
+        # total_icu_beds=imported_params.get("TotalNumberOfICUBeds", 10),
         total_non_covid_icu_beds=imported_params["TotalNumberOfICUBedsForNCPatients"],
-        total_vents=imported_params.get("TotalNumberOfVents", 10),
+        # total_vents=imported_params.get("TotalNumberOfVents", 10),
         total_non_covid_vents=imported_params["TotalNumberOfVentsForNCPatients"],
 
         current_hospitalized=imported_params["CurrentlyHospitalizedCovidPatients"],
@@ -75,7 +75,7 @@ def param_download_widget(st, parameters, as_date, max_y_axis_set, max_y_axis):
         out_json = json.dumps(out_obj)
         b64_json = base64.b64encode(out_json.encode()).decode()
         st.sidebar.markdown(
-            """<a download="{filename}" href="data:text/plain;base64,{b64_json}" style="padding:.75em;border-radius:10px;background-color:#00aeff;color:white;font-family:sans-serif;text-decoration:none;">Save Parameters</a>"""
+            """<a download="{filename}" href="data:text/plain;base64,{b64_json}" style="padding:.75em;border-radius:10px;background-color:#00aeff;color:white;font-family:sans-serif;text-decoration:none;">Save Scenario</a>"""
             .format(b64_json=b64_json,filename=filename), 
             unsafe_allow_html=True,
         )
