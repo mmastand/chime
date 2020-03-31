@@ -34,11 +34,6 @@ hide_menu_style = """
 
 def display_header(st, m, p):
 
-    detection_prob_str = (
-        "{detection_prob:.0%}".format(detection_prob=m.detection_probability)
-        if m.detection_probability
-        else "unknown"
-    )
     st.markdown(
         """
 <link rel="stylesheet" href="https://www1.pennmedicine.org/styles/shared/penn-medicine-header.css">
@@ -53,8 +48,7 @@ def display_header(st, m, p):
 
     st.markdown(
         """
-        The estimated number of currently infected individuals is **{total_infections:.0f}**. The **{initial_infections}**
-    confirmed cases in the region imply a **{detection_prob_str}** rate of detection. This is based on current inputs for
+        The estimated number of currently infected individuals is **{total_infections:.0f}**. This is based on current inputs for
     Hospitalizations (**{current_hosp}**), Hospitalization rate (**{hosp_rate:.1%}**), Region size (**{S}**),
     and Hospital market share (**{market_share:.0%}**).
 
@@ -65,8 +59,6 @@ An initial doubling time of **{doubling_time}** days and a recovery time of **{r
 outbreak **{impact_statement:s} {doubling_time_t:.1f}** days, implying an effective $R_t$ of **${r_t:.2f}$**.
 """.format(
             total_infections=m.infected,
-            initial_infections=p.known_infected,
-            detection_prob_str=detection_prob_str,
             current_hosp=p.current_hospitalized,
             hosp_rate=p.hospitalized.rate,
             S=p.susceptible,
@@ -84,9 +76,9 @@ outbreak **{impact_statement:s} {doubling_time_t:.1f}** days, implying an effect
     return None
 
 def display_how_to_use(st):
-    BUILD_TIME = os.environ['BUILD_TIME'] # == "`date`"
-    VERSION_NUMBER = os.environ['VERSION_NUMBER']
     st.subheader("Information About This Tool")
+
+
     st.markdown(
         f"""
 
@@ -98,13 +90,10 @@ def display_how_to_use(st):
         users' local desktops, then upload those scenarios again for later use. We also added additional features that reflect hospital 
         operations, such as the ability to understand capacity.
 
-        We've done our best to test and validate this tool, balancing time-to-value with thorough test and validation. We are confident there 
-        are no major problems or errors in the model, and we are comfortable in advocating it for its intended use. That said, we expect that 
-        we've missed minor errors in functionality, not output, and encourage you to report those to us [here] (mailto:jason.jones@healthcatalyst.com). In addition, we encourage you 
-        to suggest enhancements [here] (mailto:jason.jones@healthcatalyst.com).
-
-        Version: **{VERSION_NUMBER}** (Released **{BUILD_TIME}**)
-
+        We've done our best to test and validate this tool, balancing time-to-value with thorough test and validation. 
+        * If you find a bug, please report it [here] (mailto:covidcapacitybugs@healthcatalyst.com).
+        * If you have an enhancement request, please provide it [here] (mailto:covidcapacityenhancements@healthcatalyst.com).
+        
         See **Application Guidance** section below for more information 
         """,
         unsafe_allow_html=True,)
@@ -114,10 +103,14 @@ def display_sidebar(st, d: Constants) -> Parameters:
     # these functions create input elements and bind the values they are set to
     # to the variables they are set equal to
     # it's kindof like ember or angular if you are familiar with those
-
-    if d.known_infected < 1:
-        raise ValueError("Known cases must be larger than one to enable predictions.")
-
+    
+    BUILD_TIME = os.environ['BUILD_TIME'] # == "`date`"
+    VERSION_NUMBER = os.environ['VERSION_NUMBER']
+    st.sidebar.markdown(
+        f"""V: **{VERSION_NUMBER}** (**{BUILD_TIME}**)""",
+        unsafe_allow_html=True,)
+    
+    st.sidebar.subheader("Scenario")
     uploaded_file = st.sidebar.file_uploader("Load Parameters", type=['json'])
     if uploaded_file is not None:
         d, raw_imported = constants_from_uploaded_file(uploaded_file)
@@ -132,28 +125,67 @@ def display_sidebar(st, d: Constants) -> Parameters:
     scenario = st.sidebar.text_input("Scenario Name", 
         value="COVID Model" if uploaded_file is None else raw_imported["Scenario"])
     
-    n_days = st.sidebar.number_input(
-        "Number of days to project",
-        min_value=30,
-        max_value=1000,
-        value=d.n_days,
-        step=10,
+    st.sidebar.subheader("Hospital Parameters")
+    susceptible = st.sidebar.number_input(
+        "Regional Population",
+        min_value=1,
+        value=d.region.susceptible,
+        step=100000,
         format="%i",
     )
 
-    census_date = st.sidebar.date_input(
-        "COVID-19 Census Sampling Date",
-        value = d.census_date,
+    market_share = (
+        st.sidebar.number_input(
+            "Hospital Market Share (%)",
+            min_value=0.001,
+            max_value=100.0,
+            value=d.market_share * 100,
+            step=1.0,
+            format="%f",
+        )
+        / 100.0
     )
 
     current_hospitalized = st.sidebar.number_input(
-        "COVID-19 Census (From Date Above)",
+        "COVID-19 Total Hospital Census",
         min_value=0,
         value=d.current_hospitalized,
         step=1,
         format="%i",
     )
 
+    census_date = st.sidebar.date_input(
+        "COVID-19 Total Hospital Census Date",
+        value = d.census_date,
+    )
+    
+    st.sidebar.subheader("Hospital Capacity")
+    total_non_covid_beds = st.sidebar.number_input(
+        "Total # of Beds for COVID Patients",
+    #    min_value=0,
+       value=d.total_non_covid_beds,
+    #    step=10,
+       format="%i",
+    )
+
+
+    total_non_covid_icu_beds = st.sidebar.number_input(
+        "Total # of ICU Beds for COVID Patients",
+    #    min_value=0,
+       value=d.total_non_covid_icu_beds,
+    #    step=10,
+       format="%i",
+    )
+    
+    total_non_covid_vents = st.sidebar.number_input(
+        "Total # of Ventilators for COVID Patients",
+    #    min_value=0,
+       value=d.total_non_covid_vents,
+    #    step=10,
+       format="%i",
+    )
+
+    st.sidebar.subheader("Spread and Contact Parameters")
     doubling_time = st.sidebar.number_input(
         "Doubling time before social distancing (days)",
         min_value=0.0,
@@ -173,6 +205,8 @@ def display_sidebar(st, d: Constants) -> Parameters:
         )
         / 100.0
     )
+    
+    st.sidebar.subheader("Severity Parameters")
 
     hospitalized_rate = (
         st.sidebar.number_input(
@@ -229,80 +263,16 @@ def display_sidebar(st, d: Constants) -> Parameters:
         step=1,
         format="%i",
     )
-
-    market_share = (
-        st.sidebar.number_input(
-            "Hospital Market Share (%)",
-            min_value=0.001,
-            max_value=100.0,
-            value=d.market_share * 100,
-            step=1.0,
-            format="%f",
-        )
-        / 100.0
-    )
-    susceptible = st.sidebar.number_input(
-        "Regional Population",
-        min_value=1,
-        value=d.region.susceptible,
-        step=100000,
-        format="%i",
-    )
-
-    known_infected = st.sidebar.number_input(
-        "Currently Known Regional Infections (only used to compute detection rate - does not change projections)",
-        min_value=0,
-        value=d.known_infected,
+    
+    st.sidebar.subheader("Display Parameters")
+    
+    n_days = st.sidebar.number_input(
+        "Number of days to project",
+        min_value=30,
+        max_value=1000,
+        value=d.n_days,
         step=10,
         format="%i",
-    )
-
-    total_beds = st.sidebar.number_input(
-        "Total # of Beds",
-    #    min_value=0,
-       value=d.total_beds,
-    #    step=10,
-       format="%i",
-    )
-
-    total_non_covid_beds = st.sidebar.number_input(
-        "Total # of Beds for COVID Patients",
-    #    min_value=0,
-       value=d.total_non_covid_beds,
-    #    step=10,
-       format="%i",
-    )
-
-    total_icu_beds = st.sidebar.number_input(
-        "Total # of ICU Beds",
-    #    min_value=0,
-       value=d.total_icu_beds,
-    #    step=10,
-       format="%i",
-    )
-
-    total_non_covid_icu_beds = st.sidebar.number_input(
-        "Total # of ICU Beds for COVID Patients",
-    #    min_value=0,
-       value=d.total_non_covid_icu_beds,
-    #    step=10,
-       format="%i",
-    )
-
-    total_vents = st.sidebar.number_input(
-        "Total # of Ventilators",
-    #    min_value=0,
-       value=d.total_vents,
-    #    step=10,
-       format="%i",
-    )
-
-    total_non_covid_vents = st.sidebar.number_input(
-        "Total # of Ventilators for COVID Patients",
-    #    min_value=0,
-       value=d.total_non_covid_vents,
-    #    step=10,
-       format="%i",
     )
 
     as_date_default = False if uploaded_file is None else raw_imported["PresentResultAsDates"]
@@ -323,7 +293,6 @@ def display_sidebar(st, d: Constants) -> Parameters:
         as_date=as_date,
         current_hospitalized=current_hospitalized,
         doubling_time=doubling_time,
-        known_infected=known_infected,
         market_share=market_share,
         max_y_axis=max_y_axis,
         max_y_axis_set=max_y_axis_set,
@@ -335,11 +304,8 @@ def display_sidebar(st, d: Constants) -> Parameters:
         icu=RateLos(icu_rate, icu_los),
         ventilators=RateLos(ventilators_rate, ventilators_los),
 
-        total_beds=total_beds,
         total_non_covid_beds= total_non_covid_beds,
-        total_icu_beds=total_icu_beds,
         total_non_covid_icu_beds=total_non_covid_icu_beds,
-        total_vents=total_vents,
         total_non_covid_vents=total_non_covid_vents,
 
         author = author,
@@ -510,11 +476,11 @@ def show_additional_projections(
 
 def draw_projected_admissions_table(
     st, parameters, projection_admits: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False,
-):
+    ):
     if daily_count == True:
-        admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
+        admits_table = projection_admits
     else:
-        admits_table = projection_admits[np.mod(projection_admits.index, 7) == 0].copy()
+        admits_table = projection_admits.iloc[::7]
     admits_table["day"] = admits_table.index
     admits_table.index = range(admits_table.shape[0])
     admits_table = np.ceil(admits_table.fillna(0)).astype(int)
@@ -530,9 +496,9 @@ def draw_projected_admissions_table(
 
 def draw_census_table(st, parameters, census_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
     if daily_count == True:
-        census_table = census_df[np.mod(census_df.index, 1) == 0].copy()
+        census_table = census_df
     else:
-        census_table = census_df[np.mod(census_df.index, 7) == 0].copy()
+        census_table = census_df.iloc[::7]
     census_table.index = range(census_table.shape[0])
     census_table.loc[0, :] = 0
     census_table = census_table.dropna().astype(int)
@@ -548,9 +514,9 @@ def draw_census_table(st, parameters, census_df: pd.DataFrame, labels, as_date: 
 
 def draw_beds_table(st, parameters, bed_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
     if daily_count == True:
-        bed_table = bed_df[np.mod(bed_df.index, 1) == 0].copy()
+        bed_table = bed_df
     else:
-        bed_table = bed_df[np.mod(bed_df.index, 7) == 0].copy()
+        bed_table = bed_df.iloc[::7]
     bed_table.index = range(bed_table.shape[0])
     bed_table.loc[0, :] = 0
     bed_table = bed_table.dropna().astype(int)
@@ -567,10 +533,10 @@ def draw_beds_table(st, parameters, bed_df: pd.DataFrame, labels, as_date: bool 
 def draw_raw_sir_simulation_table(st, parameters, model):
     as_date = parameters.as_date
     projection_area = model.raw_df
+    projection_area["day"] = projection_area.index.astype(int)
     infect_table = (projection_area.iloc[::7, :]).apply(np.floor)
     infect_table.index = range(infect_table.shape[0])
-    infect_table["day"] = infect_table.day.astype(int)
-
+   
     if as_date:
         infect_table = add_date_column(
             infect_table, parameters, drop_day_column=True, date_format=DATE_FORMAT, daily_count=False
@@ -595,7 +561,7 @@ def build_download_link(st, filename: str, df: pd.DataFrame, parameters: Paramet
 def build_data_and_params(projection_admits, census_df, beds_df, model, parameters):
     # taken from admissions table function:
     admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
-    admits_table["day"] = admits_table.index
+    admits_table["day"] = admits_table.index.astype(int)
     admits_table.index = range(admits_table.shape[0])
     admits_table = admits_table.fillna(0).astype(int)
     # Add date info
@@ -647,7 +613,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
 
     df["Author"] = parameters.author
     df["Scenario"] = parameters.scenario
-    df["DateGenerated"] = datetime.now().isoformat()
+    df["DateGenerated"] = datetime.utcnow().isoformat()
 
     df["CurrentlyHospitalizedCovidPatients"] = parameters.current_hospitalized
     df["CurrentlyHospitalizedCovidPatientsDate"] = parameters.census_date
@@ -665,13 +631,9 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
 
     df["HospitalMarketShare"] = parameters.market_share
     df["RegionalPopulation"] = parameters.susceptible
-    df["CurrentlyKnownRegionalInfections"] = parameters.known_infected
     
-    df["TotalNumberOfBeds"] = parameters.total_beds
     df["TotalNumberOfBedsForNCPatients"] = parameters.total_non_covid_beds
-    df["TotalNumberOfICUBeds"] = parameters.total_icu_beds
     df["TotalNumberOfICUBedsForNCPatients"] = parameters.total_non_covid_icu_beds
-    df["TotalNumberOfVents"] = parameters.total_vents
     df["TotalNumberOfVentsForNCPatients"] = parameters.total_non_covid_vents
 
     

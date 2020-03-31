@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from .defaults import Constants, Regions, RateLos
 
 delaware = 564696
@@ -19,16 +19,12 @@ DEFAULTS = Constants(
         philly=philly,
     ),
     
-    total_beds=500,
     total_non_covid_beds=300,
-    total_icu_beds=100,
     total_non_covid_icu_beds=30,
-    total_vents=50,
     total_non_covid_vents=10,
 
     current_hospitalized=14,
     doubling_time=4.0,
-    known_infected=510,
     n_days=60,
     market_share=0.15,
     relative_contact_rate=0.3,
@@ -36,6 +32,6 @@ DEFAULTS = Constants(
     icu=RateLos(0.0075, 9),
     ventilators=RateLos(0.005, 10),
 
-    census_date=datetime.today(),
+    census_date=datetime.utcnow() - timedelta(hours = 6),
     selected_offset=-1
 )

@@ -106,7 +106,6 @@ def main():
     p = Parameters(
         current_hospitalized=a.current_hospitalized,
         doubling_time=a.doubling_time,
-        known_infected=a.known_infected,
         market_share=a.market_share,
         n_days=a.n_days,
         relative_contact_rate=a.relative_contact_rate,

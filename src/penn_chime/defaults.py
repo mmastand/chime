@@ -24,15 +24,11 @@ class Constants:
         *,
         current_hospitalized: int,
         doubling_time: int,
-        known_infected: int,
         relative_contact_rate: int,
         region: Regions,
 
-        total_beds: int,
         total_non_covid_beds: int,
-        total_icu_beds: int,
         total_non_covid_icu_beds: int,
-        total_vents: int,
         total_non_covid_vents: int,
 
         hospitalized: RateLos,
@@ -51,7 +47,6 @@ class Constants:
     ):
         self.region = region
         self.current_hospitalized = current_hospitalized
-        self.known_infected = known_infected
         self.doubling_time = doubling_time
         self.relative_contact_rate = relative_contact_rate
 
@@ -65,15 +60,12 @@ class Constants:
         self.n_days = n_days
         self.recovery_days = recovery_days
 
-        self.total_beds = total_beds
         self.total_non_covid_beds = total_non_covid_beds
-        self.total_icu_beds = total_icu_beds
         self.total_non_covid_icu_beds = total_non_covid_icu_beds
-        self.total_vents = total_vents
         self.total_non_covid_vents = total_non_covid_vents
 
         self.census_date = census_date
         self.selected_offset = selected_offset
 
     def __repr__(self) -> str:
-        return f"Constants(susceptible_default: {self.region.susceptible}, known_infected: {self.known_infected})"
+        return f"Constants(susceptible_default: {self.region.susceptible})"

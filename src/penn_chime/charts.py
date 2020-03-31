@@ -48,7 +48,6 @@ def new_admissions_chart(
                 "key:N",
             ],
         )
-        .interactive()
     )
 
     p2 = get_vertical_line(alt, parameters, projection_admits, plot_projection_days)
@@ -94,7 +93,6 @@ def admitted_patients_chart(
                 "key:N",
             ],
         )
-        .interactive()
     )
 
     p2 = get_vertical_line(alt, parameters, census, plot_projection_days)
@@ -143,7 +141,7 @@ def covid_beds_chart(
             alt.Tooltip("value:Q", format=".0f", title="Beds Available"),
             "key:N",
         ],
-    ).interactive()
+    )
     
     p2 = alt.Chart(census.head(plot_projection_days)
     ).transform_fold(
@@ -200,7 +198,6 @@ def additional_projections_chart(
             tooltip=["key:N", "value:Q"],
             color="key:N",
         )
-        .interactive()
     )
 
     plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
