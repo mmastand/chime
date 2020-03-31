@@ -56,9 +56,9 @@ if st.checkbox("Show more info about this tool"):
     show_more_info_about_this_tool(st=st, model=m, parameters=p, defaults=DEFAULTS, notes=notes)
 
 off = calc_offset(m.census_df, p)
-st.markdown(f"Calculated Days Since First Hospital Admission: {off}")
+st.markdown(f"Calculated Days from First Admission to COVID-19 Hospital Census Date: {off}") 
 selected_offset = st.number_input(
-    "Days Since First Hospital Admission, Manual Override",
+    "Days from First Hospital Admission to COVID-19 Hospital Census Date, Manual Override",
     value = off if p.selected_offset == -1 else p.selected_offset)
 p.selected_offset = selected_offset
 m = shift_truncate_tables(m, p, selected_offset)
