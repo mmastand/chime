@@ -228,7 +228,6 @@ def test_model(model=MODEL, param=PARAM):
     assert isinstance(model.infected, float)  # based off note in models.py
 
     # test the class-calculated attributes
-    assert model.detection_probability == 0.125
     assert model.intrinsic_growth_rate == 0.12246204830937302
     assert model.beta == 3.2961405355450555e-07
     assert model.r_t == 2.307298374881539

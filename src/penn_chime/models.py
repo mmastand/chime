@@ -27,10 +27,6 @@ class SimSirModel:
             p.current_hospitalized / p.market_share / p.hospitalized.rate
         )
 
-        self.detection_probability = (
-            p.known_infected / infected if infected > 1.0e-7 else None
-        )
-
         # TODO missing initial recovered value
         self.recovered = recovered = 0.0
 

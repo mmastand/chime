@@ -17,15 +17,11 @@ class Parameters:
         *,
         current_hospitalized: int,
         doubling_time: float,
-        known_infected: int,
         relative_contact_rate: float,
         susceptible: int,
 
-        total_beds: int,
         total_non_covid_beds: int,
-        total_icu_beds: int,
         total_non_covid_icu_beds: int,
-        total_vents: int,
         total_non_covid_vents: int,
 
         hospitalized: RateLos,
@@ -48,7 +44,6 @@ class Parameters:
     ):
         self.current_hospitalized = current_hospitalized
         self.doubling_time = doubling_time
-        self.known_infected = known_infected
         self.relative_contact_rate = relative_contact_rate
         self.susceptible = susceptible
 
@@ -63,11 +58,8 @@ class Parameters:
         self.n_days = n_days
         self.recovery_days = recovery_days
 
-        self.total_beds = total_beds
         self.total_non_covid_beds = total_non_covid_beds
-        self.total_icu_beds = total_icu_beds
         self.total_non_covid_icu_beds = total_non_covid_icu_beds
-        self.total_vents = total_vents
         self.total_non_covid_vents = total_non_covid_vents
 
         self.author = author
