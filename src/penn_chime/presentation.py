@@ -510,11 +510,11 @@ def show_additional_projections(
 
 def draw_projected_admissions_table(
     st, parameters, projection_admits: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False,
-):
+    ):
     if daily_count == True:
-        admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
+        admits_table = projection_admits
     else:
-        admits_table = projection_admits[np.mod(projection_admits.index, 7) == 0].copy()
+        admits_table = projection_admits.iloc[::7]
     admits_table["day"] = admits_table.index
     admits_table.index = range(admits_table.shape[0])
     admits_table = np.ceil(admits_table.fillna(0)).astype(int)
@@ -530,9 +530,9 @@ def draw_projected_admissions_table(
 
 def draw_census_table(st, parameters, census_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
     if daily_count == True:
-        census_table = census_df[np.mod(census_df.index, 1) == 0].copy()
+        census_table = census_df
     else:
-        census_table = census_df[np.mod(census_df.index, 7) == 0].copy()
+        census_table = census_df.iloc[::7]
     census_table.index = range(census_table.shape[0])
     census_table.loc[0, :] = 0
     census_table = census_table.dropna().astype(int)
@@ -548,9 +548,9 @@ def draw_census_table(st, parameters, census_df: pd.DataFrame, labels, as_date: 
 
 def draw_beds_table(st, parameters, bed_df: pd.DataFrame, labels, as_date: bool = False, daily_count: bool = False):
     if daily_count == True:
-        bed_table = bed_df[np.mod(bed_df.index, 1) == 0].copy()
+        bed_table = bed_df
     else:
-        bed_table = bed_df[np.mod(bed_df.index, 7) == 0].copy()
+        bed_table = bed_df.iloc[::7]
     bed_table.index = range(bed_table.shape[0])
     bed_table.loc[0, :] = 0
     bed_table = bed_table.dropna().astype(int)
@@ -647,7 +647,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
 
     df["Author"] = parameters.author
     df["Scenario"] = parameters.scenario
-    df["DateGenerated"] = datetime.now().isoformat()
+    df["DateGenerated"] = datetime.utcnow().isoformat()
 
     df["CurrentlyHospitalizedCovidPatients"] = parameters.current_hospitalized
     df["CurrentlyHospitalizedCovidPatientsDate"] = parameters.census_date

@@ -7,7 +7,6 @@ from base64 import b64encode
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
-
 # from .parameters import Parameters
 
 
@@ -45,9 +44,9 @@ def add_date_column(
     non_date_columns = [col for col in df.columns if not col == "day"]
 
     # Allocate (day) continous range for dates
-    today = datetime.now().date()
+    today = (datetime.utcnow() - timedelta(hours = 6)).date()
     start_date = today - timedelta(days=(p.days_elapsed + int(p.selected_offset)))
-    end_date = today + timedelta(days=p.n_days - 1)
+    end_date = today + timedelta(days=p.n_days)
     # And pick dates present in frame
     dates = pd.date_range(start=start_date, end=end_date, freq="D")
     if date_format is not None:
@@ -87,19 +86,19 @@ def shift_truncate_tables(m, p, selected_offset):
     elapsed_days_from_census_date = (datetime.now().date() - p.census_date).days
     p.days_elapsed = elapsed_days_from_census_date
     day_range_start = - (selected_offset + elapsed_days_from_census_date)
-    truncation_index = p.n_days + selected_offset + elapsed_days_from_census_date
+    truncation_index = p.n_days + selected_offset + elapsed_days_from_census_date + 1
 
     m.admits_df = m.admits_df.iloc[0:truncation_index]
-    m.admits_df["day"] = np.arange(day_range_start, p.n_days)
+    m.admits_df["day"] = np.arange(day_range_start, p.n_days + 1)
     m.admits_df = m.admits_df.set_index("day", drop=False)
 
     m.census_df = m.census_df.iloc[0:truncation_index]
-    m.census_df["day"] = np.arange(day_range_start, p.n_days)
+    m.census_df["day"] = np.arange(day_range_start, p.n_days + 1)
 
     m.beds_df = m.beds_df.iloc[0:truncation_index]
-    m.beds_df["day"] = np.arange(day_range_start, p.n_days)
+    m.beds_df["day"] = np.arange(day_range_start, p.n_days + 1)
 
     m.raw_df = m.raw_df.iloc[0:truncation_index]
-    m.raw_df["day"] = np.arange(day_range_start, p.n_days)
+    m.raw_df["day"] = np.arange(day_range_start, p.n_days + 1)
     m.raw_df = m.raw_df.set_index("day")
     return(m)

@@ -58,7 +58,7 @@ if st.checkbox("Show more info about this tool"):
 st.subheader("New Admissions")
 st.markdown("Projected number of **daily** COVID-19 admissions")
 
-off = calc_offset(m.admits_df, p)
+off = calc_offset(m.census_df, p)
 st.markdown(f"Calculated Days Since First Infection: {off}")
 selected_offset = st.number_input(
     "Days Since First Infection, Manual Override",
@@ -66,7 +66,7 @@ selected_offset = st.number_input(
 p.selected_offset = selected_offset
 m = shift_truncate_tables(m, p, selected_offset)
 
-st.dataframe(m.admits_df) #######
+# st.dataframe(m.admits_df) #######
 new_admit_chart_dash, new_admit_chart = new_admissions_chart(alt, m.admits_df, parameters=p)
 st.altair_chart(
     new_admit_chart_dash,
