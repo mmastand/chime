@@ -19,16 +19,12 @@ DEFAULTS = Constants(
         philly=philly,
     ),
     
-    total_beds=500,
     total_non_covid_beds=300,
-    total_icu_beds=100,
     total_non_covid_icu_beds=30,
-    total_vents=50,
     total_non_covid_vents=10,
 
     current_hospitalized=14,
     doubling_time=4.0,
-    known_infected=510,
     n_days=60,
     market_share=0.15,
     relative_contact_rate=0.3,

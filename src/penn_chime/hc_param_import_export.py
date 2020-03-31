@@ -19,7 +19,7 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Constants, dict]:
     constants = Constants(
         region=Regions(area=imported_params["RegionalPopulation"]),
         doubling_time=float(imported_params["DoublingTimeBeforeSocialDistancing"]),
-        known_infected=imported_params["CurrentlyKnownRegionalInfections"],
+        known_infected=imported_params.get("CurrentlyKnownRegionalInfections", 510),
         n_days=imported_params["NumberOfDaysToProject"],
         market_share=float(imported_params["HospitalMarketShare"]),
         relative_contact_rate=float(imported_params["SocialDistancingPercentReduction"]),
@@ -27,11 +27,11 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Constants, dict]:
         icu=RateLos(float(imported_params["ICUPercentage"]), imported_params["ICULengthOfStay"]),
         ventilators=RateLos(float(imported_params["VentilatorsPercentage"]),imported_params["VentLengthOfStay"]),
 
-        total_beds=imported_params["TotalNumberOfBeds"],
+        total_beds=imported_params.get("TotalNumberOfBeds", 10),
         total_non_covid_beds=imported_params["TotalNumberOfBedsForNCPatients"],
-        total_icu_beds=imported_params["TotalNumberOfICUBeds"],
+        total_icu_beds=imported_params.get("TotalNumberOfICUBeds", 10),
         total_non_covid_icu_beds=imported_params["TotalNumberOfICUBedsForNCPatients"],
-        total_vents=imported_params["TotalNumberOfVents"],
+        total_vents=imported_params.get("TotalNumberOfVents", 10),
         total_non_covid_vents=imported_params["TotalNumberOfVentsForNCPatients"],
 
         current_hospitalized=imported_params["CurrentlyHospitalizedCovidPatients"],
@@ -60,16 +60,12 @@ def param_download_widget(st, parameters, as_date, max_y_axis_set, max_y_axis):
             "VentLengthOfStay": parameters.ventilators.length_of_stay,
             "HospitalMarketShare": parameters.market_share,
             "RegionalPopulation": parameters.susceptible,
-            "CurrentlyKnownRegionalInfections": parameters.known_infected,
             "PresentResultAsDates": as_date,
             "MaxYAxisSet":max_y_axis_set,
             "MaxYAxis":max_y_axis,
             
-            "TotalNumberOfBeds": parameters.total_beds,
             "TotalNumberOfBedsForNCPatients": parameters.total_non_covid_beds,
-            "TotalNumberOfICUBeds": parameters.total_icu_beds,
             "TotalNumberOfICUBedsForNCPatients": parameters.total_non_covid_icu_beds,
-            "TotalNumberOfVents": parameters.total_vents,
             "TotalNumberOfVentsForNCPatients": parameters.total_non_covid_vents,
 
             "CurrentlyHospitalizedCovidPatients": parameters.current_hospitalized,
