@@ -320,6 +320,7 @@ def build_admits_df(dispositions_df: pd.DataFrame) -> pd.DataFrame:
     admits_df = dispositions_df.iloc[:, :] - dispositions_df.shift(1)
     admits_df.day = dispositions_df.day
     admits_df.date = dispositions_df.date
+    admits_df["total"] = admits_df.hospitalized + admits_df.icu
     return admits_df
 
 
@@ -339,3 +340,38 @@ def build_census_df(
             for key, los in lengths_of_stay.items()
         }
     })
+
+def build_beds_df(
+    census_df: pd.DataFrame, lengths_of_stay, p
+) -> pd.DataFrame:
+    """ALOS for each category of COVID-19 case (total guesses)"""
+    # n_days = np.shape(census_df)[0]
+    census_dict = {}
+
+    beds_df = pd.DataFrame(census_dict)
+    beds_df["day"] = census_df.index
+
+    covid_non_icu_beds = p.total_covid_beds - p.covid_icu_beds
+
+    # If hospitalized < 0 and there's space in icu, start borrowing if possible
+    # If ICU < 0, raise alarms. No changes.
+    beds_df["hospitalized"] = p.covid_non_icu_beds - census_df["hospitalized"]
+    beds_df["icu"] = p.covid_icu_beds - p.census_df["icu"]
+    beds_df["ventilators"] = p.covid_vents - p.census_df["ventilators"]
+    beds_df["total"] = p.total_covid_beds - census_df["hospitalized"] - census_df["icu"]
+    # beds_df = beds_df.head(n_days)
+
+    # Shift people to ICU if main hospital is full and ICU is not.
+    new_hosp = []
+    new_icu = []
+    for row in beds_df.itertuples():
+        if row.hospitalized < 0 and row.icu > 0:
+            needed = min(abs(row.hospitalized), row.icu)
+            new_hosp.append(row.hospitalized + needed)
+            new_icu.append(row.icu - needed)
+        else: 
+            new_hosp.append(row.hospitalized)
+            new_icu.append(row.icu)
+    beds_df["hospitalized"] = new_hosp
+    beds_df["icu"] = new_icu
+    return beds_df

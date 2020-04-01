@@ -70,7 +70,7 @@ class Parameters:
         self.current_hospitalized = StrictlyPositive(value=current_hospitalized)
         self.relative_contact_rate = Rate(value=relative_contact_rate)
 
-        Rate(value=hospitalized.rate), Rate(value=icu.rate), Rate(value=ventilated.rate)
+        Rate(value=hospitalized.rate), Rate(value=icu.rate), Rate(value=ventilated.rate),
         StrictlyPositive(value=hospitalized.days), StrictlyPositive(value=icu.days),
         StrictlyPositive(value=ventilated.days)
 
@@ -113,4 +113,5 @@ class Parameters:
             "hospitalized": hospitalized,
             "icu": icu,
             "ventilated": ventilated,
+            "total": hospitalized
         }
