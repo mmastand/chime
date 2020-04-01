@@ -12,5 +12,11 @@ COPY .streamlit .streamlit
 COPY settings.cfg .
 COPY src src
 
+ARG BUILD_TIME
+ARG VERSION_NUMBER
+ENV BUILD_TIME=$BUILD_TIME
+ENV VERSION_NUMBER=$VERSION_NUMBER
+RUN echo $BUILD_TIME $VERSION_NUMBER
+
 CMD ["streamlit", "run", "src/app.py"]
 
