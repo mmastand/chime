@@ -60,7 +60,7 @@ def param_download_widget(st, parameters, max_y_axis_set, max_y_axis):
             "Author": parameters.author,
             "Scenario": parameters.scenario,
             "NumberOfDaysToProject": parameters.n_days,
-            "DoublingTimeBeforeSocialDistancing": parameters.doubling_time,
+            "DoublingTimeBeforeSocialDistancing": 4.0 if parameters.doubling_time == None else parameters.doubling_time,
             "SocialDistancingPercentReduction": parameters.relative_contact_rate,
             "HospitalizationPercentage": parameters.hospitalized.rate,
             "ICUPercentage": parameters.icu.rate,
