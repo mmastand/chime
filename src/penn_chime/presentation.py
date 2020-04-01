@@ -80,7 +80,7 @@ outbreak **{impact_statement:s} {doubling_time_t:.1f}** days, implying an effect
 and daily growth rate of **{daily_growth_t:.2f}%**.
 """.format(
             total_infections=m.infected,
-            current_hosp=p.current_hospitalized,
+            current_hosp=p.covid_census_value,
             hosp_rate=p.hospitalized.rate,
             S=p.population,
             market_share=p.market_share,
@@ -330,7 +330,6 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
     population = population_input()
     market_share = market_share_pct_input()
-    # known_infected = known_infected_input()
     covid_census_value = covid_census_value_input()
     covid_census_date = covid_census_date_input()
 
