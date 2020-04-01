@@ -18,6 +18,7 @@ from .constants import (
 from .utils import dataframe_to_base64
 from .parameters import Parameters, Disposition
 from .models import SimSirModel as Model
+from .hc_param_import_export import constants_from_uploaded_file
 
 hide_menu_style = """
         <style>
@@ -172,15 +173,15 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     # to the variables they are set equal to
     # it's kindof like ember or angular if you are familiar with those
 
+    uploaded_file = st.sidebar.file_uploader("Load Scenario", type=['json'])
+    if uploaded_file is not None:
+        d, raw_imported = constants_from_uploaded_file(uploaded_file)
+
+    st.sidebar.markdown("""
+        <span style="color:red;font-size:small;">Known Limitation: You must refresh your browser window before loading scenario, otherwise the projections will not be updated.</span> 
+    """, unsafe_allow_html=True)
+
     st_obj = st.sidebar
-    current_hospitalized_input = NumberInput(
-        st_obj,
-        "Currently Hospitalized COVID-19 Patients",
-        min_value=0,
-        value=d.current_hospitalized,
-        step=1,
-        format="%i",
-    )
     n_days_input = NumberInput(
         st_obj,
         "Number of days to project",
@@ -197,8 +198,8 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         step=0.25,
         format="%f",
     )
-    current_date_input = DateInput(
-        st_obj, "Current date (Default is today)", value=d.current_date,
+    social_distancing_date = DateInput(
+        st_obj, "Date when Social Distancing Protocols Started (Default is today)", value=d.social_distancing_date,
     )
     date_first_hospitalized_input = DateInput(
         st_obj, "Date of first hospitalized case - Enter this date to have chime estimate the initial doubling time",
@@ -215,14 +216,15 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     hospitalized_pct_input = PercentInput(
         st_obj, "Hospitalization %(total infections)", value=d.hospitalized.rate,
     )
-    icu_pct_input = PercentInput(st_obj,
+    icu_pct_input = PercentInput(
+        st_obj,
         "ICU %(total infections)",
         min_value=0.0,
         value=d.icu.rate,
         step=0.05
     )
-    ventilated_pct_input = PercentInput(
-        st_obj, "Ventilated %(total infections)", value=d.ventilated.rate,
+    ventilators_pct_input = PercentInput(
+        st_obj, "Ventilators %(total infections)", value=d.ventilators.rate,
     )
     hospitalized_days_input = NumberInput(
         st_obj,
@@ -240,11 +242,11 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         step=1,
         format="%i",
     )
-    ventilated_days_input = NumberInput(
+    ventilators_days_input = NumberInput(
         st_obj,
         "Average Days on Ventilator",
         min_value=0,
-        value=d.ventilated.days,
+        value=d.ventilators.days,
         step=1,
         format="%i",
     )
@@ -260,6 +262,43 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         min_value=1,
         value=(d.population),
         step=1,
+        format="%i",
+    )
+    covid_census_value_input = NumberInput(
+        st_obj,
+        "COVID-19 Total Hospital Census",
+        min_value=0,
+        value=d.covid_census_value,
+        step=1,
+        format="%i",
+    )
+    covid_census_date_input = DateInput(
+        st_obj,
+        "COVID-19 Total Hospital Census Date",
+        value = d.covid_census_date,
+    )
+    total_covid_beds_input = NumberInput(
+        st_obj,
+        "Total # of Beds for COVID-19 Patients",
+        min_value=0,
+        value=d.total_covid_beds,
+        step=10,
+        format="%i",
+    )
+    icu_covid_beds_input = NumberInput(
+        st_obj,
+        "Total # of ICU Beds for COVID-19 Patients",
+        min_value=0,
+        value=d.icu_covid_beds,
+        step=5,
+        format="%i",
+    )
+    covid_ventilators_input = NumberInput(
+        st_obj,
+        "Total # of Ventilators for COVID-19 Patients",
+        min_value=0,
+        value=d.covid_ventilators,
+        step=5,
         format="%i",
     )
     infectious_days_input = NumberInput(
@@ -285,17 +324,27 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
 
     st.sidebar.markdown(
-        "### Hospital Parameters [ℹ]({docs_url}/what-is-chime/parameters#hospital-parameters)".format(
+        "### Hospital Parameters".format(
             docs_url=DOCS_URL
         )
     )
     population = population_input()
     market_share = market_share_pct_input()
     # known_infected = known_infected_input()
-    current_hospitalized = current_hospitalized_input()
+    covid_census_value = covid_census_value_input()
+    covid_census_date = covid_census_date_input()
 
     st.sidebar.markdown(
-        "### Spread and Contact Parameters [ℹ]({docs_url}/what-is-chime/parameters#spread-and-contact-parameters)".format(
+        "### Hospital Capacity".format(
+            docs_url=DOCS_URL
+        )
+    )
+    total_covid_beds = total_covid_beds_input()
+    icu_covid_beds = icu_covid_beds_input()
+    covid_ventilators = covid_ventilators_input()
+
+    st.sidebar.markdown(
+        "### Spread and Contact Parameters".format(
             docs_url=DOCS_URL
         )
     )
@@ -311,21 +360,23 @@ def display_sidebar(st, d: Parameters) -> Parameters:
 
     relative_contact_rate = relative_contact_pct_input()
 
+    social_distancing_date = social_distancing_date()
+
     st.sidebar.markdown(
-        "### Severity Parameters [ℹ]({docs_url}/what-is-chime/parameters#severity-parameters)".format(
+        "### Severity Parameters".format(
             docs_url=DOCS_URL
         )
     )
     hospitalized_rate = hospitalized_pct_input()
     icu_rate = icu_pct_input()
-    ventilated_rate = ventilated_pct_input()
+    ventilators_rate = ventilators_pct_input()
     infectious_days = infectious_days_input()
     hospitalized_days = hospitalized_days_input()
     icu_days = icu_days_input()
-    ventilated_days = ventilated_days_input()
+    ventilators_days = ventilators_days_input()
 
     st.sidebar.markdown(
-        "### Display Parameters [ℹ]({docs_url}/what-is-chime/parameters#display-parameters)".format(
+        "### Display Parameters".format(
             docs_url=DOCS_URL
         )
     )
@@ -336,15 +387,17 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     if max_y_axis_set:
         max_y_axis = max_y_axis_input()
 
-    current_date = current_date_input()
-
     return Parameters(
-        current_hospitalized=current_hospitalized,
+        covid_census_value=covid_census_value,
+        covid_census_date=covid_census_date,
         hospitalized=Disposition(hospitalized_rate, hospitalized_days),
+        total_covid_beds=total_covid_beds,
+        icu_covid_beds=icu_covid_beds,
+        covid_ventilators=covid_ventilators,
         icu=Disposition(icu_rate, icu_days),
         relative_contact_rate=relative_contact_rate,
-        ventilated=Disposition(ventilated_rate, ventilated_days),
-        current_date=current_date,
+        ventilators=Disposition(ventilators_rate, ventilators_days),
+        social_distancing_date=social_distancing_date,
         date_first_hospitalized=date_first_hospitalized,
         doubling_time=doubling_time,
         infectious_days=infectious_days,

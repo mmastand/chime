@@ -5,7 +5,7 @@ constants.py `change_date``.
 """
 
 from collections import namedtuple
-from datetime import date
+import datetime
 from typing import Optional
 
 from .validators import (
@@ -51,13 +51,18 @@ class Parameters:
     def __init__(
         self,
         *,
-        current_hospitalized: int,
+        covid_census_value: int, # used to be current_hospitalized
+        covid_census_date: datetime.date, # added by Health Catalyst team
+        total_covid_beds: int,
+        icu_covid_beds: int,
+        covid_ventilators: int,
         hospitalized: Disposition,
         icu: Disposition,
         relative_contact_rate: float,
-        ventilated: Disposition,
-        current_date: date = date.today(),
-        date_first_hospitalized: Optional[date] = None,
+        ventilators: Disposition, # used to be ventilated
+        current_date: datetime.date = datetime.date.today() - datetime.timedelta(hours=6),
+        social_distancing_date: datetime.date = datetime.date.today()  - datetime.timedelta(hours=6),
+        date_first_hospitalized: Optional[datetime.date] = None,
         doubling_time: Optional[float] = None,
         infectious_days: int = 14,
         market_share: float = 1.0,
@@ -66,17 +71,25 @@ class Parameters:
         population: Optional[int] = None,
         recovered: int = 0,
         region: Optional[Regions] = None,
+        # Added by the Health Catalyst Team
     ):
-        self.current_hospitalized = StrictlyPositive(value=current_hospitalized)
+        self.covid_census_value = StrictlyPositive(value=covid_census_value)
+        self.covid_census_date = Date(value=covid_census_date)
+        self.current_date = Date(value=current_date)
         self.relative_contact_rate = Rate(value=relative_contact_rate)
 
-        Rate(value=hospitalized.rate), Rate(value=icu.rate), Rate(value=ventilated.rate)
-        StrictlyPositive(value=hospitalized.days), StrictlyPositive(value=icu.days),
-        StrictlyPositive(value=ventilated.days)
+        self.total_covid_beds = StrictlyPositive(value=total_covid_beds)
+        self.icu_covid_beds = StrictlyPositive(value=icu_covid_beds)
+        self.covid_ventilators = StrictlyPositive(value=covid_ventilators)
+        Rate(value=hospitalized.rate)
+        Rate(value=icu.rate)
+        StrictlyPositive(value=hospitalized.days)
+        StrictlyPositive(value=icu.days),
 
         self.hospitalized = hospitalized
         self.icu = icu
-        self.ventilated = ventilated
+
+        self.ventilators = ventilators
 
         if region is not None and population is None:
             self.region = region
@@ -87,7 +100,7 @@ class Parameters:
         else:
             raise AssertionError('population or regions must be provided.')
 
-        self.current_date = Date(value=current_date)
+        self.social_distancing_date = Date(value=social_distancing_date)
        
         self.date_first_hospitalized = OptionalDate(value=date_first_hospitalized)
         self.doubling_time = OptionalStrictlyPositive(value=doubling_time)
@@ -101,7 +114,7 @@ class Parameters:
         self.labels = {
             "hospitalized": "Hospitalized",
             "icu": "ICU",
-            "ventilated": "Ventilated",
+            "ventilators": "Ventilators",
             "day": "Day",
             "date": "Date",
             "susceptible": "Susceptible",
@@ -112,5 +125,5 @@ class Parameters:
         self.dispositions = {
             "hospitalized": hospitalized,
             "icu": icu,
-            "ventilated": ventilated,
+            "ventilators": ventilators,
         }
