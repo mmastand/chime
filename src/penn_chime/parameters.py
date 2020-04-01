@@ -61,8 +61,9 @@ class Parameters:
         relative_contact_rate: float,
         ventilators: Disposition, # used to be ventilated
         current_date: datetime.date = datetime.date.today() - datetime.timedelta(hours=6),
-        social_distancing_date: datetime.date = datetime.date.today()  - datetime.timedelta(hours=6),
+        social_distancing_start_date: datetime.date = datetime.date.today()  - datetime.timedelta(hours=6),
         date_first_hospitalized: Optional[datetime.date] = None,
+        first_hospitalized_date_known: bool = False,
         doubling_time: Optional[float] = None,
         infectious_days: int = 14,
         market_share: float = 1.0,
@@ -72,6 +73,8 @@ class Parameters:
         recovered: int = 0,
         region: Optional[Regions] = None,
         # Added by the Health Catalyst Team
+        author: str = "Jane Doe",
+        scenario: str = "COVID-19 Model",
     ):
         self.covid_census_value = StrictlyPositive(value=covid_census_value)
         self.covid_census_date = Date(value=covid_census_date)
@@ -100,9 +103,10 @@ class Parameters:
         else:
             raise AssertionError('population or regions must be provided.')
 
-        self.social_distancing_date = Date(value=social_distancing_date)
+        self.social_distancing_start_date = Date(value=social_distancing_start_date)
        
         self.date_first_hospitalized = OptionalDate(value=date_first_hospitalized)
+        self.first_hospitalized_date_known = first_hospitalized_date_known
         self.doubling_time = OptionalStrictlyPositive(value=doubling_time)
 
         self.infectious_days = StrictlyPositive(value=infectious_days)
@@ -111,6 +115,9 @@ class Parameters:
         self.n_days = StrictlyPositive(value=n_days)
         self.recovered = Positive(value=recovered)
 
+        self.author = author
+        self.scenario = scenario
+            
         self.labels = {
             "hospitalized": "Hospitalized",
             "icu": "ICU",

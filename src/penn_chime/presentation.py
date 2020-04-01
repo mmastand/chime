@@ -166,22 +166,41 @@ class CheckboxInput(Input):
         kwargs = dict(key=key)
         super().__init__(st_obj.checkbox, label, value, kwargs)
 
+class TextInput(Input):
+    def __init__(self, st_obj, label, value=None, key=None):
+        kwargs = dict(key=key)
+        super().__init__(st_obj.text_input, label, value, kwargs)
+
 
 def display_sidebar(st, d: Parameters) -> Parameters:
     # Initialize variables
     # these functions create input elements and bind the values they are set to
     # to the variables they are set equal to
     # it's kindof like ember or angular if you are familiar with those
-
+    st_obj = st.sidebar
+    st.sidebar.markdown(
+        "### Scenario"
+    )
     uploaded_file = st.sidebar.file_uploader("Load Scenario", type=['json'])
     if uploaded_file is not None:
-        d, raw_imported = constants_from_uploaded_file(uploaded_file)
+        d = constants_from_uploaded_file(uploaded_file)
 
     st.sidebar.markdown("""
         <span style="color:red;font-size:small;">Known Limitation: You must refresh your browser window before loading scenario, otherwise the projections will not be updated.</span> 
     """, unsafe_allow_html=True)
 
-    st_obj = st.sidebar
+    author_input = TextInput(
+        st_obj,
+        "Author Name", 
+        value="Jane Doe" if uploaded_file is None else raw_imported["Author"]
+    )
+    
+    scenario_input = TextInput(
+        st_obj,
+        "Scenario Name", 
+        value="COVID Model" if uploaded_file is None else raw_imported["Scenario"]
+    )
+
     n_days_input = NumberInput(
         st_obj,
         "Number of days to project",
@@ -198,8 +217,8 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         step=0.25,
         format="%f",
     )
-    social_distancing_date = DateInput(
-        st_obj, "Date when Social Distancing Protocols Started (Default is today)", value=d.social_distancing_date,
+    social_distancing_start_date_input = DateInput(
+        st_obj, "Date when Social Distancing Protocols Started (Default is today)", value=d.social_distancing_start_date,
     )
     date_first_hospitalized_input = DateInput(
         st_obj, "Date of first hospitalized case - Enter this date to have chime estimate the initial doubling time",
@@ -317,16 +336,12 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
 
     # Build in desired order
-    st.sidebar.markdown(
-        """**CHIME [v1.1.1](https://github.com/CodeForPhilly/chime/releases/tag/v1.1.1) ({change_date})**""".format(
-            change_date=CHANGE_DATE
-        )
-    )
+
+    author = author_input()
+    scenario = scenario_input()
 
     st.sidebar.markdown(
-        "### Hospital Parameters".format(
-            docs_url=DOCS_URL
-        )
+        "### Hospital Parameters"
     )
     population = population_input()
     market_share = market_share_pct_input()
@@ -335,18 +350,14 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     covid_census_date = covid_census_date_input()
 
     st.sidebar.markdown(
-        "### Hospital Capacity".format(
-            docs_url=DOCS_URL
-        )
+        "### Hospital Capacity"
     )
     total_covid_beds = total_covid_beds_input()
     icu_covid_beds = icu_covid_beds_input()
     covid_ventilators = covid_ventilators_input()
 
     st.sidebar.markdown(
-        "### Spread and Contact Parameters".format(
-            docs_url=DOCS_URL
-        )
+        "### Spread and Contact Parameters"
     )
 
     if st.sidebar.checkbox(
@@ -360,12 +371,10 @@ def display_sidebar(st, d: Parameters) -> Parameters:
 
     relative_contact_rate = relative_contact_pct_input()
 
-    social_distancing_date = social_distancing_date()
+    social_distancing_start_date = social_distancing_start_date_input()
 
     st.sidebar.markdown(
-        "### Severity Parameters".format(
-            docs_url=DOCS_URL
-        )
+        "### Severity Parameters"
     )
     hospitalized_rate = hospitalized_pct_input()
     icu_rate = icu_pct_input()
@@ -376,9 +385,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     ventilators_days = ventilators_days_input()
 
     st.sidebar.markdown(
-        "### Display Parameters".format(
-            docs_url=DOCS_URL
-        )
+        "### Display Parameters"
     )
     n_days = n_days_input()
     max_y_axis_set = max_y_axis_set_input()
@@ -397,7 +404,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         icu=Disposition(icu_rate, icu_days),
         relative_contact_rate=relative_contact_rate,
         ventilators=Disposition(ventilators_rate, ventilators_days),
-        social_distancing_date=social_distancing_date,
+        social_distancing_start_date=social_distancing_start_date,
         date_first_hospitalized=date_first_hospitalized,
         doubling_time=doubling_time,
         infectious_days=infectious_days,
