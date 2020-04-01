@@ -39,6 +39,7 @@ if st.checkbox("Show more info about this tool"):
     display_more_info(st=st, model=m, parameters=p, defaults=d, notes=notes)
 
 st.subheader("New Admissions")
+st.dataframe(m.admits_df) ###############
 st.markdown("Projected number of **daily** COVID-19 admissions. \n\n _NOTE: Now including estimates of prior admissions for comparison._")
 admits_chart = build_admits_chart(alt=alt, admits_floor_df=m.admits_floor_df, max_y_axis=p.max_y_axis)
 st.altair_chart(admits_chart, use_container_width=True)
@@ -61,6 +62,7 @@ if st.checkbox("Show Projected Admissions in tabular form"):
 
 
 st.subheader("Admitted Patients (Census)")
+st.dataframe(m.census_df) ###############
 st.markdown("Projected **census** of COVID-19 patients, accounting for arrivals and discharges \n\n _NOTE: Now including estimates of prior census for comparison._")
 census_chart = build_census_chart(alt=alt, census_floor_df=m.census_floor_df, max_y_axis=p.max_y_axis)
 st.altair_chart(census_chart, use_container_width=True)
