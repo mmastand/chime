@@ -122,7 +122,7 @@ def build_beds_chart(
     color = alt.Color("key:N", sort = ["total", "icu", "ventilators"])
     tooltip = ["key:N", "value:Q"]
     
-    # census["line"] = 0
+    beds_floor_df["zero"] = 0
     # TODO fix the fold to allow any number of dispositions
     beds = (
         alt.Chart()
@@ -131,34 +131,20 @@ def build_beds_chart(
         .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line()
     )
-    # Horizontal line at 0
-    # hline = alt.Chart(census.head(plot_projection_days)
-    # ).transform_fold(
-    #     fold=["line"]
-    # ).mark_line(
-    #     point=False,
-    #     color="black",
-    #     strokeDash=[5,3],
-    #     opacity=.5,
-    # ).encode(
-    #     x=alt.X(**x_kwargs),
-    #     y=alt.Y("value:Q"),
-    # )
-    # # Vertical line on today
-    # v_line_location = "0"
-    # if parameters.as_date:
-    #     today = datetime.date.today()
-    #     v_line_location = f"datetime({today.year}, {today.month - 1}, {today.day})" # Because Altair uses vega which has 0-based month indexes
-    # vline = alt.Chart(census.head(plot_projection_days)
-    # ).mark_rule(
-    #     strokeDash=[5,3],
-    #     opacity=.05, # This doesn't seem to do anything
-    # ).encode(
-    #     x="v_line_location:T" if parameters.as_date else "v_line_location:Q"
-    # ).transform_calculate(v_line_location=v_line_location)
+    bar = (
+        alt.Chart()
+        .encode(x=alt.X(**x))
+        .transform_filter(alt.datum.day == 0)
+        .mark_rule(color="black", opacity=0.35, size=2)
+    )
+    hbar = (
+        alt.Chart()
+        .transform_fold(fold=["zero"])
+        .encode(x=alt.X(**x), y=alt.Y("value:Q"))
+        .mark_line(point=False, color="black", strokeDash=[5,3], opacity=0.35,)
+    )
+    return alt.layer(beds, bar, hbar, data=beds_floor_df)
 
-    # return beds + vline + hline, beds
-    return alt.layer(beds, data=beds_floor_df)
 def build_descriptions(
     *,
     chart: Chart,
