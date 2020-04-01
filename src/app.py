@@ -11,6 +11,7 @@ from penn_chime.presentation import (
     hide_menu_style,
     write_definitions,
     write_footer,
+    build_data_and_params,
 )
 from penn_chime.settings import get_defaults
 from penn_chime.models import SimSirModel
@@ -21,6 +22,7 @@ from penn_chime.charts import (
     build_sim_sir_w_date_chart,
     build_table,
 )
+from penn_chime.utils import dataframe_to_base64
 
 # This is somewhat dangerous:
 # Hide the main menu with "Rerun", "run on Save", "clear cache", and "record a screencast"
@@ -99,6 +101,27 @@ if st.checkbox("Show SIR Simulation in tabular form"):
         df=m.sim_sir_w_date_floor_df,
         labels=p.labels)
     st.table(table_df)
+
+### Export Full Data and Parameters
+st.header("Export Full Data and Parameters")
+df = build_data_and_params(projection_admits = m.admits_df, 
+                           census_df = m.census_df,
+                           beds_df= m.beds_df, 
+                           model = m, 
+                           parameters = p)
+
+if st.checkbox("Show full data and parameters to be exported"):
+    st.dataframe(df)
+
+if p.author == "Jane Doe" or p.scenario == "COVID Model":
+    st.markdown("""
+    **Enter a unique author name and scenario name to enable downloading.**""")
+else:
+    filename = "Data" + "_" + p.author + "_" + p.scenario + "_" + df.loc[0, "Date"] + ".csv"
+    csv = dataframe_to_base64(df)
+    st.markdown("""
+            <a download="{filename}" href="data:text/plain;base64,{csv}">Download full table as CSV</a>
+    """.format(csv=csv,filename=filename), unsafe_allow_html=True)
 
 write_definitions(st)
 write_footer(st)

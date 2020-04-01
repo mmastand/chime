@@ -1,7 +1,7 @@
 """effectful functions for streamlit io"""
 
 from typing import Optional
-from datetime import date
+import datetime
 
 import altair as alt
 import numpy as np
@@ -561,3 +561,127 @@ def display_download_link(st, filename: str, df: pd.DataFrame):
         ),
         unsafe_allow_html=True,
     )
+
+def build_data_and_params(projection_admits, census_df, beds_df, model, parameters):
+    # taken from admissions table function:
+    admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
+    admits_table["day"] = admits_table.index.astype(int)
+    admits_table.index = range(admits_table.shape[0])
+    admits_table = admits_table.fillna(0).astype(int)
+    admits_table.rename(parameters.labels)
+
+    # taken from census table function:
+    census_table = census_df[np.mod(census_df.index, 1) == 0].copy()
+    census_table.index = range(census_table.shape[0])
+    census_table.loc[0, :] = 0
+    census_table = census_table.dropna().astype(int)
+    census_table.rename(parameters.labels)
+    
+    # taken from beds table function:
+    bed_table = beds_df[np.mod(beds_df.index, 1) == 0].copy()
+    bed_table.index = range(bed_table.shape[0])
+    bed_table.loc[0, :] = 0
+    bed_table = bed_table.dropna().astype(int)
+    bed_table.rename(parameters.labels)
+
+    # taken from raw sir table function:
+    projection_area = model.raw_df
+    infect_table = (projection_area.iloc[::1, :]).apply(np.floor)
+    infect_table.index = range(infect_table.shape[0])
+    infect_table["day"] = infect_table.index.astype(int)
+
+    # Build full dataset
+    df = admits_table.copy()
+    df = df.rename(columns = {
+        "date": "Date",
+        "total": "TotalAdmissions", 
+        "icu": "ICUAdmissions", 
+        "ventilators": "ventilatorsAdmissions"}, )
+    
+    df["TotalCensus"] = census_table["total"]
+    df["ICUCensus"] = census_table["icu"]
+    df["ventilatorsCensus"] = census_table["ventilators"]
+
+    df["TotalBeds"] = bed_table["total"]
+    df["ICUBeds"] = bed_table["icu"]
+    df["Ventilators"] = bed_table["ventilators"]
+
+    df["Susceptible"] = infect_table["susceptible"]
+    df["Infections"] = infect_table["infected"]
+    df["Recovered"] = infect_table["recovered"]
+
+    df["Author"] = parameters.author
+    df["Scenario"] = parameters.scenario
+    df["DateGenerated"] = datetime.datetime.utcnow().isoformat()
+
+    df["CurrentlyHospitalizedCovidPatients"] = parameters.current_hospitalized
+    df["CurrentlyHospitalizedCovidPatientsDate"] = parameters.census_date
+    df["SelectedOffsetDays"] = parameters.selected_offset
+    df["DoublingTimeBeforeSocialDistancing"] = parameters.doubling_time
+    df["SocialDistancingPercentReduction"] = parameters.relative_contact_rate
+    
+    df["HospitalizationPercentage"] = parameters.hospitalized.rate
+    df["ICUPercentage"] = parameters.icu.rate
+    df["ventilatorsPercentage"] = parameters.ventilators.rate
+
+    df["HospitalLengthOfStay"] = parameters.hospitalized.length_of_stay
+    df["ICULengthOfStay"] = parameters.icu.length_of_stay
+    df["VentLengthOfStay"] = parameters.ventilators.length_of_stay
+
+    df["HospitalMarketShare"] = parameters.market_share
+    df["RegionalPopulation"] = parameters.susceptible
+    
+    df["TotalNumberOfBedsForNCPatients"] = parameters.total_non_covid_beds
+    df["TotalNumberOfICUBedsForNCPatients"] = parameters.total_non_covid_icu_beds
+    df["TotalNumberOfVentsForNCPatients"] = parameters.total_non_covid_vents
+
+    
+    # Reorder columns
+    df = df[[
+        "Author", 
+        "Scenario", 
+        "DateGenerated",
+
+        "CurrentlyHospitalizedCovidPatients",
+        "CurrentlyHospitalizedCovidPatientsDate",
+        "SelectedOffsetDays",
+        "DoublingTimeBeforeSocialDistancing",
+        "SocialDistancingPercentReduction",
+
+        "HospitalizationPercentage",
+        "ICUPercentage",
+        "ventilatorsPercentage",
+
+        "HospitalLengthOfStay",
+        "ICULengthOfStay",
+        "VentLengthOfStay",
+
+        "HospitalMarketShare",
+        "RegionalPopulation",
+        # "CurrentlyKnownRegionalInfections",
+        
+        # "TotalNumberOfBeds",
+        "TotalNumberOfBedsForNCPatients",
+        # "TotalNumberOfICUBeds",
+        "TotalNumberOfICUBedsForNCPatients",
+        # "TotalNumberOfVents",
+        "TotalNumberOfVentsForNCPatients",
+
+        "Date",
+        "TotalAdmissions", 
+        "ICUAdmissions", 
+        "ventilatorsAdmissions",
+
+        "TotalCensus",
+        "ICUCensus",
+        "ventilatorsCensus",
+        
+        "TotalBeds",
+        "ICUBeds",
+        "Ventilators", 
+
+        "Susceptible",
+        "Infections",
+        "Recovered"
+        ]]
+    return(df)
