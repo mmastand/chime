@@ -18,7 +18,10 @@ from .constants import (
 from .utils import dataframe_to_base64
 from .parameters import Parameters, Disposition
 from .models import SimSirModel as Model
-from .hc_param_import_export import constants_from_uploaded_file
+from .hc_param_import_export import (
+    constants_from_uploaded_file, 
+    param_download_widget
+)
 
 hide_menu_style = """
         <style>
@@ -197,13 +200,13 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     author_input = TextInput(
         st_obj,
         "Author Name", 
-        value="Jane Doe" if uploaded_file is None else raw_imported["Author"]
+        value="Jane Doe" if uploaded_file is None else d.author
     )
     
     scenario_input = TextInput(
         st_obj,
         "Scenario Name", 
-        value="COVID Model" if uploaded_file is None else raw_imported["Scenario"]
+        value="COVID Model" if uploaded_file is None else d.scenario
     )
 
     n_days_input = NumberInput(
@@ -398,7 +401,8 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     if max_y_axis_set:
         max_y_axis = max_y_axis_input()
 
-    return Parameters(
+
+    parameters = Parameters(
         covid_census_value=covid_census_value,
         covid_census_date=covid_census_date,
         hospitalized=Disposition(hospitalized_rate, hospitalized_days),
@@ -416,8 +420,18 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         max_y_axis=max_y_axis,
         n_days=n_days,
         population=population,
+        author=author,
+        scenario=scenario,
     )
 
+    param_download_widget(
+        st,
+        parameters, 
+        max_y_axis_set=max_y_axis_set, 
+        max_y_axis=max_y_axis
+    )
+
+    return parameters
 
 def display_more_info(
     st, model: Model, parameters: Parameters, defaults: Parameters, notes: str = "",
