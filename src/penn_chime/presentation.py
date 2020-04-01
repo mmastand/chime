@@ -40,29 +40,34 @@ def display_header(st, m, p):
         else ""
     )
 
+    st.subheader("Information About This Tool")
+
+    st.markdown(
+        f"""
+        This tool was developed by Health Catalyst to assist healthcare systems with their modeling and forecasting of COVID-19 infection 
+        rates in their local catchment region, and the subsequent impact of those rates on care delivery capacity. We extend our deep 
+        thanks to the [Predictive Healthcare team at Penn Medicine] (http://predictivehealthcare.pennmedicine.org/)  for their [COVID-19 
+        Hospital Impact Model for Epidemics] (https://penn-chime.phl.io/), and making the code for their tool available to the opensource community. We leveraged the Penn 
+        epidemiology models, and added new features in our tool such as the ability to run multiple scenarios, store those scenarios on 
+        users' local desktops, then upload those scenarios again for later use. We also added additional features that reflect hospital 
+        operations, such as the ability to understand capacity.
+        We've done our best to test and validate this tool, balancing time-to-value with thorough test and validation. 
+        * If you find a bug, please report it [here] (mailto:covidcapacitybugs@healthcatalyst.com).
+        * If you have an enhancement request, please provide it [here] (mailto:covidcapacityenhancements@healthcatalyst.com).
+        
+        See **Application Guidance** section below for more information 
+        """,
+        unsafe_allow_html=True,)
+
     st.markdown(
         """
-<link rel="stylesheet" href="https://www1.pennmedicine.org/styles/shared/penn-medicine-header.css">
-<div class="penn-medicine-header__content">
-    <a href="https://www.pennmedicine.org" class="penn-medicine-header__logo"
-        title="Go to the Penn Medicine home page">Penn Medicine</a>
-    <a id="title" class="penn-medicine-header__title">COVID-19 Hospital Impact Model for Epidemics (CHIME)</a>
-</div>
-    """,
+        <link rel="stylesheet" href="https://www1.pennmedicine.org/styles/shared/penn-medicine-header.css">
+        <div class="penn-medicine-header__content">
+            <a id="title" class="penn-medicine-header__title" style="font-size:24pt;color:#00aeff">COVID-19 Hospital Impact Model for Epidemics</a>
+        </div> 
+        <br>
+        """,
         unsafe_allow_html=True,
-    )
-    st.markdown(
-        """[Documentation]({docs_url}) | [Github](https://github.com/CodeForPhilly/chime/) |
-[Slack](https://codeforphilly.org/chat?channel=covid19-chime-penn)""".format(
-            docs_url=DOCS_URL
-        )
-    )
-    st.markdown(
-        """*This tool was developed by the [Predictive Healthcare team](http://predictivehealthcare.pennmedicine.org/) at
-    Penn Medicine to assist hospitals and public health officials with hospital capacity planning,
-    but can be used anywhere in the world.
-    Customize it for your region by modifying data inputs in the left panel.*
-    """
     )
 
     st.markdown(
@@ -513,24 +518,37 @@ $$\\beta = (g + \\gamma)$$.
 
 
 def write_definitions(st):
-    st.subheader("Guidance on Selecting Inputs")
+    st.subheader("Application Guidance")
+    st.markdown("""
+    This tool has the ability to load and save parameters, as well as save parameters and calculations. Enable
+    these features by changing the *Author Name* and *Scenario Name* to values of your choosing. Rather than create the parameter file
+    from scratch we highly recommend using the "Save Parameters" button to create a parameter file which can then be edited by hand
+    if desired. Please note however that it is easy to inadvertently produce an invalid JSON file when editing by hand. If you wish
+    to update a set of existing parameters we recommend loading in the parameters, editing them in the UI, and re-exporting a new
+    version of the parameters.
+    
+    **Saving Parameters:** At the bottom of the left sidebar, a download link will appear to save your 
+    parameters as a file. Click to save the file. This file is .json and can be opened in a text editor.
+    
+    **Loading Parameters:** At the top of the left sidebar, browse for a parameter file (in the same 
+    format as the exported parameters) or drag and drop. Parameter values will update.
+    
+    **Saving Calculations**: At the bottom of the main page, a link will appear to save all model 
+    parameters and calculations as a .csv file. Click the link to save the file.
+    """)
+
     st.markdown(
-        """**This information has been moved to the
-[User Documentation]({docs_url}/what-is-chime/parameters)**""".format(
-            docs_url=DOCS_URL
-        )
+        """**For more details on input selection, please refer here: [User Documentation](https://code-for-philly.gitbook.io/chime/what-is-chime/parameters#guidance-on-selecting-inputs)**"""
     )
 
 
 def write_footer(st):
     st.subheader("References & Acknowledgements")
     st.markdown(
-        """* AHA Webinar, Feb 26, James Lawler, MD, an associate professor University of Nebraska Medical Center, What Healthcare Leaders Need To Know: Preparing for the COVID-19
-* We would like to recognize the valuable assistance in consultation and review of model assumptions by Michael Z. Levy, PhD, Associate Professor of Epidemiology, Department of Biostatistics, Epidemiology and Informatics at the Perelman School of Medicine
-* Finally we'd like to thank [Code for Philly](https://codeforphilly.org/) and the many members of the open-source community that [contributed](https://github.com/CodeForPhilly/chime/graphs/contributors) to this project.
-    """
+        """* This application is based on the work that is developed and made freely available (under MIT license) by Penn Medicine (https://github.com/CodeForPhilly/chime). 
+        """
     )
-    st.markdown("© 2020, The Trustees of the University of Pennsylvania")
+    st.markdown("© 2020, Health Catalyst Inc.")
 
 
 def display_download_link(st, filename: str, df: pd.DataFrame):
