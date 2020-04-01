@@ -185,6 +185,46 @@ def build_descriptions(
         messages.append("_* The max is at the upper bound of the data, and therefore may not be the actual max_")
     return "\n\n".join(messages)
 
+def build_bed_descriptions(
+    *,
+    chart: Chart,
+    labels: Dict[str, str],
+    suffix: str = ""
+) -> str:
+    """
+
+    :param chart: The alt chart to be used in finding max points
+    :param suffix: The assumption is that the charts have similar column names.
+                   The census chart adds " Census" to the column names.
+                   Make sure to include a space or underscore as appropriate
+    :return: Returns a multi-line string description of the results
+    """
+    messages = []
+
+    cols = ["total", "icu", "ventilators"]
+    asterisk = False
+    
+    # Add note if lines overlap.
+    if sum(np.where(chart.data["total"] == chart.data["icu"], 1, 0)) > 1:
+        messages.append("_The overlapping lines represent non-ICU patients being housed in the ICU._")
+
+    for col in cols:
+        if np.nanmin(chart.data[col]) > 0:
+            asterisk = True
+            messages.append("_{} are never exhausted._".format(labels[col]))
+            continue
+
+        on = chart.data["date"][chart.data[col].le(0).idxmax()]
+        on = datetime.strftime(on, "%b %d")  # todo: bring this to an optional arg / i18n
+
+        messages.append(
+            "{} are exhausted on {}".format(
+                labels[col],
+                on,
+            )
+        )
+
+    return "\n\n".join(messages)
 
 def build_table(
     *,

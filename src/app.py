@@ -19,6 +19,7 @@ from penn_chime.charts import (
     build_census_chart,
     build_beds_chart,
     build_descriptions,
+    build_bed_descriptions,
     build_sim_sir_w_date_chart,
     build_table,
 )
@@ -92,18 +93,22 @@ st.markdown(
 st.dataframe(m.beds_df)##########
 beds_chart = build_beds_chart(alt=alt, beds_floor_df=m.beds_df, max_y_axis=p.max_y_axis)
 st.altair_chart(beds_chart, use_container_width=True)
-# st.markdown(bed_chart_descriptions(beds_chart, p.bed_chart_desc))
-# if st.checkbox("Show Projected Available COVID-19 Beds in tabular form"):
-#     if st.checkbox("Show Daily Available Bed Counts"):
-#         draw_beds_table(st, p, m.beds_df, p.labels, as_date=p.as_date, daily_count=True)
-#     else:
-#         draw_beds_table(st, p, m.beds_df, p.labels, as_date=p.as_date, daily_count=False)
-#     build_download_link(st,
-#         filename="projected_beds.csv",
-#         df=m.beds_df,
-#         parameters=p
-#     )
+st.markdown(build_bed_descriptions(chart=beds_chart, labels=p.eqpt_chart_desc))
+display_download_link(
+    st,
+    filename=f"{p.current_date}_projected_capacity.csv",
+    df=m.beds_df,
+)
 
+if st.checkbox("Show Projected Capacity in tabular form"):
+    beds_modulo = 1
+    if not st.checkbox("Show Daily Capacity Counts"):
+        beds_modulo = 7
+    table_df = build_table(
+        df=m.beds_floor_df,
+        labels=p.labels,
+        modulo=beds_modulo)
+    st.table(table_df)
 
 
 st.subheader("Susceptible, Infected, and Recovered")
