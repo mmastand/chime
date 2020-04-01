@@ -1,222 +1,130 @@
 
+from datetime import datetime
 from math import ceil
-import datetime
+from typing import Dict, Optional
 
-from altair import Chart  # type: ignore
-import pandas as pd  # type: ignore
+from altair import Chart
+import pandas as pd
 import numpy as np
 
+from .constants import DATE_FORMAT
 from .parameters import Parameters
-from .utils import add_date_column
-from .presentation import DATE_FORMAT
 
 
-def new_admissions_chart(
-    alt, projection_admits: pd.DataFrame, parameters: Parameters
+def build_admits_chart(
+    *,
+    alt,
+    admits_floor_df: pd.DataFrame,
+    max_y_axis: Optional[int] = None,
 ) -> Chart:
-    """docstring"""
-    plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
-    max_y_axis = parameters.max_y_axis
-    max_y_axis_set = parameters.max_y_axis_set
-    as_date = parameters.as_date
-
+    """Build admits chart."""
     y_scale = alt.Scale()
-
-    if max_y_axis_set and max_y_axis is not None:
+    if max_y_axis is not None:
         y_scale.domain = (0, max_y_axis)
-        y_scale.clamp = True
 
-    tooltip_dict = {False: "day", True: "date:T"}
-    if as_date:
-        projection_admits = add_date_column(projection_admits, parameters)
-        x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
-    else:
-        x_kwargs = {"shorthand": "day", "title": "Days from today"}
+    x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
+    y = dict(shorthand="value:Q", title="Daily admissions", scale=y_scale)
+    color = "key:N"
+    tooltip=["date:T", alt.Tooltip("value:Q", format=".0f", title="Admit"), "key:N"]
 
     # TODO fix the fold to allow any number of dispositions
-    p1 = (
-        alt.Chart(projection_admits.head(plot_projection_days))
-        .transform_fold(fold=["total", "icu", "ventilators"])
+    points = (
+        alt.Chart()
+        .transform_fold(fold=["hospitalized", "icu", "ventilated"])
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line(point=True)
-        .encode(
-            x=alt.X(**x_kwargs),
-            y=alt.Y("value:Q", title="COVID-19 Daily admissions", scale=y_scale),
-            color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
-            tooltip=[
-                tooltip_dict[as_date],
-                alt.Tooltip("value:Q", format=".0f", title="Admissions"),
-                "key:N",
-            ],
-        )
     )
+    bar = (
+        alt.Chart()
+        .encode(x=alt.X(**x))
+        .transform_filter(alt.datum.day == 0)
+        .mark_rule(color="black", opacity=0.35, size=2)
+    )
+    return alt.layer(points, bar, data=admits_floor_df)
 
-    p2 = get_vertical_line(alt, parameters, projection_admits, plot_projection_days)
-
-    return p1 + p2, p1
 
 
-def admitted_patients_chart(
-    alt, census: pd.DataFrame, parameters: Parameters
+def build_census_chart(
+    *,
+    alt,
+    census_floor_df: pd.DataFrame,
+    max_y_axis: Optional[int] = None,
 ) -> Chart:
-    """docstring"""
-
-    plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
-    max_y_axis = parameters.max_y_axis
-    max_y_axis_set = parameters.max_y_axis_set
-    as_date = parameters.as_date
-    if as_date:
-        census = add_date_column(census, parameters)
-        x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
-        idx = "date:T"
-    else:
-        x_kwargs = {"shorthand": "day", "title": "Days from today"}
-        idx = "day"
-
+    """Build census chart."""
     y_scale = alt.Scale()
-
-    if max_y_axis_set and max_y_axis is not None:
+    if max_y_axis:
         y_scale.domain = (0, max_y_axis)
-        y_scale.clamp = True
+
+    x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
+    y = dict(shorthand="value:Q", title="Census", scale=y_scale)
+    color = "key:N"
+    tooltip = ["date:T", alt.Tooltip("value:Q", format=".0f", title="Census"), "key:N"]
 
     # TODO fix the fold to allow any number of dispositions
-    p1 = (
-        alt.Chart(census.head(plot_projection_days))
-        .transform_fold(fold=["total", "icu", "ventilators"])
+    points = (
+        alt.Chart()
+        .transform_fold(fold=["hospitalized", "icu", "ventilated"])
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line(point=True)
-        .encode(
-            x=alt.X(**x_kwargs),
-            y=alt.Y("value:Q", title="Census", scale=y_scale),
-            color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
-            tooltip=[
-                idx,
-                alt.Tooltip("value:Q", format=".0f", title="Census"),
-                "key:N",
-            ],
-        )
     )
+    bar = (
+        alt.Chart()
+        .encode(x=alt.X(**x))
+        .transform_filter(alt.datum.day == 0)
+        .mark_rule(color="black", opacity=0.35, size=2)
+    )
+    return alt.layer(points, bar, data=census_floor_df)
 
-    p2 = get_vertical_line(alt, parameters, census, plot_projection_days)
 
-    return p1 + p2, p1
-
-
- # Total covid med/surg beds = total beds - nc beds - icu
- # covid_icu_beds  = total icu - nc_icu
- # covid_vents = total_vents - nc_vents
-def covid_beds_chart(
-    alt, census: pd.DataFrame, parameters: Parameters, st
+def build_sim_sir_w_date_chart(
+    *,
+    alt,
+    sim_sir_w_date_floor_df: pd.DataFrame,
+    max_y_axis: Optional[int] = None,
 ) -> Chart:
-    """docstring"""
-
-    plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
-    max_y_axis = parameters.max_y_axis
-    max_y_axis_set = parameters.max_y_axis_set
-    as_date = parameters.as_date
-    if as_date:
-        census = add_date_column(census, parameters)
-        x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
-        idx = "date:T"
-    else:
-        x_kwargs = {"shorthand": "day", "title": "Days from today"}
-        idx = "day"
-
+    """Build sim sir w date chart."""
     y_scale = alt.Scale()
-
-    if max_y_axis_set and max_y_axis is not None:
+    if max_y_axis is not None:
         y_scale.domain = (0, max_y_axis)
-        y_scale.clamp = True
 
-    census["line"] = 0
+    x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
+    y = dict(shorthand="value:Q", title="Count", scale=y_scale)
+    color = "key:N"
+    tooltip = ["key:N", "value:Q"]
+
     # TODO fix the fold to allow any number of dispositions
-    p1 = alt.Chart(census.head(plot_projection_days)
-    ).transform_fold(
-        fold=["total", "icu", "ventilators"]
-    ).mark_line(point=True
-    ).encode(
-        x=alt.X(**x_kwargs),
-        y=alt.Y("value:Q", title="COVID-19 Capacity", scale=y_scale),
-        color=alt.Color("key:N", sort = ["total", "icu", "ventilators"]),
-        tooltip=[
-            idx,
-            alt.Tooltip("value:Q", format=".0f", title="Beds Available"),
-            "key:N",
-        ],
-    )
-    
-    p2 = alt.Chart(census.head(plot_projection_days)
-    ).transform_fold(
-        fold=["line"]
-    ).mark_line(
-        point=False,
-        color="black",
-        strokeDash=[5,3],
-        opacity=.5,
-    ).encode(
-        x=alt.X(**x_kwargs),
-        y=alt.Y("value:Q"),
-    )
-
-    p3 = get_vertical_line(alt, parameters, census, plot_projection_days)
-
-    return p1 + p2 + p3, p1
-
-def additional_projections_chart(
-    alt, model, parameters
-) -> Chart:
-
-    # TODO use subselect of df_raw instead of creating a new df
-    raw_df = model.raw_df
-    dat = pd.DataFrame({
-        "infected": raw_df.infected,
-        "recovered": raw_df.recovered
-    })
-    dat["day"] = dat.index
-
-    as_date = parameters.as_date
-    max_y_axis = parameters.max_y_axis
-    max_y_axis_set = parameters.max_y_axis_set
-
-    if as_date:
-        dat = add_date_column(dat, parameters)
-        x_kwargs = {"shorthand": "date:T", "title": "Date", "axis": alt.Axis(format=(DATE_FORMAT))}
-    else:
-        x_kwargs = {"shorthand": "day", "title": "Days from today"}
-
-    y_scale = alt.Scale()
-
-    if max_y_axis_set and max_y_axis is not None:
-        y_scale.domain = (0, max_y_axis)
-        y_scale.clamp = True
-
-    p1 = (
-        alt.Chart(dat)
-        .transform_fold(fold=["infected", "recovered"])
+    points = (
+        alt.Chart()
+        .transform_fold(fold=["susceptible", "infected", "recovered"])
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line()
-        .encode(
-            x=alt.X(**x_kwargs),
-            y=alt.Y("value:Q", title="Case Volume", scale=y_scale),
-            tooltip=["key:N", "value:Q"],
-            color="key:N",
-        )
     )
+    bar = (
+        alt.Chart()
+        .encode(x=alt.X(**x))
+        .transform_filter(alt.datum.day == 0)
+        .mark_rule(color="black", opacity=0.35, size=2)
+    )
+    return alt.layer(points, bar, data=sim_sir_w_date_floor_df)
 
-    plot_projection_days = parameters.n_days + parameters.selected_offset + parameters.days_elapsed
-    p2 = get_vertical_line(alt, parameters, dat, plot_projection_days)
 
-    return p1 + p2
-
-
-def chart_descriptions(chart: Chart, labels):
+def build_descriptions(
+    *,
+    chart: Chart,
+    labels: Dict[str, str],
+    suffix: str = ""
+) -> str:
     """
 
-    :param chart: Chart: The alt chart to be used in finding max points
-    :param suffix: str: The assumption is that the charts have similar column names.
+    :param chart: The alt chart to be used in finding max points
+    :param suffix: The assumption is that the charts have similar column names.
                    The census chart adds " Census" to the column names.
                    Make sure to include a space or underscore as appropriate
-    :return: str: Returns a multi-line string description of the results
+    :return: Returns a multi-line string description of the results
     """
     messages = []
-    cols = ["total", "icu", "ventilators"]
+
+    cols = ["hospitalized", "icu", "ventilated"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
 
@@ -224,82 +132,31 @@ def chart_descriptions(chart: Chart, labels):
         if chart.data[col].idxmax() + 1 == len(chart.data):
             asterisk = True
 
-        on = chart.data[day][chart.data[col].idxmax()]
-        day_string = "day "
-        if day == "date":
-            on = datetime.datetime.strftime(on, "%b %d")
-            day_string = " "
-        else:
-            on += 1  # 0 index issue
+        # todo: bring this to an optional arg / i18n
+        on = datetime.strftime(chart.data[day][chart.data[col].idxmax()], "%b %d")
 
         messages.append(
-            "{} {:,} on {}{}{}".format(
+            "{}{} peaks at {:,} on {}{}".format(
                 labels[col],
+                suffix,
                 ceil(chart.data[col].max()),
-                day_string,
                 on,
                 "*" if asterisk else "",
             )
         )
+
     if asterisk:
         messages.append("_* The max is at the upper bound of the data, and therefore may not be the actual max_")
     return "\n\n".join(messages)
 
-def bed_chart_descriptions(chart: Chart, labels):
-    """
 
-    :param chart: Chart: The alt chart to be used in finding 0 crossing points
-    :param suffix: str: The assumption is that the charts have similar column names.
-                   Make sure to include a space or underscore as appropriate
-    :return: str: Returns a multi-line string description of the results
-    """
-    messages = []
-
-
-    cols = ["total", "icu", "ventilators"]
-    asterisk = False
-    day = "date" if "date" in chart.data.columns else "day"
-    
-    # Add note if lines overlap.
-    if sum(np.where(chart.data["total"] == chart.data["icu"], 1, 0)) > 1:
-        messages.append("_The overlapping lines represent non-ICU patients being housed in the ICU._")
-
-    day_string = "day "
-    for col in cols:
-        if np.nanmin(chart.data[col]) > 0:
-            asterisk = True
-            messages.append("_{} are never exhausted._".format(labels[col]))
-            continue
-
-        on = chart.data[day][chart.data[col].le(0).idxmax()]
-        if day == "date":
-            on = datetime.datetime.strftime(on, "%b %d")  # todo: bring this to an optional arg / i18n
-            day_string = " "
-        else:
-            on += 1  # 0 index issue
-
-        messages.append(
-            "{} are exhausted on {}{}".format(
-                labels[col],
-                day_string,
-                on,
-                "*" if asterisk else "",
-            )
-        )
-
-    return "\n\n".join(messages)
-
-def get_vertical_line(alt, parameters, df, plot_projection_days):
-    v_line_location = "0"
-    if parameters.as_date:
-        today = datetime.date.today()
-        v_line_location = f"datetime({today.year}, {today.month - 1}, {today.day})" # Because Altair uses vega which has 0-based month indexes
-    p3 = alt.Chart(df.head(plot_projection_days)
-    ).mark_rule(
-        strokeDash=[5,3],
-        opacity=.05, # This doesn't seem to do anything
-    ).encode(
-        x="v_line_location:T" if parameters.as_date else "v_line_location:Q"
-    ).transform_calculate(v_line_location=v_line_location)
-
-    return p3
+def build_table(
+    *,
+    df: pd.DataFrame,
+    labels: Dict[str, str],
+    modulo: int = 1,
+) -> pd.DataFrame:
+    table_df = df[np.mod(df.day, modulo) == 0].copy()
+    table_df.date = table_df.date.dt.strftime(DATE_FORMAT)
+    table_df.rename(labels)
+    return table_df

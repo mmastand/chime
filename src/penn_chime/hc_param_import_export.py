@@ -1,44 +1,47 @@
 import base64
-from datetime import (
-    datetime, 
-    date,
-)
+import datetime
 import json
 import io
 from typing import Tuple
 
-from .defaults import (
-    Constants, 
+from .parameters import (
+    Parameters, 
     Regions, 
-    RateLos,
+    Disposition,
 )
 
 
-def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Constants, dict]:
+def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
     imported_params = json.loads(file.read())
-    constants = Constants(
-        region=Regions(area=imported_params["RegionalPopulation"]),
-        doubling_time=float(imported_params["DoublingTimeBeforeSocialDistancing"]),
-        # known_infected=imported_params.get("CurrentlyKnownRegionalInfections", 510),
+    parameters = Parameters(
+        population=imported_params["RegionalPopulation"],
+        doubling_time=float(imported_params["DoublingTimeBeforeSocialDistancing"]) if "DoublingTimeBeforeSocialDistancing" in imported_params else 4.0,
+        date_first_hospitalized=datetime.datetime.fromisoformat(imported_params["FirstHospitalizedCaseDate"]) if "FirstHospitalizedCaseDate" in imported_params else None,
+        first_hospitalized_date_known=imported_params.get("FirstHospitalizedDateKnown", False), # Added in v2.0.0
+        # known_infected=imported_params.get("CurrentlyKnownRegionalInfections", 510), # Deprecated in v1.1.1
         n_days=imported_params["NumberOfDaysToProject"],
         market_share=float(imported_params["HospitalMarketShare"]),
         relative_contact_rate=float(imported_params["SocialDistancingPercentReduction"]),
-        hospitalized=RateLos(float(imported_params["HospitalizationPercentage"]), imported_params["HospitalLengthOfStay"]),
-        icu=RateLos(float(imported_params["ICUPercentage"]), imported_params["ICULengthOfStay"]),
-        ventilators=RateLos(float(imported_params["VentilatorsPercentage"]),imported_params["VentLengthOfStay"]),
+        social_distancing_start_date=datetime.date.fromisoformat(imported_params["SocialDistancingStartDate"], (datetime.date.today() - datetime.timedelta(hours=6)).isoformat()),
+        hospitalized=Disposition(float(imported_params["HospitalizationPercentage"]), imported_params["HospitalLengthOfStay"]),
+        icu=Disposition(float(imported_params["ICUPercentage"]), imported_params["ICULengthOfStay"]),
+        ventilators=Disposition(float(imported_params["VentilatorsPercentage"]),imported_params["VentLengthOfStay"]),
 
-        # total_beds=imported_params.get("TotalNumberOfBeds", 10),
-        total_non_covid_beds=imported_params["TotalNumberOfBedsForNCPatients"],
-        # total_icu_beds=imported_params.get("TotalNumberOfICUBeds", 10),
-        total_non_covid_icu_beds=imported_params["TotalNumberOfICUBedsForNCPatients"],
-        # total_vents=imported_params.get("TotalNumberOfVents", 10),
-        total_non_covid_vents=imported_params["TotalNumberOfVentsForNCPatients"],
+        # total_beds=imported_params.get("TotalNumberOfBeds", 10), # Deprecated in v1.1.1
+        total_covid_beds=imported_params["TotalNumberOfBedsForNCPatients"],
+        # total_icu_beds=imported_params.get("TotalNumberOfICUBeds", 10), # Deprecated in v1.1.1
+        icu_covid_beds=imported_params["TotalNumberOfICUBedsForNCPatients"],
+        # total_vents=imported_params.get("TotalNumberOfVents", 10), # Deprecated in v1.1.1
+        covid_ventilators=imported_params["TotalNumberOfVentsForNCPatients"],
 
-        current_hospitalized=imported_params["CurrentlyHospitalizedCovidPatients"],
-        census_date = date.fromisoformat(imported_params.get("CurrentlyHospitalizedCovidPatientsDate", date.today().isoformat())),
-        selected_offset = imported_params.get("SelectedOffsetDays", -1)
+        covid_census_value=imported_params["CurrentlyHospitalizedCovidPatients"],
+        covid_census_date = datetime.date.fromisoformat(imported_params.get("CurrentlyHospitalizedCovidPatientsDate", (datetime.date.today() - datetime.timedelta(hours=6)).isoformat())),
+        # selected_offset = imported_params.get("SelectedOffsetDays", -1), # Deprecated in v2.0.0
+        author=imported_params.get("Author", "Jane Doe"), # Added in v2.0.0
+        scenario=imported_params.get("Scenario", "COVID-19 Model"), # Added in v2.0.0
     )
-    return constants, imported_params
+    return parameters
+
 
 def param_download_widget(st, parameters, as_date, max_y_axis_set, max_y_axis):
     if parameters.author == "Jane Doe" or parameters.scenario == "COVID Model":

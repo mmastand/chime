@@ -1,37 +1,25 @@
 #!/usr/bin/env python
 
-from datetime import datetime, timedelta
-from .defaults import Constants, Regions, RateLos
+import datetime
 
-delaware = 564696
-chester = 519293
-montgomery = 826075
-bucks = 628341
-philly = 1581000
+from .parameters import Parameters, Regions, Disposition
 
-DEFAULTS = Constants(
-    # EDIT YOUR DEFAULTS HERE
-    region=Regions(
-        delaware=delaware,
-        chester=chester,
-        montgomery=montgomery,
-        bucks=bucks,
-        philly=philly,
-    ),
-    
-    total_non_covid_beds=300,
-    total_non_covid_icu_beds=30,
-    total_non_covid_vents=10,
 
-    current_hospitalized=14,
-    doubling_time=4.0,
-    n_days=60,
-    market_share=0.15,
-    relative_contact_rate=0.3,
-    hospitalized=RateLos(0.025, 7),
-    icu=RateLos(0.0075, 9),
-    ventilators=RateLos(0.005, 10),
-
-    census_date=datetime.utcnow() - timedelta(hours = 6),
-    selected_offset=-1
-)
+def get_defaults():
+    return Parameters(
+        population=3600000,
+        covid_census_value=10,
+        covid_census_date=datetime.date.today(),
+        total_covid_beds=300,
+        icu_covid_beds=30,
+        covid_ventilators=10,
+        date_first_hospitalized=datetime.date(2020,3,7),
+        doubling_time=4.0,
+        hospitalized=Disposition(0.025, 7),
+        icu=Disposition(0.0075, 9),
+        infectious_days=14,
+        market_share=0.15,
+        n_days=100,
+        relative_contact_rate=0.3,
+        ventilators=Disposition(0.005, 10),
+    )

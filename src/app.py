@@ -4,37 +4,25 @@ import altair as alt  # type: ignore
 import streamlit as st  # type: ignore
 
 from penn_chime.presentation import (
-    build_download_link,
+    display_download_link,
     display_header,
+    display_more_info,
     display_sidebar,
-    draw_census_table,
-    draw_projected_admissions_table,
-    draw_beds_table,
-    draw_raw_sir_simulation_table,
     hide_menu_style,
-    show_additional_projections,
-    show_more_info_about_this_tool,
     write_definitions,
     write_footer,
     build_data_and_params,
-    display_how_to_use
 )
-from penn_chime.settings import DEFAULTS
+from penn_chime.settings import get_defaults
 from penn_chime.models import SimSirModel
 from penn_chime.charts import (
-    additional_projections_chart,
-    admitted_patients_chart,
-    new_admissions_chart,
-    covid_beds_chart,
-    chart_descriptions,
-    bed_chart_descriptions,
+    build_admits_chart,
+    build_census_chart,
+    build_descriptions,
+    build_sim_sir_w_date_chart,
+    build_table,
 )
-from penn_chime.utils import (
-    dataframe_to_base64,
-    calc_offset,
-    shift_truncate_tables,
-)
-from penn_chime.hc_param_import_export import param_download_widget
+from penn_chime.utils import dataframe_to_base64
 
 # This is somewhat dangerous:
 # Hide the main menu with "Rerun", "run on Save", "clear cache", and "record a screencast"
@@ -42,102 +30,79 @@ from penn_chime.hc_param_import_export import param_download_widget
 # In dev, this should be shown
 st.markdown(hide_menu_style, unsafe_allow_html=True)
 
-p = display_sidebar(st, DEFAULTS)
+d = get_defaults()
+p = display_sidebar(st, d)
 m = SimSirModel(p)
-# Calculate offset.
-# p = display_sidebar(st, p)
-display_how_to_use(st)
 
 display_header(st, m, p)
 
-
 if st.checkbox("Show more info about this tool"):
-    notes = "The total size of the susceptible population will be the entire catchment area"
-    show_more_info_about_this_tool(st=st, model=m, parameters=p, defaults=DEFAULTS, notes=notes)
+    notes = "The total size of the susceptible population will be the entire catchment area for our hospitals."
+    display_more_info(st=st, model=m, parameters=p, defaults=d, notes=notes)
 
-off = calc_offset(m.census_df, p)
-st.markdown(f"Calculated Days from First Admission to COVID-19 Hospital Census Date: {off}") 
-selected_offset = st.number_input(
-    "Days from First Hospital Admission to COVID-19 Hospital Census Date, Manual Override",
-    value = off if p.selected_offset == -1 else p.selected_offset)
-p.selected_offset = selected_offset
-m = shift_truncate_tables(m, p, selected_offset)
-
-st.subheader("New Hospital Admissions")
-st.markdown("Projected number of **daily** COVID-19 admissions")
-
-
-# st.dataframe(m.admits_df) #######
-new_admit_chart_dash, new_admit_chart = new_admissions_chart(alt, m.admits_df, parameters=p)
-st.altair_chart(
-    new_admit_chart_dash,
-    use_container_width=True,
+st.subheader("New Admissions")
+st.dataframe(m.admits_df) ###############
+st.markdown("Projected number of **daily** COVID-19 admissions. \n\n _NOTE: Now including estimates of prior admissions for comparison._")
+admits_chart = build_admits_chart(alt=alt, admits_floor_df=m.admits_floor_df, max_y_axis=p.max_y_axis)
+st.altair_chart(admits_chart, use_container_width=True)
+st.markdown(build_descriptions(chart=admits_chart, labels=p.labels, suffix=" Admissions"))
+display_download_link(
+    st,
+    filename=f"{p.current_date}_projected_admits.csv",
+    df=m.admits_df,
 )
-suf = {"total": " COVID", "icu": " COVID", "ventilators": ""}
-st.markdown(chart_descriptions(new_admit_chart, p.patient_chart_desc))
+
 if st.checkbox("Show Projected Admissions in tabular form"):
-    if st.checkbox("Show Daily Counts"):
-        draw_projected_admissions_table(st, p, m.admits_df, p.labels, as_date=p.as_date, daily_count=True)
-    else:
-        draw_projected_admissions_table(st, p, m.admits_df, p.labels, as_date=p.as_date, daily_count=False)
-    build_download_link(st,
-        filename="projected_admissions.csv",
-        df=m.admits_df,
-        parameters=p
-    )
-st.subheader("Hospital Census")
-st.markdown(
-    "Projected **census** of COVID-19 patients, accounting for arrivals and discharges"
-)
-# st.dataframe(m.census_df)#########
-census_chart_dash, census_chart = admitted_patients_chart(alt=alt, census=m.census_df, parameters=p)
-st.altair_chart(
-    census_chart_dash,
-    use_container_width=True,
+    admits_modulo = 1
+    if not st.checkbox("Show Daily Counts"):
+        admits_modulo = 7
+    table_df = build_table(
+        df=m.admits_floor_df,
+        labels=p.labels,
+        modulo=admits_modulo)
+    st.table(table_df)
+
+
+st.subheader("Admitted Patients (Census)")
+st.dataframe(m.census_df) ###############
+st.markdown("Projected **census** of COVID-19 patients, accounting for arrivals and discharges \n\n _NOTE: Now including estimates of prior census for comparison._")
+census_chart = build_census_chart(alt=alt, census_floor_df=m.census_floor_df, max_y_axis=p.max_y_axis)
+st.altair_chart(census_chart, use_container_width=True)
+st.markdown(build_descriptions(chart=census_chart, labels=p.labels, suffix=" Census"))
+display_download_link(
+    st,
+    filename=f"{p.current_date}_projected_census.csv",
+    df=m.census_df,
 )
 
-st.markdown(chart_descriptions(census_chart, p.patient_chart_desc))
 if st.checkbox("Show Projected Census in tabular form"):
-    if st.checkbox("Show Daily Census Counts"):
-        draw_census_table(st, p, m.census_df, p.labels, as_date=p.as_date, daily_count=True)
-    else:
-        draw_census_table(st, p, m.census_df, p.labels, as_date=p.as_date, daily_count=False)
-    build_download_link(st,
-        filename="projected_census.csv",
-        df=m.census_df,
-        parameters=p
-    )
+    census_modulo = 1
+    if not st.checkbox("Show Daily Census Counts"):
+        census_modulo = 7
+    table_df = build_table(
+        df=m.census_floor_df,
+        labels=p.labels,
+        modulo=census_modulo)
+    st.table(table_df)
 
-st.subheader("COVID-19 Capacity")
-st.markdown(
-    "Projected **number** of available COVID-19 beds, accounting for admits and discharges"
-)  
-# st.dataframe(m.beds_df)##########
-beds_chart_dash, beds_chart = covid_beds_chart(alt=alt, census=m.beds_df, parameters=p, st=st)
-st.altair_chart(beds_chart_dash, use_container_width=True)
-st.markdown(bed_chart_descriptions(beds_chart, p.bed_chart_desc))
-if st.checkbox("Show Projected Available COVID-19 Beds in tabular form"):
-    if st.checkbox("Show Daily Available Bed Counts"):
-        draw_beds_table(st, p, m.beds_df, p.labels, as_date=p.as_date, daily_count=True)
-    else:
-        draw_beds_table(st, p, m.beds_df, p.labels, as_date=p.as_date, daily_count=False)
-    build_download_link(st,
-        filename="projected_beds.csv",
-        df=m.beds_df,
-        parameters=p
-    )
 
-st.markdown(
-    """**Click the checkbox below to view additional data generated by this simulation**"""
+st.subheader("Susceptible, Infected, and Recovered")
+st.markdown("The number of susceptible, infected, and recovered individuals in the hospital catchment region at any given moment")
+sim_sir_w_date_chart = build_sim_sir_w_date_chart(alt=alt, sim_sir_w_date_floor_df=m.sim_sir_w_date_floor_df)
+st.altair_chart(sim_sir_w_date_chart, use_container_width=True)
+display_download_link(
+    st,
+    filename=f"{p.current_date}_sim_sir_w_date.csv",
+    df=m.sim_sir_w_date_df,
 )
-if st.checkbox("Show Additional Projections"):
-    show_additional_projections(
-        st, alt, additional_projections_chart, model=m, parameters=p
-    )
-    if st.checkbox("Show Raw SIR Simulation Data"):
-        draw_raw_sir_simulation_table(st, model=m, parameters=p)
 
+if st.checkbox("Show SIR Simulation in tabular form"):
+    table_df = build_table(
+        df=m.sim_sir_w_date_floor_df,
+        labels=p.labels)
+    st.table(table_df)
 
+### Export Full Data and Parameters
 st.header("Export Full Data and Parameters")
 df = build_data_and_params(projection_admits = m.admits_df, 
                            census_df = m.census_df,
@@ -160,11 +125,3 @@ else:
 
 write_definitions(st)
 write_footer(st)
-
-param_download_widget(
-    st,
-    p, 
-    as_date=p.as_date, 
-    max_y_axis_set=p.max_y_axis_set, 
-    max_y_axis=p.max_y_axis
-)
