@@ -89,7 +89,7 @@ class SimSirModel:
             self.i_day = 0 # seed to the full length
             self.beta_t = self.beta
             self.run_projection(p)
-            self.i_day = i_day = int(get_argmin_ds(self.census_df, p.current_hospitalized))
+            self.i_day = i_day = int(get_argmin_ds(self.census_df, p.covid_census_value))
 
             self.beta_t = get_beta(intrinsic_growth_rate, self.gamma, self.susceptible, p.relative_contact_rate)
             self.run_projection(p)
@@ -114,7 +114,7 @@ class SimSirModel:
             min_loss = 2.0**99
             dts = np.linspace(1, 15, 29)
             losses = np.zeros(dts.shape[0])
-            self.current_hospitalized = p.current_hospitalized
+            self.covid_census_value = p.covid_census_value
             for i, i_dt in enumerate(dts):
                 intrinsic_growth_rate = get_growth_rate(i_dt)
                 self.beta = get_beta(intrinsic_growth_rate, self.gamma, self.susceptible, 0.0)
@@ -184,14 +184,14 @@ class SimSirModel:
     def get_loss(self) -> float:
         """Squared error: predicted vs. actual current hospitalized."""
         predicted = self.census_df.hospitalized.loc[self.i_day]
-        return (self.current_hospitalized - predicted) ** 2.0
+        return (self.covid_census_value - predicted) ** 2.0
 
 
-def get_argmin_ds(census_df: pd.DataFrame, current_hospitalized: float) -> float:
+def get_argmin_ds(census_df: pd.DataFrame, covid_census_value: float) -> float:
     # By design, this forbids choosing a day after the peak
     # If that's a problem, see #381
     peak_day = census_df.hospitalized.argmax()
-    losses_df = (census_df.hospitalized[:peak_day] - current_hospitalized) ** 2.0
+    losses_df = (census_df.hospitalized[:peak_day] - covid_census_value) ** 2.0
     return losses_df.argmin()
 
 

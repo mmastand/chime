@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from datetime import date
+import datetime
 
 from .parameters import Parameters, Regions, Disposition
 
@@ -8,8 +8,12 @@ from .parameters import Parameters, Regions, Disposition
 def get_defaults():
     return Parameters(
         population=3600000,
-        current_hospitalized=69,
-        date_first_hospitalized=date(2020,3,7),
+        covid_census_value=10,
+        covid_census_date=datetime.date.today(),
+        total_covid_beds=300,
+        icu_covid_beds=30,
+        covid_ventilators=10,
+        date_first_hospitalized=datetime.date(2020,3,7),
         doubling_time=4.0,
         hospitalized=Disposition(0.025, 7),
         icu=Disposition(0.0075, 9),
@@ -17,5 +21,5 @@ def get_defaults():
         market_share=0.15,
         n_days=100,
         relative_contact_rate=0.3,
-        ventilated=Disposition(0.005, 10),
+        ventilators=Disposition(0.005, 10),
     )
