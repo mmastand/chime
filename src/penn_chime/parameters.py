@@ -130,7 +130,22 @@ class Parameters:
         }
 
         self.dispositions = {
+            "total": hospitalized,
             "hospitalized": hospitalized,
             "icu": icu,
             "ventilators": ventilators,
+        }
+
+        self.patient_chart_desc = {
+            "hospitalized": "Hospitalized COVID-19 Admissions peak at",
+            "icu": "ICU COVID-19 Admissions peak at",
+            "ventilators": "COVID-19 Ventilators peak at",
+            "total": "Total COVID-19 Admissions peaks at"
+        }
+        
+        self.eqpt_chart_desc = {
+            "hospitalized": "Hospitalized COVID-19 Beds",
+            "icu": "ICU COVID-19 Beds",
+            "ventilators": "COVID-19 Ventilators",
+            "total": "Total COVID-19 Beds"
         }

@@ -160,6 +160,7 @@ class SimSirModel:
         self.sim_sir_w_date_floor_df = build_floor_df(self.sim_sir_w_date_df, self.keys)
         self.admits_floor_df = build_floor_df(self.admits_df, p.dispositions.keys())
         self.census_floor_df = build_floor_df(self.census_df, p.dispositions.keys())
+        self.beds_floor_df = build_floor_df(self.beds_df, p.dispositions.keys())
 
         self.daily_growth_rate = get_growth_rate(p.doubling_time)
         self.daily_growth_rate_t = get_growth_rate(self.doubling_time_t)
@@ -179,6 +180,7 @@ class SimSirModel:
         self.dispositions_df = build_dispositions_df(self.raw_df, self.rates, p.market_share, p.current_date)
         self.admits_df = build_admits_df(self.dispositions_df)
         self.census_df = build_census_df(self.admits_df, self.days)
+        self.beds_df = build_beds_df(self.census_df, p)
         self.current_infected = self.raw_df.infected.loc[self.i_day]
 
     def get_loss(self) -> float:
@@ -342,22 +344,19 @@ def build_census_df(
     })
 
 def build_beds_df(
-    census_df: pd.DataFrame, lengths_of_stay, p
+    census_df: pd.DataFrames,
+    p,
 ) -> pd.DataFrame:
     """ALOS for each category of COVID-19 case (total guesses)"""
-    # n_days = np.shape(census_df)[0]
-    census_dict = {}
-
-    beds_df = pd.DataFrame(census_dict)
-    beds_df["day"] = census_df.index
-
-    covid_non_icu_beds = p.total_covid_beds - p.covid_icu_beds
+    beds_df = pd.DataFrame()
+    beds_df["day"] = census_df["day"]
+    beds_df["date"] = census_df["date"]
 
     # If hospitalized < 0 and there's space in icu, start borrowing if possible
     # If ICU < 0, raise alarms. No changes.
-    beds_df["hospitalized"] = p.covid_non_icu_beds - census_df["hospitalized"]
-    beds_df["icu"] = p.covid_icu_beds - p.census_df["icu"]
-    beds_df["ventilators"] = p.covid_vents - p.census_df["ventilators"]
+    beds_df["hospitalized"] = p.total_covid_beds - p.icu_covid_beds - census_df["hospitalized"]
+    beds_df["icu"] = p.icu_covid_beds - census_df["icu"]
+    beds_df["ventilators"] = p.covid_ventilators - census_df["ventilators"]
     beds_df["total"] = p.total_covid_beds - census_df["hospitalized"] - census_df["icu"]
     # beds_df = beds_df.head(n_days)
 

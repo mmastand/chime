@@ -18,7 +18,9 @@ from penn_chime.models import SimSirModel
 from penn_chime.charts import (
     build_admits_chart,
     build_census_chart,
+    build_beds_chart,
     build_descriptions,
+    build_bed_descriptions,
     build_sim_sir_w_date_chart,
     build_table,
 )
@@ -41,11 +43,10 @@ if st.checkbox("Show more info about this tool"):
     display_more_info(st=st, model=m, parameters=p, defaults=d, notes=notes)
 
 st.subheader("New Admissions")
-st.dataframe(m.admits_df) ###############
 st.markdown("Projected number of **daily** COVID-19 admissions. \n\n _NOTE: Now including estimates of prior admissions for comparison._")
 admits_chart = build_admits_chart(alt=alt, admits_floor_df=m.admits_floor_df, max_y_axis=p.max_y_axis)
 st.altair_chart(admits_chart, use_container_width=True)
-st.markdown(build_descriptions(chart=admits_chart, labels=p.labels, suffix=" Admissions"))
+st.markdown(build_descriptions(chart=admits_chart, labels=p.patient_chart_desc))
 display_download_link(
     st,
     filename=f"{p.current_date}_projected_admits.csv",
@@ -64,11 +65,10 @@ if st.checkbox("Show Projected Admissions in tabular form"):
 
 
 st.subheader("Admitted Patients (Census)")
-st.dataframe(m.census_df) ###############
 st.markdown("Projected **census** of COVID-19 patients, accounting for arrivals and discharges \n\n _NOTE: Now including estimates of prior census for comparison._")
 census_chart = build_census_chart(alt=alt, census_floor_df=m.census_floor_df, max_y_axis=p.max_y_axis)
 st.altair_chart(census_chart, use_container_width=True)
-st.markdown(build_descriptions(chart=census_chart, labels=p.labels, suffix=" Census"))
+st.markdown(build_descriptions(chart=census_chart, labels=p.patient_chart_desc))
 display_download_link(
     st,
     filename=f"{p.current_date}_projected_census.csv",
@@ -83,6 +83,30 @@ if st.checkbox("Show Projected Census in tabular form"):
         df=m.census_floor_df,
         labels=p.labels,
         modulo=census_modulo)
+    st.table(table_df)
+
+
+st.subheader("COVID-19 Capacity")
+st.markdown(
+    "Projected **number** of available COVID-19 beds, accounting for admits and discharges"
+)  
+beds_chart = build_beds_chart(alt=alt, beds_floor_df=m.beds_df, max_y_axis=p.max_y_axis)
+st.altair_chart(beds_chart, use_container_width=True)
+st.markdown(build_bed_descriptions(chart=beds_chart, labels=p.eqpt_chart_desc))
+display_download_link(
+    st,
+    filename=f"{p.current_date}_projected_capacity.csv",
+    df=m.beds_df,
+)
+
+if st.checkbox("Show Projected Capacity in tabular form"):
+    beds_modulo = 1
+    if not st.checkbox("Show Daily Capacity Counts"):
+        beds_modulo = 7
+    table_df = build_table(
+        df=m.beds_floor_df,
+        labels=p.labels,
+        modulo=beds_modulo)
     st.table(table_df)
 
 
