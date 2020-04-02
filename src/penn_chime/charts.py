@@ -15,12 +15,13 @@ def build_admits_chart(
     *,
     alt,
     admits_floor_df: pd.DataFrame,
-    max_y_axis: Optional[int] = None,
+    parameters: Parameters,
 ) -> Chart:
     """Build admits chart."""
     y_scale = alt.Scale()
-    if max_y_axis is not None:
-        y_scale.domain = (0, max_y_axis)
+    if parameters.max_y_axis_set:
+        y_scale.domain = (0, parameters.max_y_axis)
+        y_scale.clamp = True
 
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="Daily admissions", scale=y_scale)
@@ -48,12 +49,13 @@ def build_census_chart(
     *,
     alt,
     census_floor_df: pd.DataFrame,
-    max_y_axis: Optional[int] = None,
+    parameters: Parameters,
 ) -> Chart:
     """Build census chart."""
     y_scale = alt.Scale()
-    if max_y_axis:
-        y_scale.domain = (0, max_y_axis)
+    if parameters.max_y_axis_set:
+        y_scale.domain = (0, parameters.max_y_axis)
+        y_scale.clamp = True
 
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="Census", scale=y_scale)
@@ -80,12 +82,9 @@ def build_sim_sir_w_date_chart(
     *,
     alt,
     sim_sir_w_date_floor_df: pd.DataFrame,
-    max_y_axis: Optional[int] = None,
 ) -> Chart:
     """Build sim sir w date chart."""
     y_scale = alt.Scale()
-    if max_y_axis is not None:
-        y_scale.domain = (0, max_y_axis)
 
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="Count", scale=y_scale)
@@ -110,12 +109,13 @@ def build_sim_sir_w_date_chart(
 def build_beds_chart(
     alt, 
     beds_floor_df: pd.DataFrame, 
-    max_y_axis: Optional[int] = None,
+    parameters: Parameters,
 ) -> Chart:
     """docstring"""
     y_scale = alt.Scale()
-    if max_y_axis is not None:
-        y_scale.domain = (0, max_y_axis)
+    if parameters.max_y_axis_set:
+        y_scale.domain = (-parameters.max_y_axis, parameters.max_y_axis)
+        y_scale.clamp = True
 
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="COVID-19 Capacity", scale=y_scale)

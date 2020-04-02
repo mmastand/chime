@@ -344,10 +344,15 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         format="%i",
     )
     max_y_axis_set_input = CheckboxInput(
-        st_obj, "Set the Y-axis on graphs to a static value"
+        st_obj, 
+        "Set the Y-axis on graphs to a static value",
     )
     max_y_axis_input = NumberInput(
-        st_obj, "Y-axis static value", value=500, format="%i", step=25
+        st_obj, 
+        "Y-axis static value", 
+        value=500, 
+        format="%i", 
+        step=25,
     )
 
     # Build in desired order
@@ -437,6 +442,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         infectious_days=infectious_days,
         market_share=market_share,
         max_y_axis=max_y_axis,
+        max_y_axis_set=max_y_axis_set,
         n_days=n_days,
         population=population,
         author=author,
@@ -446,9 +452,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
 
     param_download_widget(
         st,
-        parameters, 
-        max_y_axis_set=max_y_axis_set, 
-        max_y_axis=max_y_axis
+        parameters,
     )
 
     return parameters
