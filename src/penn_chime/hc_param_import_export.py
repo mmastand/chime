@@ -49,7 +49,7 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
     return parameters
 
 
-def param_download_widget(st, parameters, max_y_axis_set, max_y_axis):
+def param_download_widget(st, parameters):
     if parameters.author == "Jane Doe" or parameters.scenario == "COVID-19 Model":
         st.sidebar.markdown("""
         **Enter a unique author name and scenario name to enable parameter download.**""")
@@ -73,8 +73,8 @@ def param_download_widget(st, parameters, max_y_axis_set, max_y_axis):
             "VentLengthOfStay": parameters.ventilators.days,
             "HospitalMarketShare": parameters.market_share,
             "RegionalPopulation": parameters.population,
-            "MaxYAxisSet":max_y_axis_set,
-            "MaxYAxis":max_y_axis,
+            "MaxYAxisSet":parameters.max_y_axis_set,
+            "MaxYAxis":parameters.max_y_axis,
             
             "TotalNumberOfBedsForNCPatients": parameters.total_covid_beds,
             "TotalNumberOfICUBedsForNCPatients": parameters.icu_covid_beds,
