@@ -367,13 +367,20 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         "### Spread and Contact Parameters"
     )
 
+    
+    # parameter.first_hospitalized_date_known = st.sidebar.checkbox("Set the Y-axis on graphs to a static value", value=max_y_axis_set_default)
+    
+    first_hospitalized_date_known_default = False if uploaded_file is None else d.first_hospitalized_date_known
+
     if st.sidebar.checkbox(
-        "I know the date of the first hospitalized case."
+        "I know the date of the first hospitalized case.", value=first_hospitalized_date_known_default
     ):
         date_first_hospitalized = date_first_hospitalized_input()
+        first_hospitalized_date_known = True
         doubling_time = None
     else:
         doubling_time = doubling_time_input()
+        first_hospitalized_date_known = False
         date_first_hospitalized = None
 
     relative_contact_rate = relative_contact_pct_input()
@@ -395,12 +402,17 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         "### Display Parameters"
     )
     n_days = n_days_input()
-    max_y_axis_set = max_y_axis_set_input()
-
-    max_y_axis = None
+    
+    max_y_axis_set_default = False if uploaded_file is None else d.max_y_axis_set
+    max_y_axis_set = st.sidebar.checkbox("Set the Y-axis on graphs to a static value", value=max_y_axis_set_default)
+    max_y_axis = 500 if uploaded_file is None else d.max_y_axis
     if max_y_axis_set:
-        max_y_axis = max_y_axis_input()
-
+        max_y_axis = st.sidebar.number_input(
+            "Y-axis static value", 
+            value=max_y_axis, 
+            format="%i", 
+            step=25,
+        )
 
     parameters = Parameters(
         covid_census_value=covid_census_value,
@@ -422,6 +434,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         population=population,
         author=author,
         scenario=scenario,
+        first_hospitalized_date_known=first_hospitalized_date_known,
     )
 
     param_download_widget(

@@ -36,6 +36,9 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         icu_covid_beds=imported_params["TotalNumberOfICUBedsForNCPatients"],
         # total_vents=imported_params.get("TotalNumberOfVents", 10), # Deprecated in v1.1.1
         covid_ventilators=imported_params["TotalNumberOfVentsForNCPatients"],
+        
+        max_y_axis_set = imported_params["MaxYAxisSet"],
+        max_y_axis = imported_params["MaxYAxis"],
 
         covid_census_value=imported_params["CurrentlyHospitalizedCovidPatients"],
         covid_census_date = date.fromisoformat(imported_params["CurrentlyHospitalizedCovidPatientsDate"]) if "CurrentlyHospitalizedCovidPatientsDate" in imported_params else (date.today() - timedelta(hours=6)).isoformat(),

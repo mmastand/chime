@@ -68,6 +68,7 @@ class Parameters:
         infectious_days: int = 14,
         market_share: float = 1.0,
         max_y_axis: Optional[int] = None,
+        max_y_axis_set: bool = False,
         n_days: int = 100,
         population: Optional[int] = None,
         recovered: int = 0,
@@ -112,9 +113,10 @@ class Parameters:
         self.infectious_days = StrictlyPositive(value=infectious_days)
         self.market_share = Rate(value=market_share)
         self.max_y_axis = OptionalStrictlyPositive(value=max_y_axis)
+        self.max_y_axis_set = max_y_axis_set
         self.n_days = StrictlyPositive(value=n_days)
         self.recovered = Positive(value=recovered)
-
+        
         self.author = author
         self.scenario = scenario
             
