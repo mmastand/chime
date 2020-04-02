@@ -1,4 +1,5 @@
 """App."""
+import datetime
 
 import altair as alt  # type: ignore
 import streamlit as st  # type: ignore
@@ -141,7 +142,7 @@ if p.author == "Jane Doe" or p.scenario == "COVID Model":
     st.markdown("""
     **Enter a unique author name and scenario name to enable downloading.**""")
 else:
-    filename = "Data" + "_" + p.author + "_" + p.scenario + "_" + df.loc[0, "Date"] + ".csv"
+    filename = "Data" + "_" + p.author + "_" + p.scenario + "_" + (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).isoformat() + ".csv"
     csv = dataframe_to_base64(df)
     st.markdown("""
             <a download="{filename}" href="data:text/plain;base64,{csv}">Download full table as CSV</a>

@@ -1,5 +1,6 @@
 """effectful functions for streamlit io"""
 
+import os
 from typing import Optional
 import datetime
 
@@ -185,6 +186,12 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     # these functions create input elements and bind the values they are set to
     # to the variables they are set equal to
     # it's kindof like ember or angular if you are familiar with those
+    BUILD_TIME = os.environ['BUILD_TIME']
+    VERSION_NUMBER = os.environ['VERSION_NUMBER']
+    st.sidebar.markdown(
+        f"""V: **{VERSION_NUMBER}** (**{BUILD_TIME}**)""",
+        unsafe_allow_html=True,)
+    
     st_obj = st.sidebar
     st.sidebar.markdown(
         "### Scenario"
@@ -588,33 +595,43 @@ def display_download_link(st, filename: str, df: pd.DataFrame):
         unsafe_allow_html=True,
     )
 
+def non_date_columns_to_int(df):
+    for column in df.columns:
+        if column != 'date':
+            df[column] = df[column].astype(int)
+    return df
+
 def build_data_and_params(projection_admits, census_df, beds_df, model, parameters):
     # taken from admissions table function:
     admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
     admits_table["day"] = admits_table.index.astype(int)
     admits_table.index = range(admits_table.shape[0])
-    admits_table = admits_table.fillna(0).astype(int)
+    admits_table = admits_table.fillna(0)
+    admits_table = non_date_columns_to_int(admits_table)
     admits_table.rename(parameters.labels)
 
     # taken from census table function:
     census_table = census_df[np.mod(census_df.index, 1) == 0].copy()
     census_table.index = range(census_table.shape[0])
     census_table.loc[0, :] = 0
-    census_table = census_table.dropna().astype(int)
+    census_table = census_table.dropna()
+    census_table = non_date_columns_to_int(census_table)
     census_table.rename(parameters.labels)
     
     # taken from beds table function:
     bed_table = beds_df[np.mod(beds_df.index, 1) == 0].copy()
     bed_table.index = range(bed_table.shape[0])
     bed_table.loc[0, :] = 0
-    bed_table = bed_table.dropna().astype(int)
+    bed_table = bed_table.dropna()
+    bed_table = non_date_columns_to_int(bed_table)
     bed_table.rename(parameters.labels)
 
     # taken from raw sir table function:
     projection_area = model.raw_df
     infect_table = (projection_area.iloc[::1, :]).apply(np.floor)
     infect_table.index = range(infect_table.shape[0])
-    infect_table["day"] = infect_table.index.astype(int)
+    infect_table["day"] = infect_table.index
+    infect_table = non_date_columns_to_int(infect_table)
 
     # Build full dataset
     df = admits_table.copy()
@@ -626,7 +643,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     
     df["TotalCensus"] = census_table["total"]
     df["ICUCensus"] = census_table["icu"]
-    df["ventilatorsCensus"] = census_table["ventilators"]
+    df["VentilatorsCensus"] = census_table["ventilators"]
 
     df["TotalBeds"] = bed_table["total"]
     df["ICUBeds"] = bed_table["icu"]
@@ -638,28 +655,30 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
 
     df["Author"] = parameters.author
     df["Scenario"] = parameters.scenario
-    df["DateGenerated"] = datetime.datetime.utcnow().isoformat()
+    df["DateGenerated"] = (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).isoformat()
 
-    df["CurrentlyHospitalizedCovidPatients"] = parameters.current_hospitalized
-    df["CurrentlyHospitalizedCovidPatientsDate"] = parameters.census_date
-    df["SelectedOffsetDays"] = parameters.selected_offset
+    df["CovidCensusValue"] = parameters.covid_census_value
+    df["CovidCensusDate"] = parameters.covid_census_date
     df["DoublingTimeBeforeSocialDistancing"] = parameters.doubling_time
     df["SocialDistancingPercentReduction"] = parameters.relative_contact_rate
-    
+    df["SocialDistancingStartDate"] = parameters.social_distancing_start_date
+    df["DateFirstHospitalized"] = parameters.date_first_hospitalized
+    df["InfectiousDays"] = parameters.infectious_days
+
     df["HospitalizationPercentage"] = parameters.hospitalized.rate
     df["ICUPercentage"] = parameters.icu.rate
-    df["ventilatorsPercentage"] = parameters.ventilators.rate
+    df["VentilatorsPercentage"] = parameters.ventilators.rate
 
-    df["HospitalLengthOfStay"] = parameters.hospitalized.length_of_stay
-    df["ICULengthOfStay"] = parameters.icu.length_of_stay
-    df["VentLengthOfStay"] = parameters.ventilators.length_of_stay
+    df["HospitalLengthOfStay"] = parameters.hospitalized.days
+    df["ICULengthOfStay"] = parameters.icu.days
+    df["VentLengthOfStay"] = parameters.ventilators.days
 
     df["HospitalMarketShare"] = parameters.market_share
-    df["RegionalPopulation"] = parameters.susceptible
+    df["RegionalPopulation"] = parameters.population
     
-    df["TotalNumberOfBedsForNCPatients"] = parameters.total_non_covid_beds
-    df["TotalNumberOfICUBedsForNCPatients"] = parameters.total_non_covid_icu_beds
-    df["TotalNumberOfVentsForNCPatients"] = parameters.total_non_covid_vents
+    df["TotalNumberOfBedsForCOVIDPatients"] = parameters.total_covid_beds
+    df["TotalNumberOfICUBedsFoCOVIDPatients"] = parameters.icu_covid_beds
+    df["TotalNumberOfVentsFoCOVIDPatients"] = parameters.covid_ventilators
 
     
     # Reorder columns
@@ -668,15 +687,16 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         "Scenario", 
         "DateGenerated",
 
-        "CurrentlyHospitalizedCovidPatients",
-        "CurrentlyHospitalizedCovidPatientsDate",
-        "SelectedOffsetDays",
+        "CovidCensusValue",
+        "CovidCensusDate",
         "DoublingTimeBeforeSocialDistancing",
         "SocialDistancingPercentReduction",
-
+        "SocialDistancingStartDate",
+        "DateFirstHospitalized",
+        "InfectiousDays",
         "HospitalizationPercentage",
         "ICUPercentage",
-        "ventilatorsPercentage",
+        "VentilatorsPercentage",
 
         "HospitalLengthOfStay",
         "ICULengthOfStay",
@@ -686,12 +706,12 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         "RegionalPopulation",
         # "CurrentlyKnownRegionalInfections",
         
+        "TotalNumberOfBedsForCOVIDPatients",
+        "TotalNumberOfICUBedsFoCOVIDPatients",
+        "TotalNumberOfVentsFoCOVIDPatients",
         # "TotalNumberOfBeds",
-        "TotalNumberOfBedsForNCPatients",
         # "TotalNumberOfICUBeds",
-        "TotalNumberOfICUBedsForNCPatients",
         # "TotalNumberOfVents",
-        "TotalNumberOfVentsForNCPatients",
 
         "Date",
         "TotalAdmissions", 
@@ -700,7 +720,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
 
         "TotalCensus",
         "ICUCensus",
-        "ventilatorsCensus",
+        "VentilatorsCensus",
         
         "TotalBeds",
         "ICUBeds",
