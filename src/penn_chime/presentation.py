@@ -113,72 +113,72 @@ and daily growth rate of **{daily_growth_t:.2f}%**.
     return None
 
 
-class Input:
-    """Helper to separate Streamlit input definition from creation/rendering"""
+# class Input:
+#     """Helper to separate Streamlit input definition from creation/rendering"""
 
-    def __init__(self, st_obj, label, value, kwargs):
-        self.st_obj = st_obj
-        self.label = label
-        self.value = value
-        self.kwargs = kwargs
+#     def __init__(self, st_obj, label, value, kwargs):
+#         self.st_obj = st_obj
+#         self.label = label
+#         self.value = value
+#         self.kwargs = kwargs
 
-    def __call__(self):
-        return self.st_obj(self.label, value=self.value, **self.kwargs)
-
-
-class NumberInput(Input):
-    def __init__(
-        self,
-        st_obj,
-        label,
-        min_value=None,
-        max_value=None,
-        value=None,
-        step=None,
-        format=None,
-        key=None,
-    ):
-        kwargs = dict(
-            min_value=min_value, max_value=max_value, step=step, format=format, key=key
-        )
-        super().__init__(st_obj.number_input, label, value, kwargs)
+#     def __call__(self):
+#         return self.st_obj(self.label, value=self.value, **self.kwargs)
 
 
-class DateInput(Input):
-    def __init__(self, st_obj, label, value=None, key=None):
-        kwargs = dict(key=key)
-        super().__init__(st_obj.date_input, label, value, kwargs)
+# class NumberInput(Input):
+#     def __init__(
+#         self,
+#         st_obj,
+#         label,
+#         min_value=None,
+#         max_value=None,
+#         value=None,
+#         step=None,
+#         format=None,
+#         key=None,
+#     ):
+#         kwargs = dict(
+#             min_value=min_value, max_value=max_value, step=step, format=format, key=key
+#         )
+#         super().__init__(st_obj.number_input, label, value, kwargs)
 
 
-class PercentInput(NumberInput):
-    def __init__(
-        self,
-        st_obj,
-        label,
-        min_value=0.0,
-        max_value=100.0,
-        value=None,
-        step=FLOAT_INPUT_STEP,
-        format="%f",
-        key=None,
-    ):
-        super().__init__(
-            st_obj, label, min_value, max_value, value * 100.0, step, format, key
-        )
-
-    def __call__(self):
-        return super().__call__() / 100.0
+# class DateInput(Input):
+#     def __init__(self, st_obj, label, value=None, key=None):
+#         kwargs = dict(key=key)
+#         super().__init__(st_obj.date_input, label, value, kwargs)
 
 
-class CheckboxInput(Input):
-    def __init__(self, st_obj, label, value=None, key=None):
-        kwargs = dict(key=key)
-        super().__init__(st_obj.checkbox, label, value, kwargs)
+# class PercentInput(NumberInput):
+#     def __init__(
+#         self,
+#         st_obj,
+#         label,
+#         min_value=0.0,
+#         max_value=100.0,
+#         value=None,
+#         step=FLOAT_INPUT_STEP,
+#         format="%f",
+#         key=None,
+#     ):
+#         super().__init__(
+#             st_obj, label, min_value, max_value, value * 100.0, step, format, key
+#         )
 
-class TextInput(Input):
-    def __init__(self, st_obj, label, value=None, key=None):
-        kwargs = dict(key=key)
-        super().__init__(st_obj.text_input, label, value, kwargs)
+#     def __call__(self):
+#         return super().__call__() / 100.0
+
+
+# class CheckboxInput(Input):
+#     def __init__(self, st_obj, label, value=None, key=None):
+#         kwargs = dict(key=key)
+#         super().__init__(st_obj.checkbox, label, value, kwargs)
+
+# class TextInput(Input):
+#     def __init__(self, st_obj, label, value=None, key=None):
+#         kwargs = dict(key=key)
+#         super().__init__(st_obj.text_input, label, value, kwargs)
 
 
 def display_sidebar(st, d: Parameters) -> Parameters:
@@ -204,176 +204,87 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         <span style="color:red;font-size:small;">Known Limitation: You must refresh your browser window before loading scenario, otherwise the projections will not be updated.</span> 
     """, unsafe_allow_html=True)
 
-    author_input = TextInput(
-        st_obj,
+    
+    
+    # social_distancing_start_date_input = DateInput(
+    #     st_obj, "Date when Social Distancing Protocols Started (Default is today)", value=d.social_distancing_start_date,
+    # )
+    
+    
+    # max_y_axis_set_input = CheckboxInput(
+    #     st_obj, 
+    #     "Set the Y-axis on graphs to a static value",
+    # )
+    # max_y_axis_input = NumberInput(
+    #     st_obj, 
+    #     "Y-axis static value", 
+    #     value=500, 
+    #     format="%i", 
+    #     step=25,
+    # )
+
+    # Build in desired order
+
+    author = st.sidebar.text_input(
         "Author Name", 
         value="Jane Doe" if uploaded_file is None else d.author
     )
-    
-    scenario_input = TextInput(
-        st_obj,
+    scenario = st.sidebar.text_input(
         "Scenario Name", 
         value="COVID Model" if uploaded_file is None else d.scenario
     )
 
-    n_days_input = NumberInput(
-        st_obj,
-        "Number of days to project",
-        min_value=30,
-        value=d.n_days,
-        step=1,
-        format="%i",
+    st.sidebar.markdown(
+        "### Hospital Parameters"
     )
-    doubling_time_input = NumberInput(
-        st_obj,
-        "Doubling time in days (up to today)",
-        min_value=0.5,
-        value=d.doubling_time,
-        step=0.25,
-        format="%f",
-    )
-    social_distancing_start_date_input = DateInput(
-        st_obj, "Date when Social Distancing Protocols Started (Default is today)", value=d.social_distancing_start_date,
-    )
-    date_first_hospitalized_input = DateInput(
-        st_obj, "Date of first hospitalized case - Enter this date to have chime estimate the initial doubling time",
-        value=d.date_first_hospitalized,
-    )
-    relative_contact_pct_input = PercentInput(
-        st_obj,
-        "Social distancing (% reduction in social contact going forward)",
-        min_value=0.0,
-        max_value=100.0,
-        value=d.relative_contact_rate,
-        step=1.0,
-    )
-    hospitalized_pct_input = PercentInput(
-        st_obj, "Hospitalization %(total infections)", value=d.hospitalized.rate,
-    )
-    icu_pct_input = PercentInput(
-        st_obj,
-        "ICU %(total infections)",
-        min_value=0.0,
-        value=d.icu.rate,
-        step=0.05
-    )
-    ventilators_pct_input = PercentInput(
-        st_obj, "Ventilators %(total infections)", value=d.ventilators.rate,
-    )
-    hospitalized_days_input = NumberInput(
-        st_obj,
-        "Average Hospital Length of Stay (days)",
-        min_value=0,
-        value=d.hospitalized.days,
-        step=1,
-        format="%i",
-    )
-    icu_days_input = NumberInput(
-        st_obj,
-        "Average Days in ICU",
-        min_value=0,
-        value=d.icu.days,
-        step=1,
-        format="%i",
-    )
-    ventilators_days_input = NumberInput(
-        st_obj,
-        "Average Days on Ventilator",
-        min_value=0,
-        value=d.ventilators.days,
-        step=1,
-        format="%i",
-    )
-    market_share_pct_input = PercentInput(
-        st_obj,
-        "Hospital Market Share (%)",
-        min_value=0.5,
-        value=d.market_share,
-    )
-    population_input = NumberInput(
-        st_obj,
+    population = st.sidebar.number_input(
         "Regional Population",
         min_value=1,
         value=(d.population),
         step=1,
         format="%i",
     )
-    covid_census_value_input = NumberInput(
-        st_obj,
+    market_share = st.sidebar.number_input(
+        "Hospital Market Share (%)",
+        min_value=0.5,
+        value=d.market_share * 100.,
+    ) / 100.
+    covid_census_value = st.sidebar.number_input(
         "Current COVID-19 Total Hospital Census",
         min_value=0,
         value=d.covid_census_value,
         step=1,
         format="%i",
     )
-    covid_census_date_input = DateInput(
-        st_obj,
+    covid_census_date = st.sidebar.date_input(
         "Current Date (default is today)",
         value = d.covid_census_date,
     )
-    total_covid_beds_input = NumberInput(
-        st_obj,
+
+    st.sidebar.markdown(
+        "### Hospital Capacity"
+    )
+    total_covid_beds = st.sidebar.number_input(
         "Total # of Beds for COVID-19 Patients",
         min_value=0,
         value=d.total_covid_beds,
         step=10,
         format="%i",
     )
-    icu_covid_beds_input = NumberInput(
-        st_obj,
+    icu_covid_beds = st.sidebar.number_input(
         "Total # of ICU Beds for COVID-19 Patients",
         min_value=0,
         value=d.icu_covid_beds,
         step=5,
         format="%i",
     )
-    covid_ventilators_input = NumberInput(
-        st_obj,
+    covid_ventilators = st.sidebar.number_input(
         "Total # of Ventilators for COVID-19 Patients",
         min_value=0,
         value=d.covid_ventilators,
         step=5,
         format="%i",
     )
-    infectious_days_input = NumberInput(
-        st_obj,
-        "Infectious Days",
-        min_value=0,
-        value=d.infectious_days,
-        step=1,
-        format="%i",
-    )
-    max_y_axis_set_input = CheckboxInput(
-        st_obj, 
-        "Set the Y-axis on graphs to a static value",
-    )
-    max_y_axis_input = NumberInput(
-        st_obj, 
-        "Y-axis static value", 
-        value=500, 
-        format="%i", 
-        step=25,
-    )
-
-    # Build in desired order
-
-    author = author_input()
-    scenario = scenario_input()
-
-    st.sidebar.markdown(
-        "### Hospital Parameters"
-    )
-    population = population_input()
-    market_share = market_share_pct_input()
-    covid_census_value = covid_census_value_input()
-    covid_census_date = covid_census_date_input()
-
-    st.sidebar.markdown(
-        "### Hospital Capacity"
-    )
-    total_covid_beds = total_covid_beds_input()
-    icu_covid_beds = icu_covid_beds_input()
-    covid_ventilators = covid_ventilators_input()
 
     st.sidebar.markdown(
         "### Spread and Contact Parameters"
@@ -388,15 +299,30 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         "I know the date of the first hospitalized case.", value=first_hospitalized_date_known_default
     ):
         st.sidebar.markdown("""First Hospitalized Date Must Be Before Current Date""")
-        date_first_hospitalized = date_first_hospitalized_input()
+        date_first_hospitalized = st.sidebar.date_input(
+            "Date of first hospitalized case - Enter this date to have chime estimate the initial doubling time",
+            value=d.date_first_hospitalized,
+        )
         first_hospitalized_date_known = True
         doubling_time = None
     else:
-        doubling_time = doubling_time_input()
+        doubling_time = st.sidebar.number_input(
+            "Doubling time in days (up to today)",
+            min_value=0.5,
+            value=d.doubling_time,
+            step=0.25,
+            format="%f",
+        )
         first_hospitalized_date_known = False
         date_first_hospitalized = None
 
-    relative_contact_rate = relative_contact_pct_input()
+    relative_contact_rate = st.sidebar.number_input(
+        "Social distancing (% reduction in social contact going forward)",
+        min_value=0.0,
+        max_value=100.0,
+        value=d.relative_contact_rate * 100.,
+        step=1.0,
+    ) / 100.
 
     # social_distancing_start_date = social_distancing_start_date_input()
     social_distancing_start_date = (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).date()
@@ -404,18 +330,60 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     st.sidebar.markdown(
         "### Severity Parameters"
     )
-    hospitalized_rate = hospitalized_pct_input()
-    icu_rate = icu_pct_input()
-    ventilators_rate = ventilators_pct_input()
-    infectious_days = infectious_days_input()
-    hospitalized_days = hospitalized_days_input()
-    icu_days = icu_days_input()
-    ventilators_days = ventilators_days_input()
+    
+    hospitalized_rate = st.sidebar.number_input(
+        "Hospitalization %(total infections)", 
+        value=d.hospitalized.rate * 100.,
+    ) / 100.
+    icu_rate = st.sidebar.number_input(
+        "ICU %(total infections)",
+        min_value=0.0,
+        value=d.icu.rate * 100.,
+        step=0.05
+    ) / 100.
+    ventilators_rate = st.sidebar.number_input(
+        "Ventilators %(total infections)", 
+        value=d.ventilators.rate * 100.,
+    ) / 100.
+    infectious_days = st.sidebar.number_input(
+        "Infectious Days",
+        min_value=0,
+        value=d.infectious_days,
+        step=1,
+        format="%i",
+    )
+    hospitalized_days = st.sidebar.number_input(
+        "Average Hospital Length of Stay (days)",
+        min_value=0,
+        value=d.hospitalized.days,
+        step=1,
+        format="%i",
+    )
+    icu_days = st.sidebar.number_input(
+        "Average Days in ICU",
+        min_value=0,
+        value=d.icu.days,
+        step=1,
+        format="%i",
+    )
+    ventilators_days = st.sidebar.number_input(
+        "Average Days on Ventilator",
+        min_value=0,
+        value=d.ventilators.days,
+        step=1,
+        format="%i",
+    )
 
     st.sidebar.markdown(
         "### Display Parameters"
     )
-    n_days = n_days_input()
+    n_days = st.sidebar.number_input(
+        "Number of days to project",
+        min_value=30,
+        value=d.n_days,
+        step=1,
+        format="%i",
+    )
     
     max_y_axis_set_default = False if uploaded_file is None else d.max_y_axis_set
     max_y_axis_set = st.sidebar.checkbox("Set the Y-axis on graphs to a static value", value=max_y_axis_set_default)
