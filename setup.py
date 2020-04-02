@@ -22,7 +22,7 @@ setup(
     package_dir={'': 'src'},
     packages=find_namespace_packages(where='src', exclude=('tests')),
     install_requires=[
-        "streamlit",
+        "streamlit==0.56.0",
         "pandas",
         "numpy",
         "altair",
