@@ -78,7 +78,8 @@ class SimSirModel:
         self.beta_t = get_beta(intrinsic_growth_rate, self.gamma, self.susceptible, p.relative_contact_rate)
         self.intrinsic_growth_rate = intrinsic_growth_rate
 
-        if p.date_first_hospitalized is None and p.doubling_time is not None:
+        # if p.date_first_hospitalized is None and p.doubling_time is not None:
+        if p.doubling_time is not None:
             logger.info('Using doubling_time: %s', p.doubling_time)
             self.i_day = 0
             self.beta = (
@@ -103,8 +104,9 @@ class SimSirModel:
                 p.date_first_hospitalized,
                 p.current_date,
                 self.i_day)
-
-        elif p.date_first_hospitalized is not None and p.doubling_time is None:
+        
+        # elif p.date_first_hospitalized is not None and p.doubling_time is None:
+        elif p.date_first_hospitalized is not None:
             self.i_day = (p.current_date - p.date_first_hospitalized).days
             logger.info(
                 'Using date_first_hospitalized: %s; current_date: %s; i_day: %s',

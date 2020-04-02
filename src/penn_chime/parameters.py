@@ -105,8 +105,14 @@ class Parameters:
             raise AssertionError('population or regions must be provided.')
 
         self.social_distancing_start_date = Date(value=social_distancing_start_date)
-       
-        self.date_first_hospitalized = OptionalDate(value=date_first_hospitalized)
+
+        ####
+        if date_first_hospitalized is None: 
+            self.date_first_hospitalized = datetime.date(2020, 3, 1)
+        else:
+            self.date_first_hospitalized = date_first_hospitalized
+        ####
+
         self.first_hospitalized_date_known = first_hospitalized_date_known
         self.doubling_time = OptionalStrictlyPositive(value=doubling_time)
 

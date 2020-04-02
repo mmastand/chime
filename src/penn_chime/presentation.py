@@ -300,7 +300,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
     covid_census_value_input = NumberInput(
         st_obj,
-        "COVID-19 Total Hospital Census",
+        "Current COVID-19 Total Hospital Census",
         min_value=0,
         value=d.covid_census_value,
         step=1,
@@ -308,7 +308,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
     covid_census_date_input = DateInput(
         st_obj,
-        "COVID-19 Total Hospital Census Date",
+        "Current Date (default is today)",
         value = d.covid_census_date,
     )
     total_covid_beds_input = NumberInput(
@@ -397,7 +397,8 @@ def display_sidebar(st, d: Parameters) -> Parameters:
 
     relative_contact_rate = relative_contact_pct_input()
 
-    social_distancing_start_date = social_distancing_start_date_input()
+    # social_distancing_start_date = social_distancing_start_date_input()
+    social_distancing_start_date = (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).date()
 
     st.sidebar.markdown(
         "### Severity Parameters"
@@ -448,6 +449,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         author=author,
         scenario=scenario,
         first_hospitalized_date_known=first_hospitalized_date_known,
+        current_date=covid_census_date,
     )
 
     param_download_widget(
