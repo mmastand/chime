@@ -13,7 +13,7 @@ def get_defaults():
         total_covid_beds=300,
         icu_covid_beds=30,
         covid_ventilators=10,
-        date_first_hospitalized=datetime.date(2020,3,7),
+        date_first_hospitalized=datetime.date(2020,3,1),
         doubling_time=4.0,
         hospitalized=Disposition(0.025, 7),
         icu=Disposition(0.0075, 9),

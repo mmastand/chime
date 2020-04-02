@@ -387,6 +387,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     if st.sidebar.checkbox(
         "I know the date of the first hospitalized case.", value=first_hospitalized_date_known_default
     ):
+        st.sidebar.markdown("""First Hospitalized Date Must Be Before Current Date""")
         date_first_hospitalized = date_first_hospitalized_input()
         first_hospitalized_date_known = True
         doubling_time = None

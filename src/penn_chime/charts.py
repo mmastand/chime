@@ -127,9 +127,8 @@ def build_beds_chart(
     beds = (
         alt.Chart()
         .transform_fold(fold=["total", "icu", "ventilators"])
-        .mark_line(point=True)
         .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
-        .mark_line()
+        .mark_line(point=True)
     )
     bar = (
         alt.Chart()

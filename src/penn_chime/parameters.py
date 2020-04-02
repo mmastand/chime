@@ -110,7 +110,10 @@ class Parameters:
         if date_first_hospitalized is None: 
             self.date_first_hospitalized = datetime.date(2020, 3, 1)
         else:
-            self.date_first_hospitalized = date_first_hospitalized
+            if date_first_hospitalized > self.current_date:
+                self.date_first_hospitalized = self.current_date
+            else:
+                self.date_first_hospitalized = date_first_hospitalized
         ####
 
         self.first_hospitalized_date_known = first_hospitalized_date_known

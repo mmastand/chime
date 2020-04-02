@@ -25,7 +25,7 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         n_days=imported_params["NumberOfDaysToProject"],
         market_share=float(imported_params["HospitalMarketShare"]),
         relative_contact_rate=float(imported_params["SocialDistancingPercentReduction"]),
-        social_distancing_start_date=date.fromisoformat(imported_params["SocialDistancingStartDate"]) if "SocialDistancingStartDate" in imported_params else (date.today() - timedelta(hours=6)).isoformat(),
+        social_distancing_start_date=date.fromisoformat(imported_params["SocialDistancingStartDate"]) if "SocialDistancingStartDate" in imported_params else (date.today() - timedelta(hours=6)),
         hospitalized=Disposition(float(imported_params["HospitalizationPercentage"]), imported_params["HospitalLengthOfStay"]),
         icu=Disposition(float(imported_params["ICUPercentage"]), imported_params["ICULengthOfStay"]),
         ventilators=Disposition(float(imported_params["VentilatorsPercentage"]),imported_params["VentLengthOfStay"]),
