@@ -191,7 +191,10 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     st.sidebar.markdown(
         f"""V: **{VERSION_NUMBER}** (**{BUILD_TIME}**)""",
         unsafe_allow_html=True,)
-    
+    st.sidebar.markdown("""
+        <span style="font-size:medium;"><a href="#release_notes">Features and Enhancements History</a></span> 
+    """, unsafe_allow_html=True)
+
     st_obj = st.sidebar
     st.sidebar.markdown(
         "### Scenario"
@@ -556,6 +559,33 @@ def write_footer(st):
         """* This application is based on the work that is developed and made freely available (under MIT license) by Penn Medicine (https://github.com/CodeForPhilly/chime). 
         """
     )
+    
+    st.markdown("""<a name="release_notes"></a>""", unsafe_allow_html=True)
+    st.subheader("Features and Enhancements History")
+    if st.checkbox("Show Features and Enhancements History"):
+        st.markdown("""    
+            **V: 1.3.2 (Friday, April 03, 2020)** 
+
+            * Added support for providing historical data and incorporating it in the hospital admission/census/COVID-19 capacity charts/projections
+    
+            **V: 1.2.11 (Thursday, April 02, 2020):** 
+            
+            * Created parameter categories in the left menu for better organization
+            * Added a new chart to show the number of susceptible, infected, and recovered individuals in the hospital catchment region at any given moment. Also added support for exporting this data as a csv file
+            * Added support for specifying the date of the first hospitalized case            
+            * Added support for specifying the doubling time of COVID-19 cases   
+            * Added support for specifying the social distancing (% reduction in social contact going forward)
+
+            **V: 1.1.1 (Friday, March 27, 2020):** 
+            
+            * Added support for loading and saving capacity planning scenarios 
+            * Added support for exporting full dataset and capacity scenario as a csv file
+            * Added support for specifying Total # of Beds for COVID-19 Patients and incorporating the data in the hospital admission/census charts
+            * Added support for specifying the Total # of ICU Beds for COVID-19 Patients and incorporating the data in the hospital admission/census charts
+            * Added support for specifying the Total # of Ventilators for COVID-19 Patients and incorporating the data in the hospital admission/census charts
+
+    
+        """)
     st.markdown("© 2020, Health Catalyst Inc.")
 
 
