@@ -61,13 +61,13 @@ def actuals_download_widget(st):
     t = np.arange(rows) # Time
     tau = 7 # Time required to increase by a factor of b.
     b = np.e 
-    a = 1 # Initial count
-    admits = a * b ** (t / tau)
+    a = 267 # Initial count
+    infections = a * b ** (t / tau)
     sample_df = pd.DataFrame({
         "date": pd.date_range("2020-03-10", periods=rows, freq='D'),
-        "total_admissions_actual": np.floor(admits), 
+        "cumulative_regional_infections": np.floor(infections), 
     }).assign(
-        cumulative_regional_infections=lambda d: np.floor(d.total_admissions_actual / .025 / .15),
+        total_admissions_actual=lambda d: np.floor(d.cumulative_regional_infections * .025 * .15),
         icu_admissions_actual=lambda d: np.floor(d.total_admissions_actual * .25),
         intubated_actual=lambda d: np.floor(d.icu_admissions_actual * .5),
         total_census_actual=lambda d: (d.total_admissions_actual.cumsum() - d.total_admissions_actual.cumsum().shift(7, fill_value=0)),

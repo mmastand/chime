@@ -50,44 +50,40 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
 
 
 def param_download_widget(st, parameters):
-    if parameters.author == "Jane Doe" or parameters.scenario == "COVID-19 Model":
-        st.sidebar.markdown("""
-        **Enter a unique author name and scenario name to enable parameter download.**""")
-    else:
-        filename = "ModelParameters" + "_" + parameters.author + "_" + parameters.scenario + "_" + datetime.now().isoformat() + ".json"
-        out_obj = {
-            
-            "FirstHospitalizedCaseDate": date.today().isoformat() if parameters.date_first_hospitalized == None else parameters.date_first_hospitalized.isoformat(),
-            "FirstHospitalizedDateKnown": parameters.first_hospitalized_date_known,
-            "SocialDistancingStartDate": parameters.social_distancing_start_date.isoformat(),
-            "Author": parameters.author,
-            "Scenario": parameters.scenario,
-            "NumberOfDaysToProject": parameters.n_days,
-            "DoublingTimeBeforeSocialDistancing": 4.0 if parameters.doubling_time == None else parameters.doubling_time,
-            "SocialDistancingPercentReduction": parameters.relative_contact_rate,
-            "HospitalizationPercentage": parameters.hospitalized.rate,
-            "ICUPercentage": parameters.icu.rate,
-            "VentilatorsPercentage": parameters.ventilators.rate,
-            "HospitalLengthOfStay": parameters.hospitalized.days,
-            "ICULengthOfStay": parameters.icu.days,
-            "VentLengthOfStay": parameters.ventilators.days,
-            "HospitalMarketShare": parameters.market_share,
-            "RegionalPopulation": parameters.population,
-            "MaxYAxisSet":parameters.max_y_axis_set,
-            "MaxYAxis":parameters.max_y_axis,
-            
-            "TotalNumberOfBedsForNCPatients": parameters.total_covid_beds,
-            "TotalNumberOfICUBedsForNCPatients": parameters.icu_covid_beds,
-            "TotalNumberOfVentsForNCPatients": parameters.covid_ventilators,
+    filename = "ModelParameters" + "_" + parameters.author + "_" + parameters.scenario + "_" + datetime.now().isoformat() + ".json"
+    out_obj = {
+        
+        "FirstHospitalizedCaseDate": date.today().isoformat() if parameters.date_first_hospitalized == None else parameters.date_first_hospitalized.isoformat(),
+        "FirstHospitalizedDateKnown": parameters.first_hospitalized_date_known,
+        "SocialDistancingStartDate": parameters.social_distancing_start_date.isoformat(),
+        "Author": parameters.author,
+        "Scenario": parameters.scenario,
+        "NumberOfDaysToProject": parameters.n_days,
+        "DoublingTimeBeforeSocialDistancing": 4.0 if parameters.doubling_time == None else parameters.doubling_time,
+        "SocialDistancingPercentReduction": parameters.relative_contact_rate,
+        "HospitalizationPercentage": parameters.hospitalized.rate,
+        "ICUPercentage": parameters.icu.rate,
+        "VentilatorsPercentage": parameters.ventilators.rate,
+        "HospitalLengthOfStay": parameters.hospitalized.days,
+        "ICULengthOfStay": parameters.icu.days,
+        "VentLengthOfStay": parameters.ventilators.days,
+        "HospitalMarketShare": parameters.market_share,
+        "RegionalPopulation": parameters.population,
+        "MaxYAxisSet":parameters.max_y_axis_set,
+        "MaxYAxis":parameters.max_y_axis,
+        
+        "TotalNumberOfBedsForNCPatients": parameters.total_covid_beds,
+        "TotalNumberOfICUBedsForNCPatients": parameters.icu_covid_beds,
+        "TotalNumberOfVentsForNCPatients": parameters.covid_ventilators,
 
-            "CurrentlyHospitalizedCovidPatients": parameters.covid_census_value,
-            "CurrentlyHospitalizedCovidPatientsDate": parameters.covid_census_date.isoformat(),
-            # "SelectedOffsetDays": parameters.selected_offset,  # Deprecated in v2.0.0
-        }
-        out_json = json.dumps(out_obj)
-        b64_json = base64.b64encode(out_json.encode()).decode()
-        st.sidebar.markdown(
-            """<a download="{filename}" href="data:text/plain;base64,{b64_json}" style="padding:.75em;border-radius:10px;background-color:#00aeff;color:white;font-family:sans-serif;text-decoration:none;">Save Scenario</a>"""
-            .format(b64_json=b64_json,filename=filename), 
-            unsafe_allow_html=True,
-        )
+        "CurrentlyHospitalizedCovidPatients": parameters.covid_census_value,
+        "CurrentlyHospitalizedCovidPatientsDate": parameters.covid_census_date.isoformat(),
+        # "SelectedOffsetDays": parameters.selected_offset,  # Deprecated in v2.0.0
+    }
+    out_json = json.dumps(out_obj)
+    b64_json = base64.b64encode(out_json.encode()).decode()
+    st.sidebar.markdown(
+        """<a download="{filename}" href="data:text/plain;base64,{b64_json}" style="padding:.75em;border-radius:10px;background-color:#00aeff;color:white;font-family:sans-serif;text-decoration:none;">Save Scenario</a>"""
+        .format(b64_json=b64_json,filename=filename), 
+        unsafe_allow_html=True,
+    )

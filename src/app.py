@@ -138,15 +138,11 @@ df = build_data_and_params(projection_admits = m.admits_df,
 if st.checkbox("Show full data and parameters to be exported"):
     st.dataframe(df)
 
-if p.author == "Jane Doe" or p.scenario == "COVID Model":
-    st.markdown("""
-    **Enter a unique author name and scenario name to enable downloading.**""")
-else:
-    filename = "Data" + "_" + p.author + "_" + p.scenario + "_" + (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).isoformat() + ".csv"
-    csv = dataframe_to_base64(df)
-    st.markdown("""
-            <a download="{filename}" href="data:text/plain;base64,{csv}">Download full table as CSV</a>
-    """.format(csv=csv,filename=filename), unsafe_allow_html=True)
+filename = "Data" + "_" + p.author + "_" + p.scenario + "_" + (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).isoformat() + ".csv"
+csv = dataframe_to_base64(df)
+st.markdown("""
+        <a download="{filename}" href="data:text/plain;base64,{csv}">Download full table as CSV</a>
+""".format(csv=csv,filename=filename), unsafe_allow_html=True)
 
 if actuals is not None:
     if st.checkbox("Display Uploaded Actuals"):

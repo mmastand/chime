@@ -205,8 +205,11 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     if uploaded_file is not None:
         d = constants_from_uploaded_file(uploaded_file)
 
+    # st.sidebar.markdown("""
+    #     <span style="color:red;font-size:small;">Known Limitation: You must refresh your browser window before loading scenario, otherwise the projections will not be updated.</span> 
+    # """, unsafe_allow_html=True)
     st.sidebar.markdown("""
-        <span style="color:red;font-size:small;">Known Limitation: You must refresh your browser window before loading scenario, otherwise the projections will not be updated.</span> 
+        <span style="color:red;font-size:small;">Please refresh your browser window before loading a scenario.</span> 
     """, unsafe_allow_html=True)
 
     
@@ -236,7 +239,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
     scenario = st.sidebar.text_input(
         "Scenario Name", 
-        value="COVID Model" if uploaded_file is None else d.scenario
+        value="Scenario Name" if uploaded_file is None else d.scenario
     )
 
     st.sidebar.markdown(
