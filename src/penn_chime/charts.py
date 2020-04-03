@@ -1,7 +1,7 @@
 
 from datetime import datetime
 from math import ceil
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 from altair import Chart
 import pandas as pd
@@ -9,13 +9,30 @@ import numpy as np
 
 from .constants import DATE_FORMAT
 from .parameters import Parameters
+from .hc_actuals import ADMISSIONS_COLUMNS, CENSUS_COLUMNS
 
+
+def get_actual_columns_and_colors(possible_columns, projections_df, actuals_df, alt):
+    actuals_plot_columns = []
+    actuals_color_domain = []
+    actuals_colors_defaults = ['#4C78A8', '#F58518', '#E45756']
+    actuals_color_range=[]
+    combined = projections_df.merge(actuals_df, on="date", how="left")
+    for index, possible_column in enumerate(possible_columns):
+        if possible_column in actuals_df.columns:
+            actuals_plot_columns.append(possible_column)
+            actuals_color_domain.append(possible_column)
+            actuals_color_range.append(actuals_colors_defaults[index])
+    actuals_color = alt.Color("Actual:N", scale=alt.Scale(domain=actuals_color_domain, range=actuals_color_range))
+    return combined, actuals_plot_columns, actuals_color
+        
 
 def build_admits_chart(
     *,
     alt,
     admits_floor_df: pd.DataFrame,
     parameters: Parameters,
+    actuals: Union[pd.DataFrame, None],
 ) -> Chart:
     """Build admits chart."""
     y_scale = alt.Scale()
@@ -23,15 +40,14 @@ def build_admits_chart(
         y_scale.domain = (0, parameters.max_y_axis)
         y_scale.clamp = True
 
+    plot_columns = ["total", "icu", "ventilators"]
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="Daily admissions", scale=y_scale)
-    color = alt.Color("key:N", sort = ["total", "icu", "ventilators"])
+    color = alt.Color("Projected:N", sort = plot_columns)
     tooltip=["date:T", alt.Tooltip("value:Q", format=".0f", title="Admit"), "key:N"]
-
-    # TODO fix the fold to allow any number of dispositions
-    points = (
+    lines = (
         alt.Chart()
-        .transform_fold(fold=["total", "icu", "ventilators"])
+        .transform_fold(fold=plot_columns, as_=["Projected", "value"])
         .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line(point=True)
     )
@@ -41,7 +57,20 @@ def build_admits_chart(
         .transform_filter(alt.datum.day == 0)
         .mark_rule(color="black", opacity=0.35, size=2)
     )
-    return alt.layer(points, bar, data=admits_floor_df)
+    charts = [lines, bar]
+    if actuals is not None:
+        admits_floor_df, actuals_plot_columns, actuals_color = get_actual_columns_and_colors(
+            ADMISSIONS_COLUMNS, admits_floor_df, actuals, alt,
+        )
+        actuals_lines = (
+            alt.Chart()
+            .transform_fold(fold=actuals_plot_columns, as_=["Actual", "value"])
+            .encode(x=alt.X(**x), y=alt.Y(**y), color=actuals_color, tooltip=tooltip)
+            .mark_square(filled=True, opacity=1.)
+        )
+        charts.append(actuals_lines)
+
+    return alt.layer(*charts, data=admits_floor_df).resolve_scale(color="independent")
 
 
 
@@ -50,6 +79,7 @@ def build_census_chart(
     alt,
     census_floor_df: pd.DataFrame,
     parameters: Parameters,
+    actuals: Union[pd.DataFrame, None],
 ) -> Chart:
     """Build census chart."""
     y_scale = alt.Scale()
@@ -57,15 +87,16 @@ def build_census_chart(
         y_scale.domain = (0, parameters.max_y_axis)
         y_scale.clamp = True
 
+    plot_columns = ["total", "icu", "ventilators"]
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="Census", scale=y_scale)
-    color = alt.Color("key:N", sort = ["total", "icu", "ventilators"])
+    color = alt.Color("key:N", sort = plot_columns)
     tooltip = ["date:T", alt.Tooltip("value:Q", format=".0f", title="Census"), "key:N"]
 
     # TODO fix the fold to allow any number of dispositions
-    points = (
+    lines = (
         alt.Chart()
-        .transform_fold(fold=["total", "icu", "ventilators"])
+        .transform_fold(fold=plot_columns)
         .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line(point=True)
     )
@@ -75,7 +106,19 @@ def build_census_chart(
         .transform_filter(alt.datum.day == 0)
         .mark_rule(color="black", opacity=0.35, size=2)
     )
-    return alt.layer(points, bar, data=census_floor_df)
+    charts = [lines, bar]
+    if actuals is not None:
+        census_floor_df, actuals_plot_columns, actuals_color = get_actual_columns_and_colors(
+            CENSUS_COLUMNS, census_floor_df, actuals, alt,
+        )
+        actuals_lines = (
+            alt.Chart()
+            .transform_fold(fold=actuals_plot_columns, as_=["Actual", "value"])
+            .encode(x=alt.X(**x), y=alt.Y(**y), color=actuals_color, tooltip=tooltip)
+            .mark_square(filled=True, opacity=1.)
+        )
+        charts.append(actuals_lines)
+    return alt.layer(*charts, data=census_floor_df).resolve_scale(color="independent")
 
 
 def build_sim_sir_w_date_chart(

@@ -23,6 +23,7 @@ from .hc_param_import_export import (
     constants_from_uploaded_file, 
     param_download_widget
 )
+from .hc_actuals import parse_actuals
 
 hide_menu_style = """
         <style>
@@ -425,8 +426,22 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         st,
         parameters,
     )
+    actuals = display_actuals_section(st)
+    return parameters, actuals
 
-    return parameters
+
+def display_actuals_section(st):
+    actuals = None
+    if st.sidebar.checkbox("I have actual data."):
+        st.sidebar.markdown("""Here are some instructions about how to use the actuals *****CHANGE ME******""")
+        uploaded_actuals = st.sidebar.file_uploader("Actuals", type=['csv'])
+        if uploaded_actuals:
+            # st.sidebar.markdown(uploaded_actuals.read())
+            actuals, error_message = parse_actuals(uploaded_actuals)
+            if error_message:
+                st.sidebar.markdown(error_message)
+    return actuals
+
 
 def display_more_info(
     st, model: Model, parameters: Parameters, defaults: Parameters, notes: str = "",
