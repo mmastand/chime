@@ -75,7 +75,7 @@ class Parameters:
         region: Optional[Regions] = None,
         # Added by the Health Catalyst Team
         author: str = "Jane Doe",
-        scenario: str = "COVID-19 Model",
+        scenario: str = "Scenario Name",
     ):
         self.covid_census_value = StrictlyPositive(value=covid_census_value)
         self.covid_census_date = Date(value=covid_census_date)

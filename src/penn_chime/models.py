@@ -123,6 +123,9 @@ class SimSirModel:
                 self.beta_t = get_beta(intrinsic_growth_rate, self.gamma, self.susceptible, p.relative_contact_rate)
 
                 self.run_projection(p)
+                # Only use projection if i_day is to the left of the census maximum
+                if self.i_day > self.census_df.total.idxmax():
+                    losses[i] = np.inf
                 loss = self.get_loss()
                 losses[i] = loss
 

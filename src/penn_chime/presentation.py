@@ -23,6 +23,7 @@ from .hc_param_import_export import (
     constants_from_uploaded_file, 
     param_download_widget
 )
+from .hc_actuals import parse_actuals, actuals_download_widget
 
 hide_menu_style = """
         <style>
@@ -59,9 +60,13 @@ def display_header(st, m, p):
         * If you find a bug, please report it [here] (mailto:covidcapacitybugs@healthcatalyst.com).
         * If you have an enhancement request, please provide it [here] (mailto:covidcapacityenhancements@healthcatalyst.com).
         
-        See **Application Guidance** section below for more information 
         """,
-        unsafe_allow_html=True,)
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """<p>See <strong><a href="#application_guidance">Application Guidance</a></strong> section below for more information.</p>""",
+        unsafe_allow_html=True,
+    )
 
     st.markdown(
         """
@@ -203,8 +208,11 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     if uploaded_file is not None:
         d = constants_from_uploaded_file(uploaded_file)
 
+    # st.sidebar.markdown("""
+    #     <span style="color:red;font-size:small;">Known Limitation: You must refresh your browser window before loading scenario, otherwise the projections will not be updated.</span> 
+    # """, unsafe_allow_html=True)
     st.sidebar.markdown("""
-        <span style="color:red;font-size:small;">Known Limitation: You must refresh your browser window before loading scenario, otherwise the projections will not be updated.</span> 
+        <span style="color:red;font-size:small;">Please refresh your browser window before loading a scenario.</span> 
     """, unsafe_allow_html=True)
 
     
@@ -234,7 +242,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
     scenario = st.sidebar.text_input(
         "Scenario Name", 
-        value="COVID Model" if uploaded_file is None else d.scenario
+        value="Scenario Name" if uploaded_file is None else d.scenario
     )
 
     st.sidebar.markdown(
@@ -428,8 +436,26 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         st,
         parameters,
     )
+    actuals = display_actuals_section(st)
+    return parameters, actuals
 
-    return parameters
+
+def display_actuals_section(st):
+    actuals = None
+    # If you put this in a checkbox then 
+    st.sidebar.markdown("### Actuals")
+    st.sidebar.markdown(
+        """<p>For instructions on how to format actual data please see the <a href="#working_with_actuals">Working with Actuals</a> section.</p>""",
+        unsafe_allow_html=True,
+    )
+    uploaded_actuals = st.sidebar.file_uploader("Load Actuals", type=['csv'])
+    if uploaded_actuals:
+        # st.sidebar.markdown(uploaded_actuals.read())
+        actuals, error_message = parse_actuals(uploaded_actuals)
+        if error_message:
+            st.sidebar.markdown(error_message)
+    return actuals
+
 
 def display_more_info(
     st, model: Model, parameters: Parameters, defaults: Parameters, notes: str = "",
@@ -529,7 +555,9 @@ $$\\beta = (g + \\gamma)$$.
 
 
 def write_definitions(st):
-    st.subheader("Application Guidance")
+    st.markdown("""<a name="application_guidance"></a>""", unsafe_allow_html=True)
+    st.header("Application Guidance")
+    st.subheader("Working with Projected Data")
     st.markdown("""
     This tool has the ability to load and save parameters, as well as save parameters and calculations. Enable
     these features by changing the *Author Name* and *Scenario Name* to values of your choosing. Rather than create the parameter file
@@ -551,10 +579,98 @@ def write_definitions(st):
     st.markdown(
         """**For more details on input selection, please refer here: [User Documentation](https://code-for-philly.gitbook.io/chime/what-is-chime/parameters#guidance-on-selecting-inputs)**"""
     )
+    st.markdown("""<a name="working_with_actuals"></a>""", unsafe_allow_html=True)
+    st.subheader("Working with Actuals")
+    st.markdown("""
+    Using the parameters in the sidebar it is possible to configure theoretical projections that are driven by the 
+    SIR model. However you may also upload actual data which will be displayed along with the projections in the 
+    appropriate chart above. To upload actual data please use the file upload widget at the bottom of the sidebar.
+    Uploaded files must be in the comma-separated-value (CSV) format. Below is a list of columns that you may include 
+    in the uploaded CSV file along with a description of each column. Please note that column names are **case sensitive**.
+
+    #### Required Columns
+    `date`: The date corresponding to the measurements below.
+
+    #### Optional Columns
+    One or more of the following columns must also be present:
+
+    `total_admissions_actual`: The total number of COVID-19 patients admitted on `date`. 
+
+    `icu_admissions_actual`: The number of COVID-19 patients who entered the ICU on `date`.
+
+    `intubated_actual`: The number of COVID-19 patients who were intubated on `date`. 
+
+    `total_census_actual`: The total hospital COVID-19 census on `date`.
+
+    `icu_census_actual`: The ICU COVID-19 census on `date`.
+
+    `ventilators_in_use_actual`: The number of ventilators in use for COVID-19 patients on `date`.
+
+    `cumulative_regional_infections`: The total number of infections in your region or catchment area on `date`. 
+    **This number must be cumulative** rather than a count of currently infected people. A non-cumulative version
+    of this column is generated before it is displayed in the SIR chart above, named `daily_regional_infections`.
+
+    """)
+    # st.markdown("""
+    # Using the parameters in the sidebar it is possible to configure theoretical projections that are driven by the 
+    # SIR model. However it is also important to be able compare those theoretical projections to actual data gathered 
+    # from your hospital or region. Using the file upload widget at the bottom of the sidebar you may upload actual data 
+    # which will be displayed along with the projections in the appropriate chart above. Uploaded files must be in the 
+    # comma-separated-value (CSV) format. The supported columns and data types are as follows. Please note that column 
+    # names are **case sensitive**.
+
+    # #### Required Columns
+    # | Column       | Data Type        | Description |
+    # |--------------|------------------|-------------|
+    # | `date`       | Date or Datetime | The date corresponding to the measurements below. |
+    # `date`: The date corresponding to the measurements below.
+
+    # #### Optional Columns
+    # One or more of the following columns must be present.
+
+    # | Column                            | Data Type         | Description  |
+    # | --------------------------------- |:-----------------:| -----:|
+    # | `total_admissions_actual`         | integer or float  | The total number of COVID-19 patients admitted on `date`.      |
+    # | `icu_admissions_actual`           | integer or float  | The number of COVID-19 patients who entered the ICU on `date`. |
+    # | `intubated_actual`                | integer or float  | The number of COVID-19 patients who were intubated on `date`.  |
+    # | `total_census_actual`             | integer or float  | The total hospital COVID-19 census on `date`. |
+    # | `icu_census_actual`               | integer or float  | The ICU COVID-19 census on `date`. |
+    # | `ventilators_in_use_actual`       | integer or float  | The number of ventilators in use for COVID-19 patients on `date`.|
+    # | `cumulative_regional_infections`  | integer or float  | The total number of infections in your region or catchment area on `date`. **This number must be cumulative** rather than a count of currently infected people. |
+
+    # | Column                            | Description  |
+    # | --------------------------------- | -----|
+    # | `total_admissions_actual`         | The total number of COVID-19 patients admitted on `date`.      |
+    # | `icu_admissions_actual`           | The number of COVID-19 patients who entered the ICU on `date`. |
+    # | `intubated_actual`                | The number of COVID-19 patients who were intubated on `date`.  |
+    # | `total_census_actual`             | The total hospital COVID-19 census on `date`. |
+    # | `icu_census_actual`               | The ICU COVID-19 census on `date`. |
+    # | `ventilators_in_use_actual`       | The number of ventilators in use for COVID-19 patients on `date`.|
+    # | `cumulative_regional_infections`  | The cumulative number of infections in your region or catchment area on `date`. **This number must be cumulative** (rather than a count of currently infected people) so that it may be used to calculate doubling time. |
+
+    
+    # `total_admissions_actual`: The total number of COVID-19 patients admitted on `date`. 
+
+    # `icu_admissions_actual`: The number of COVID-19 patients who entered the ICU on `date`.
+
+    # `intubated_actual`: The number of COVID-19 patients who were intubated on `date`. 
+
+    # `total_census_actual`: The total hospital COVID-19 census on `date`.
+
+    # `icu_census_actual`: The ICU COVID-19 census on `date`.
+
+    # `ventilators_in_use_actual`: The number of ventilators in use for COVID-19 patients on `date`.
+
+    # `cumulative_regional_infections`: The total number of infections in your region or catchment area on `date`. **This number must be cumulative** rather than a count of currently infected people.
+
+    # """)
+    actuals_download_widget(st)
+
+    
 
 
 def write_footer(st):
-    st.subheader("References & Acknowledgements")
+    st.header("References & Acknowledgements")
     st.markdown(
         """* This application is based on the work that is developed and made freely available (under MIT license) by Penn Medicine (https://github.com/CodeForPhilly/chime). 
         """

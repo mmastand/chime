@@ -34,7 +34,7 @@ from penn_chime.utils import dataframe_to_base64
 st.markdown(hide_menu_style, unsafe_allow_html=True)
 
 d = get_defaults()
-p = display_sidebar(st, d)
+p, actuals = display_sidebar(st, d)
 m = SimSirModel(p)
 
 display_header(st, m, p)
@@ -45,7 +45,7 @@ if st.checkbox("Show more info about this tool"):
 
 st.subheader("New Hospital Admissions")
 st.markdown("Projected number of **daily** COVID-19 admissions. \n\n _NOTE: Now including estimates of prior admissions for comparison._")
-admits_chart = build_admits_chart(alt=alt, admits_floor_df=m.admits_floor_df, parameters=p)
+admits_chart = build_admits_chart(alt=alt, admits_floor_df=m.admits_floor_df, parameters=p, actuals=actuals)
 st.altair_chart(admits_chart, use_container_width=True)
 st.markdown(build_descriptions(chart=admits_chart, labels=p.patient_chart_desc))
 display_download_link(
@@ -67,7 +67,7 @@ if st.checkbox("Show Projected Admissions in tabular form"):
 
 st.subheader("Hospital Census")
 st.markdown("Projected **census** of COVID-19 patients, accounting for arrivals and discharges \n\n _NOTE: Now including estimates of prior census for comparison._")
-census_chart = build_census_chart(alt=alt, census_floor_df=m.census_floor_df, parameters=p)
+census_chart = build_census_chart(alt=alt, census_floor_df=m.census_floor_df, parameters=p, actuals=actuals)
 st.altair_chart(census_chart, use_container_width=True)
 st.markdown(build_descriptions(chart=census_chart, labels=p.patient_chart_desc))
 display_download_link(
@@ -113,7 +113,7 @@ if st.checkbox("Show Projected Capacity in tabular form"):
 
 st.subheader("Susceptible, Infected, and Recovered")
 st.markdown("The number of susceptible, infected, and recovered individuals in the hospital catchment region at any given moment")
-sim_sir_w_date_chart = build_sim_sir_w_date_chart(alt=alt, sim_sir_w_date_floor_df=m.sim_sir_w_date_floor_df)
+sim_sir_w_date_chart = build_sim_sir_w_date_chart(alt=alt, sim_sir_w_date_floor_df=m.sim_sir_w_date_floor_df, actuals=actuals)
 st.altair_chart(sim_sir_w_date_chart, use_container_width=True)
 display_download_link(
     st,
@@ -138,15 +138,15 @@ df = build_data_and_params(projection_admits = m.admits_df,
 if st.checkbox("Show full data and parameters to be exported"):
     st.dataframe(df)
 
-if p.author == "Jane Doe" or p.scenario == "COVID Model":
-    st.markdown("""
-    **Enter a unique author name and scenario name to enable downloading.**""")
-else:
-    filename = "Data" + "_" + p.author + "_" + p.scenario + "_" + (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).isoformat() + ".csv"
-    csv = dataframe_to_base64(df)
-    st.markdown("""
-            <a download="{filename}" href="data:text/plain;base64,{csv}">Download full table as CSV</a>
-    """.format(csv=csv,filename=filename), unsafe_allow_html=True)
+filename = "Data" + "_" + p.author + "_" + p.scenario + "_" + (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).isoformat() + ".csv"
+csv = dataframe_to_base64(df)
+st.markdown("""
+        <a download="{filename}" href="data:text/plain;base64,{csv}">Download full table as CSV</a>
+""".format(csv=csv,filename=filename), unsafe_allow_html=True)
+
+if actuals is not None:
+    if st.checkbox("Display Uploaded Actuals"):
+        st.dataframe(actuals)
 
 write_definitions(st)
 write_footer(st)
