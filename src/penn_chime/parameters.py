@@ -77,18 +77,16 @@ class Parameters:
         author: str = "Jane Doe",
         scenario: str = "Scenario Name",
     ):
-        self.covid_census_value = StrictlyPositive(value=covid_census_value)
+        self.covid_census_value = covid_census_value
         self.covid_census_date = Date(value=covid_census_date)
         self.current_date = Date(value=current_date)
         self.relative_contact_rate = Rate(value=relative_contact_rate)
 
-        self.total_covid_beds = StrictlyPositive(value=total_covid_beds)
-        self.icu_covid_beds = StrictlyPositive(value=icu_covid_beds)
-        self.covid_ventilators = StrictlyPositive(value=covid_ventilators)
+        self.total_covid_beds = total_covid_beds
+        self.icu_covid_beds = icu_covid_beds
+        self.covid_ventilators = covid_ventilators
         Rate(value=hospitalized.rate)
         Rate(value=icu.rate)
-        StrictlyPositive(value=hospitalized.days)
-        StrictlyPositive(value=icu.days),
 
         self.hospitalized = hospitalized
         self.icu = icu

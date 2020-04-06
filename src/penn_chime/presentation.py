@@ -273,7 +273,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
 
     st.sidebar.markdown(
-        "### Hospital Capacity"
+        "### COVID-19 Hospital Capacity"
     )
     total_covid_beds = st.sidebar.number_input(
         "Total # of Beds for COVID-19 Patients",
@@ -345,6 +345,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     hospitalized_rate = st.sidebar.number_input(
         "Hospitalization %(total infections)", 
         value=d.hospitalized.rate * 100.,
+        min_value=0.0000000001,
     ) / 100.
     icu_rate = st.sidebar.number_input(
         "ICU %(total infections)",

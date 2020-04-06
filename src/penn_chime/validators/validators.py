@@ -42,13 +42,13 @@ class OptionalBounded(Bounded):
         super().validate(value)
 
 class Rate(Validator):
-    """A rate in [0,1]."""
+    """A rate in (0,1)."""
     def __init__(self) -> None:
         pass
    
     def validate(self, value):
-        if 0 >= value or value >= 1:
-            raise ValueError(f"{value} needs to be a rate (i.e. in [0,1]).")
+        if value < 0 or value > 1:
+            raise ValueError(f"{value} needs to be a rate (i.e. in (0,1)).")
 
 class Date(Validator):
     """A date of some sort."""
