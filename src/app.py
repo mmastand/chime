@@ -26,6 +26,7 @@ from penn_chime.charts import (
     build_table,
 )
 from penn_chime.utils import dataframe_to_base64
+from penn_chime.hc_actuals import census_mismatch_message
 
 # This is somewhat dangerous:
 # Hide the main menu with "Rerun", "run on Save", "clear cache", and "record a screencast"
@@ -69,6 +70,8 @@ st.subheader("Hospital Census")
 st.markdown("Projected **census** of COVID-19 patients, accounting for arrivals and discharges \n\n _NOTE: Now including estimates of prior census for comparison._")
 census_chart = build_census_chart(alt=alt, census_floor_df=m.census_floor_df, parameters=p, actuals=actuals)
 st.altair_chart(census_chart, use_container_width=True)
+# Display census mismatch message if appropriate
+census_mismatch_message(parameters=p, actuals=actuals, st=st)
 st.markdown(build_descriptions(chart=census_chart, labels=p.patient_chart_desc))
 display_download_link(
     st,

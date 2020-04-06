@@ -273,7 +273,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
 
     st.sidebar.markdown(
-        "### Hospital Capacity"
+        "### COVID-19 Hospital Capacity"
     )
     total_covid_beds = st.sidebar.number_input(
         "Total # of Beds for COVID-19 Patients",

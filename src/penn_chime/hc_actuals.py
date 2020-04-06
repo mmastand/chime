@@ -85,3 +85,23 @@ def actuals_download_widget(st):
         .format(encoded_csv=encoded_csv,filename=filename), 
         unsafe_allow_html=True,
     )
+
+def census_mismatch_message(parameters: "Parameters", actuals: pd.DataFrame, st):
+    if actuals is None:
+        return
+    else:
+        sidebar_census_date = parameters.covid_census_date
+        possible_actual = actuals.loc[actuals.date == pd.Timestamp(sidebar_census_date)]
+        if len(possible_actual) > 0:
+            # They have an actual census number for the date they selected on the sidebar
+            sidebar_census_number = parameters.covid_census_value
+            if (sidebar_census_number != possible_actual.total_census_actual).iloc[0]:
+                # They don't match, display the message
+                st.markdown(f"""
+                        <span style="color:red;font-size:small;">Warning: The "Current COVID-19 Total Hospital Census" parameter in the sidebar does not match the actual census value for the selected date ({sidebar_census_date.isoformat()}). The census value from the uploaded actuals for that date is {int(possible_actual.total_census_actual.iloc[0])}.</span> 
+                    """, 
+                    unsafe_allow_html=True
+                )
+        else:
+            # They do not have an actual census for their selected census date, display nothing
+            pass

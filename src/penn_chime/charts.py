@@ -44,7 +44,7 @@ def build_admits_chart(
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="Daily admissions", scale=y_scale)
     color = alt.Color("Projected:N", sort = plot_columns)
-    tooltip=["date:T", alt.Tooltip("value:Q", format=".0f"), "Projected:N"]
+    tooltip=[alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f"), "Projected:N"]
     lines = (
         alt.Chart()
         .transform_fold(fold=plot_columns, as_=["Projected", "value"])
@@ -62,7 +62,7 @@ def build_admits_chart(
         admits_floor_df, actuals_plot_columns, actuals_color = get_actual_columns_and_colors(
             ADMISSIONS_COLUMNS, admits_floor_df, actuals, alt,
         )
-        actuals_tooltip=["date:T", alt.Tooltip("value:Q", format=".0f"), "Actual:N"]
+        actuals_tooltip=[alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f"), "Actual:N"]
         actuals_lines = (
             alt.Chart()
             .transform_fold(fold=actuals_plot_columns, as_=["Actual", "value"])
@@ -92,7 +92,8 @@ def build_census_chart(
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="Census", scale=y_scale)
     color = alt.Color("Projected:N", sort = plot_columns)
-    tooltip = ["date:T", alt.Tooltip("value:Q", format=".0f", title="Census"), "Projected:N"]
+    # tooltip = [alt.Tooltip("date:T", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title="Census"), "Projected:N"]
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title="Census"), "Projected:N"]
 
     # TODO fix the fold to allow any number of dispositions
     lines = (
@@ -112,7 +113,7 @@ def build_census_chart(
         census_floor_df, actuals_plot_columns, actuals_color = get_actual_columns_and_colors(
             CENSUS_COLUMNS, census_floor_df, actuals, alt,
         )
-        actuals_tooltip=["date:T", alt.Tooltip("value:Q", format=".0f"), "Actual:N"]
+        actuals_tooltip=[alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title="Census"), "Actual:N"]
         actuals_lines = (
             alt.Chart()
             .transform_fold(fold=actuals_plot_columns, as_=["Actual", "value"])
@@ -136,7 +137,7 @@ def build_sim_sir_w_date_chart(
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="Count", scale=y_scale)
     color = "Projected:N"
-    tooltip = ["date:T", alt.Tooltip("value:Q", format=".0f"), "Projected:N"]
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f"), "Projected:N"]
 
     # TODO fix the fold to allow any number of dispositions
     lines = (
@@ -156,7 +157,7 @@ def build_sim_sir_w_date_chart(
         sim_sir_w_date_floor_df, actuals_plot_columns, actuals_color = get_actual_columns_and_colors(
             ["daily_regional_infections"], sim_sir_w_date_floor_df, actuals, alt,
         )
-        actuals_tooltip=["date:T", alt.Tooltip("value:Q", format=".0f"), "Actual:N"]
+        actuals_tooltip=[alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f"), "Actual:N"]
         actuals_lines = (
             alt.Chart()
             .transform_fold(fold=actuals_plot_columns, as_=["Actual", "value"])
