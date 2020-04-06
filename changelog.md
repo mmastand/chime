@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+
+## [1.3.3] - 2020-04-03
 ### Fixed
 - Penn's model had a bug where if you provided a first hospitalized date instead of a doubling time the model sometimes picked a point on the backside of the maximum as today.
 
