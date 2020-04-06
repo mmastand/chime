@@ -87,7 +87,7 @@ def actuals_download_widget(st):
     )
 
 def census_mismatch_message(parameters: "Parameters", actuals: pd.DataFrame, st):
-    if actuals is None:
+    if actuals is None or 'total_census_actual' not in actuals.columns:
         return
     else:
         sidebar_census_date = parameters.covid_census_date

@@ -681,7 +681,7 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""    
-            **V: 1.3.4 (Monday, April 06, 2020)** 
+            **V: 1.3.5 (Monday, April 06, 2020)** 
 
             * Added **support for providing historical data** and incorporating it in the hospital admission/census/COVID-19 capacity charts/projections
     

@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- The mismatched census warning function wasn't checking if the actuals dataframe contained a total census column so we got a missing column exception if the user uploaded actuals without a census column.
+
+## [1.3.4] - 2020-04-06
 ### Added 
 - The ability to upload historical data which is now displayed alongside the projected data in the charts.
 - A warning that appears if the manually-entered census value from the sidebar does not match the census value provided in the actuals.
