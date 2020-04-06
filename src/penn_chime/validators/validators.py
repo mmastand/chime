@@ -48,7 +48,7 @@ class Rate(Validator):
    
     def validate(self, value):
         if value < 0 or value > 1:
-            raise ValueError(f"{value} needs to be a rate (i.e. in [0,1]).")
+            raise ValueError(f"{value} needs to be a rate (i.e. in (0,1)).")
 
 class Date(Validator):
     """A date of some sort."""
