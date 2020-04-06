@@ -680,26 +680,21 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""    
-            **V: 1.3.2 (Friday, April 03, 2020)** 
+            **V: 1.3.4 (Monday, April 06, 2020)** 
 
-            * Added support for providing historical data and incorporating it in the hospital admission/census/COVID-19 capacity charts/projections
+            * Added **support for providing historical data** and incorporating it in the hospital admission/census/COVID-19 capacity charts/projections
     
             **V: 1.2.11 (Thursday, April 02, 2020):** 
             
+            * Incorporated changes made by Penn Med to ensure replicability
             * Created parameter categories in the left menu for better organization
-            * Added a new chart to show the number of susceptible, infected, and recovered individuals in the hospital catchment region at any given moment. Also added support for exporting this data as a csv file
             * Added support for specifying the date of the first hospitalized case            
-            * Added support for specifying the doubling time of COVID-19 cases   
-            * Added support for specifying the social distancing (% reduction in social contact going forward)
 
             **V: 1.1.1 (Friday, March 27, 2020):** 
             
-            * Added support for loading and saving capacity planning scenarios 
+            * Added support for **loading and saving capacity planning scenarios** 
+            * Added support for understanding capacity as well as demand by specifying Numbers of Total Beds, ICU Beds, and Ventilators for COVID-19 Patients
             * Added support for exporting full dataset and capacity scenario as a csv file
-            * Added support for specifying Total # of Beds for COVID-19 Patients and incorporating the data in the hospital admission/census charts
-            * Added support for specifying the Total # of ICU Beds for COVID-19 Patients and incorporating the data in the hospital admission/census charts
-            * Added support for specifying the Total # of Ventilators for COVID-19 Patients and incorporating the data in the hospital admission/census charts
-
     
         """)
     st.markdown("© 2020, Health Catalyst Inc.")
