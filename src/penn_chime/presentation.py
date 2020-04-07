@@ -438,6 +438,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         parameters,
     )
     actuals = display_actuals_section(st)
+    parameters = display_ppe_section(st, d)
     return parameters, actuals
 
 
@@ -457,6 +458,105 @@ def display_actuals_section(st):
             st.sidebar.markdown(error_message)
     return actuals
 
+
+def display_ppe_section(st, d: Parameters) -> Parameters:
+    st.sidebar.markdown("### Personal Protection Equipment")
+    st.sidebar.markdown("PPE Required per Patient per Day")
+    st.sidebar.markdown("**Non-Critical Care**")
+    # Non-critical care
+    masks_n95 = st.sidebar.number_input(
+        "Masks - N95",
+        min_value=0,
+        value=d.masks_n95,
+        step=1,
+        format="%i",
+    )
+    d.masks_n95 = masks_n95
+
+    masks_surgical = st.sidebar.number_input(
+        "Masks - Surgical",
+        min_value=0,
+        value=d.masks_surgical,
+        step=1,
+        format="%i",
+    )
+    d.masks_surgical = masks_surgical
+
+    face_shield = st.sidebar.number_input(
+        "Face Shields",
+        min_value=0,
+        value=d.face_shield,
+        step=1,
+        format="%i",
+    )
+    d.face_shield = face_shield
+
+    gloves = st.sidebar.number_input(
+        "Gloves",
+        min_value=0,
+        value=d.gloves,
+        step=1,
+        format="%i",
+    )
+    d.gloves = gloves
+
+    other_ppe = st.sidebar.number_input(
+        "Other",
+        min_value=0,
+        value=d.other_ppe,
+        step=1,
+        format="%i",
+    )
+    d.other_ppe = other_ppe
+
+    # Critical Care
+    st.sidebar.markdown("PPE Required per Patient per Day")
+    st.sidebar.markdown("**Critical Care** PPE Required per Patient per Day")
+    masks_n95_icu = st.sidebar.number_input(
+        "Masks - N95 (ICU)",
+        min_value=0,
+        value=d.masks_n95_icu,
+        step=1,
+        format="%i",
+    )
+    d.masks_n95_icu = masks_n95_icu
+
+    masks_surgical_icu = st.sidebar.number_input(
+        "Masks - Surgical (ICU)",
+        min_value=0,
+        value=d.masks_surgical_icu,
+        step=1,
+        format="%i",
+    )
+    d.masks_surgical_icu = masks_surgical_icu
+
+    face_shield_icu = st.sidebar.number_input(
+        "Face Shields (ICU)",
+        min_value=0,
+        value=d.face_shield_icu,
+        step=1,
+        format="%i",
+    )
+    d.face_shield_icu = face_shield_icu
+
+    gloves_icu = st.sidebar.number_input(
+        "Gloves (ICU)",
+        min_value=0,
+        value=d.gloves_icu,
+        step=1,
+        format="%i",
+    )
+    d.gloves_icu = gloves_icu
+
+    other_ppe_icu = st.sidebar.number_input(
+        "Other (ICU)",
+        min_value=0,
+        value=d.other_ppe_icu,
+        step=1,
+        format="%i",
+    )
+    d.other_ppe_icu = other_ppe_icu
+    return d
 
 def display_more_info(
     st, model: Model, parameters: Parameters, defaults: Parameters, notes: str = "",

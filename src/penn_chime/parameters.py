@@ -76,6 +76,16 @@ class Parameters:
         # Added by the Health Catalyst Team
         author: str = "Jane Doe",
         scenario: str = "Scenario Name",
+        masks_n95: int = 5,
+        masks_surgical: int = 7,
+        face_shield: int = 5,
+        gloves: int = 10,
+        other_ppe: int = 2,
+        masks_n95_icu: int = 5,
+        masks_surgical_icu: int = 7,
+        face_shield_icu: int = 5,
+        gloves_icu: int = 10,
+        other_ppe_icu: int = 2,
     ):
         self.covid_census_value = covid_census_value
         self.covid_census_date = Date(value=covid_census_date)
@@ -126,6 +136,17 @@ class Parameters:
         
         self.author = author
         self.scenario = scenario
+
+        self.masks_n95 = masks_n95
+        self.masks_surgical = masks_surgical
+        self.face_shield = face_shield
+        self.gloves = gloves 
+        self.other_ppe = other_ppe
+        self.masks_n95_icu = masks_n95_icu
+        self.masks_surgical_icu = masks_surgical_icu
+        self.face_shield_icu = face_shield_icu
+        self.gloves_icu = gloves_icu
+        self.other_ppe_icu = other_ppe_icu
             
         self.labels = {
             "hospitalized": "Hospitalized",

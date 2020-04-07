@@ -45,6 +45,17 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         # selected_offset = imported_params.get("SelectedOffsetDays", -1), # Deprecated in v2.0.0
         author=imported_params.get("Author", "Jane Doe"), # Added in v2.0.0
         scenario=imported_params.get("Scenario", "COVID-19 Model"), # Added in v2.0.0
+
+        masks_n95=imported_params.get("MasksN95", 5),
+        masks_surgical=imported_params.get("MasksSurgical", 7),
+        face_shield=imported_params.get("FaceShields", 5),
+        gloves=imported_params.get("Gloves", 10),
+        other_ppe=imported_params.get("OtherPPE", 2),
+        masks_n95_icu=imported_params.get("MasksN95ICU", 5),
+        masks_surgical_icu=imported_params.get("MasksSurgicalICU", 7),
+        face_shield_icu=imported_params.get("FaceShieldsICU", 5),
+        gloves_icu=imported_params.get("GlovesICU", 10),
+        other_ppe_icu=imported_params.get("OtherPPEICU", 2),
     )
     return parameters
 
@@ -79,6 +90,17 @@ def param_download_widget(st, parameters):
         "CurrentlyHospitalizedCovidPatients": parameters.covid_census_value,
         "CurrentlyHospitalizedCovidPatientsDate": parameters.covid_census_date.isoformat(),
         # "SelectedOffsetDays": parameters.selected_offset,  # Deprecated in v2.0.0
+        "MasksN95": parameters.masks_n95,
+        "MasksSurgical": parameters.masks_surgical,
+        "FaceShields": parameters.face_shield,
+        "Gloves": parameters.gloves,
+        "OtherPPE": parameters.other_ppe,
+        "MasksN95ICU": parameters.masks_n95_icu,
+        "MasksSurgicalICU": parameters.masks_surgical_icu,
+        "FaceShieldsICU": parameters.face_shield_icu,
+        "GlovesICU": parameters.gloves_icu,
+        "OtherPPEICU": parameters.other_ppe_icu,
+
     }
     out_json = json.dumps(out_obj)
     b64_json = base64.b64encode(out_json.encode()).decode()
