@@ -20,6 +20,7 @@ from penn_chime.charts import (
     build_admits_chart,
     build_census_chart,
     build_beds_chart,
+    build_ppe_chart,
     build_descriptions,
     build_bed_descriptions,
     build_sim_sir_w_date_chart,
@@ -112,7 +113,6 @@ if st.checkbox("Show Projected Capacity in tabular form"):
         modulo=beds_modulo)
     st.table(table_df)
 
-
 st.subheader("Susceptible, Infected, and Recovered")
 st.markdown("The number of susceptible, infected, and recovered individuals in the hospital catchment region at any given moment")
 sim_sir_w_date_chart = build_sim_sir_w_date_chart(alt=alt, sim_sir_w_date_floor_df=m.sim_sir_w_date_floor_df, actuals=actuals)
@@ -128,6 +128,13 @@ if st.checkbox("Show SIR Simulation in tabular form"):
         df=m.sim_sir_w_date_floor_df,
         labels=p.labels)
     st.table(table_df)
+
+st.subheader("Personal Protection Equipment")
+st.markdown("The quantity of PPE needed per day")
+st.dataframe(m.ppe_floor_df)
+ppe_chart = build_ppe_chart(
+    alt=alt, ppe_floor_df=m.ppe_floor_df, parameters=p, plot_columns=["masks_n95", "masks_n95_icu"])
+st.altair_chart(ppe_chart, use_container_width=True)
 
 ### Export Full Data and Parameters
 st.header("Export Full Data and Parameters")

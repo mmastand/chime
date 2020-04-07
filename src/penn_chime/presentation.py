@@ -500,6 +500,15 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     )
     d.gloves = gloves
 
+    gowns = st.sidebar.number_input(
+        "Gowns",
+        min_value=0,
+        value=d.gowns,
+        step=1,
+        format="%i",
+    )
+    d.gowns = gowns
+
     other_ppe = st.sidebar.number_input(
         "Other",
         min_value=0,
@@ -547,6 +556,15 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
         format="%i",
     )
     d.gloves_icu = gloves_icu
+
+    gowns_icu = st.sidebar.number_input(
+        "Gowns (ICU)",
+        min_value=0,
+        value=d.gowns_icu,
+        step=1,
+        format="%i",
+    )
+    d.gowns_icu = gowns_icu
 
     other_ppe_icu = st.sidebar.number_input(
         "Other (ICU)",

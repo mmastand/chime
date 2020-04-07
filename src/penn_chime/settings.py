@@ -26,10 +26,12 @@ def get_defaults():
         masks_surgical=7,
         face_shield=5,
         gloves=10,
+        gowns=10,
         other_ppe=2,
         masks_n95_icu=5,
         masks_surgical_icu=7,
         face_shield_icu=5,
         gloves_icu=10,
+        gowns_icu=10,
         other_ppe_icu=2,
     )

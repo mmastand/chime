@@ -80,11 +80,13 @@ class Parameters:
         masks_surgical: int = 7,
         face_shield: int = 5,
         gloves: int = 10,
+        gowns: int = 10,
         other_ppe: int = 2,
         masks_n95_icu: int = 5,
         masks_surgical_icu: int = 7,
         face_shield_icu: int = 5,
         gloves_icu: int = 10,
+        gowns_icu: int = 10,
         other_ppe_icu: int = 2,
     ):
         self.covid_census_value = covid_census_value
@@ -141,11 +143,13 @@ class Parameters:
         self.masks_surgical = masks_surgical
         self.face_shield = face_shield
         self.gloves = gloves 
+        self.gowns = gowns
         self.other_ppe = other_ppe
         self.masks_n95_icu = masks_n95_icu
         self.masks_surgical_icu = masks_surgical_icu
         self.face_shield_icu = face_shield_icu
         self.gloves_icu = gloves_icu
+        self.gowns_icu = gowns_icu
         self.other_ppe_icu = other_ppe_icu
             
         self.labels = {
@@ -157,6 +161,18 @@ class Parameters:
             "susceptible": "Susceptible",
             "infected": "Infected",
             "recovered": "Recovered",
+            "masks_n95": "Masks - N95",
+            "masks_surgical": "Masks - Surgical",
+            "face_shield": "Face Shields",
+            "gloves": "Gloves",
+            "gowns": "Gowns",
+            "other_ppe": "Other",
+            "masks_n95_icu": "Masks - N95 (ICU)",
+            "masks_surgical_icu": "Masks - Surgical (ICU)",
+            "face_shield_icu": "Face Shields (ICU)",
+            "gloves_icu": "Gloves (ICU)",
+            "gowns_icu": "Gowns (ICU)",
+            "other_ppe_icu": "Other (ICU)",
         }
 
         self.dispositions = {

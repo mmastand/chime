@@ -169,6 +169,7 @@ class SimSirModel:
         self.admits_floor_df = build_floor_df(self.admits_df, p.dispositions.keys())
         self.census_floor_df = build_floor_df(self.census_df, p.dispositions.keys())
         self.beds_floor_df = build_floor_df(self.beds_df, p.dispositions.keys())
+        self.ppe_floor_df = build_floor_df(self.ppe_df, self.ppe_df.columns[2:])
 
         self.daily_growth_rate = get_growth_rate(p.doubling_time)
         self.daily_growth_rate_t = get_growth_rate(self.doubling_time_t)
@@ -189,6 +190,7 @@ class SimSirModel:
         self.admits_df = build_admits_df(self.dispositions_df)
         self.census_df = build_census_df(self.admits_df, self.days)
         self.beds_df = build_beds_df(self.census_df, p)
+        self.ppe_df = build_ppe_df(self.census_df, p)
         self.current_infected = self.raw_df.infected.loc[self.i_day]
 
     def get_loss(self) -> float:
@@ -385,37 +387,28 @@ def build_beds_df(
     beds_df["icu"] = new_icu
     return beds_df
 
-    def build_ppe_df(
-        census_df: pd.DataFrames,
-        p,
-    ) -> pd.DataFrame:
+def build_ppe_df(
+    census_df: pd.DataFrames,
+    p,
+) -> pd.DataFrame:
     """ALOS for each category of COVID-19 case (total guesses)"""
-    beds_df = pd.DataFrame()
-    beds_df["day"] = census_df["day"]
-    beds_df["date"] = census_df["date"]
+    ppe_df = pd.DataFrame()
+    ppe_df["day"] = census_df["day"]
+    ppe_df["date"] = census_df["date"]
 
-    # If hospitalized < 0 and there's space in icu, start borrowing if possible
-    # If ICU < 0, raise alarms. No changes.
-    beds_df["hospitalized"] = p.total_covid_beds - \
-        p.icu_covid_beds - census_df["hospitalized"]
-    beds_df["icu"] = p.icu_covid_beds - census_df["icu"]
-    beds_df["ventilators"] = p.covid_ventilators - census_df["ventilators"]
-    beds_df["total"] = p.total_covid_beds - \
-        census_df["hospitalized"] - census_df["icu"]
-    # beds_df = beds_df.head(n_days)
+    ppe_df["masks_n95"] = p.masks_n95 * census_df.hospitalized
+    ppe_df["masks_surgical"] = p.masks_surgical * census_df.hospitalized
+    ppe_df["face_shield"] = p.face_shield * census_df.hospitalized
+    ppe_df["gloves"] = p.gloves * census_df.hospitalized
+    ppe_df["gowns"] = p.gowns * census_df.hospitalized
+    ppe_df["other_ppe"] = p.other_ppe * census_df.hospitalized
 
-    # Shift people to ICU if main hospital is full and ICU is not.
-    new_hosp = []
-    new_icu = []
-    for row in beds_df.itertuples():
-        if row.hospitalized < 0 and row.icu > 0:
-            needed = min(abs(row.hospitalized), row.icu)
-            new_hosp.append(row.hospitalized + needed)
-            new_icu.append(row.icu - needed)
-        else:
-            new_hosp.append(row.hospitalized)
-            new_icu.append(row.icu)
-    beds_df["hospitalized"] = new_hosp
-    beds_df["icu"] = new_icu
-    return beds_df
+    ppe_df["masks_n95_icu"] = p.masks_n95_icu * census_df.icu
+    ppe_df["masks_surgical_icu"] = p.masks_surgical_icu * census_df.icu
+    ppe_df["face_shield_icu"] = p.face_shield_icu * census_df.icu
+    ppe_df["gloves_icu"] = p.gloves_icu * census_df.icu
+    ppe_df["gowns_icu"] = p.gowns_icu * census_df.icu
+    ppe_df["other_ppe_icu"] = p.other_ppe_icu * census_df.icu
+    
+    return ppe_df
 
