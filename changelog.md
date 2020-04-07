@@ -4,7 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.3.6] - 2020-04-07
+### Fixed
+- Setting the number of projected days no longer has any effect on the date of the first admitted case or beginning of the date series.
+- Total census is now a sum of ICU and non-ICU, rather than cumulative sum of total hospital admissions. See the effects of this change by setting
+ICU LOS to 50.
+
+## [1.3.5]
 ### Fixed
 - The mismatched census warning function wasn't checking if the actuals dataframe contained a total census column so we got a missing column exception if the user uploaded actuals without a census column.
 

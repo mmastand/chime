@@ -89,8 +89,11 @@ class SimSirModel:
 
             self.i_day = 0 # seed to the full length
             self.beta_t = self.beta
+            n_day_tmp = p.n_days
+            p.n_days = 1000
             self.run_projection(p)
             self.i_day = i_day = int(get_argmin_ds(self.census_df, p.covid_census_value))
+            p.n_days = n_day_tmp
 
             self.beta_t = get_beta(intrinsic_growth_rate, self.gamma, self.susceptible, p.relative_contact_rate)
             self.run_projection(p)
@@ -336,7 +339,7 @@ def build_census_df(
     lengths_of_stay: Dict[str, int],
 ) -> pd.DataFrame:
     """Average Length of Stay for each disposition of COVID-19 case (total guesses)"""
-    return pd.DataFrame({
+    census_df = pd.DataFrame({
         'day': admits_df.day,
         'date': admits_df.date,
         **{
@@ -347,6 +350,8 @@ def build_census_df(
             for key, los in lengths_of_stay.items()
         }
     })
+    census_df["total"] = np.floor(census_df["hospitalized"]) + np.floor(census_df["icu"])
+    return(census_df)
 
 def build_beds_df(
     census_df: pd.DataFrames,

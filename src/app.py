@@ -78,7 +78,6 @@ display_download_link(
     filename=f"{p.current_date}_projected_census.csv",
     df=m.census_df,
 )
-
 if st.checkbox("Show Projected Census in tabular form"):
     census_modulo = 1
     if not st.checkbox("Show Daily Census Counts"):
