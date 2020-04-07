@@ -379,3 +379,37 @@ def build_beds_df(
     beds_df["hospitalized"] = new_hosp
     beds_df["icu"] = new_icu
     return beds_df
+
+    def build_ppe_df(
+        census_df: pd.DataFrames,
+        p,
+    ) -> pd.DataFrame:
+    """ALOS for each category of COVID-19 case (total guesses)"""
+    beds_df = pd.DataFrame()
+    beds_df["day"] = census_df["day"]
+    beds_df["date"] = census_df["date"]
+
+    # If hospitalized < 0 and there's space in icu, start borrowing if possible
+    # If ICU < 0, raise alarms. No changes.
+    beds_df["hospitalized"] = p.total_covid_beds - \
+        p.icu_covid_beds - census_df["hospitalized"]
+    beds_df["icu"] = p.icu_covid_beds - census_df["icu"]
+    beds_df["ventilators"] = p.covid_ventilators - census_df["ventilators"]
+    beds_df["total"] = p.total_covid_beds - \
+        census_df["hospitalized"] - census_df["icu"]
+    # beds_df = beds_df.head(n_days)
+
+    # Shift people to ICU if main hospital is full and ICU is not.
+    new_hosp = []
+    new_icu = []
+    for row in beds_df.itertuples():
+        if row.hospitalized < 0 and row.icu > 0:
+            needed = min(abs(row.hospitalized), row.icu)
+            new_hosp.append(row.hospitalized + needed)
+            new_icu.append(row.icu - needed)
+        else:
+            new_hosp.append(row.hospitalized)
+            new_icu.append(row.icu)
+    beds_df["hospitalized"] = new_hosp
+    beds_df["icu"] = new_icu
+    return beds_df

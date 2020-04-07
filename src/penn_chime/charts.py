@@ -205,6 +205,59 @@ def build_beds_chart(
     )
     return alt.layer(beds, bar, hbar, data=beds_floor_df)
 
+
+def build_ppe_chart(
+    *,
+    alt,
+    census_floor_df: pd.DataFrame,
+    parameters: Parameters,
+    actuals: Union[pd.DataFrame, None],
+) -> Chart:
+    """Build census chart."""
+    y_scale = alt.Scale()
+    if parameters.max_y_axis_set:
+        y_scale.domain = (0, parameters.max_y_axis)
+        y_scale.clamp = True
+
+    plot_columns = ["total", "icu", "ventilators"]
+    x = dict(shorthand="date:T", title="Date",
+             axis=alt.Axis(format=(DATE_FORMAT)))
+    y = dict(shorthand="value:Q", title="Census", scale=y_scale)
+    color = alt.Color("Projected:N", sort=plot_columns)
+    # tooltip = [alt.Tooltip("date:T", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title="Census"), "Projected:N"]
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
+        DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title="Census"), "Projected:N"]
+
+    # TODO fix the fold to allow any number of dispositions
+    lines = (
+        alt.Chart()
+        .transform_fold(fold=plot_columns, as_=["Projected", "value"])
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
+        .mark_line()
+    )
+    bar = (
+        alt.Chart()
+        .encode(x=alt.X(**x))
+        .transform_filter(alt.datum.day == 0)
+        .mark_rule(color="black", opacity=0.35, size=2)
+    )
+    charts = [lines, bar]
+    if actuals is not None:
+        census_floor_df, actuals_plot_columns, actuals_color = get_actual_columns_and_colors(
+            CENSUS_COLUMNS, census_floor_df, actuals, alt,
+        )
+        actuals_tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
+            DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title="Census"), "Actual:N"]
+        actuals_lines = (
+            alt.Chart()
+            .transform_fold(fold=actuals_plot_columns, as_=["Actual", "value"])
+            .encode(x=alt.X(**x), y=alt.Y(**y), color=actuals_color, tooltip=actuals_tooltip)
+            .mark_line(point=True, opacity=1.)
+        )
+        charts.append(actuals_lines)
+    return alt.layer(*charts, data=census_floor_df).resolve_scale(color="independent")
+
+
 def build_descriptions(
     *,
     chart: Chart,
