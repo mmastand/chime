@@ -780,21 +780,25 @@ def write_footer(st):
     st.markdown("""<a name="release_notes"></a>""", unsafe_allow_html=True)
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
-        st.markdown("""    
+        st.markdown("""  
+            **V: 1.3.7 (Tuesday, April 07, 2020)** 
+            * Fixed estimated start day bug when "Number of Days to Project" was low
+            * Fixed total census to be a sum of ICU and non-ICU
+
             **V: 1.3.5 (Monday, April 06, 2020)** 
 
             * Added **support for providing historical data** and incorporating it in the hospital admission/census/COVID-19 capacity charts/projections
     
             **V: 1.2.11 (Thursday, April 02, 2020):** 
             
-            * Incorporated changes made by Penn Med to ensure replicability
+            * Incorporated changes made by **Penn Med to ensure replicability**
             * Created parameter categories in the left menu for better organization
             * Added support for specifying the date of the first hospitalized case            
 
             **V: 1.1.1 (Friday, March 27, 2020):** 
             
             * Added support for **loading and saving capacity planning scenarios** 
-            * Added support for understanding capacity as well as demand by specifying Numbers of Total Beds, ICU Beds, and Ventilators for COVID-19 Patients
+            * Added support for **understanding capacity** as well as demand by specifying Numbers of Total Beds, ICU Beds, and Ventilators for COVID-19 Patients
             * Added support for exporting full dataset and capacity scenario as a csv file
     
         """)
