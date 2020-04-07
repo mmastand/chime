@@ -330,7 +330,7 @@ def build_admits_df(dispositions_df: pd.DataFrame) -> pd.DataFrame:
     admits_df = dispositions_df.iloc[:, :] - dispositions_df.shift(1)
     admits_df.day = dispositions_df.day
     admits_df.date = dispositions_df.date
-    admits_df["total"] = admits_df.hospitalized + admits_df.icu
+    admits_df["total"] = np.floor(admits_df.hospitalized) + np.floor(admits_df.icu)
     return admits_df
 
 

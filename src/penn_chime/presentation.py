@@ -681,7 +681,7 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
-            **V: 1.3.6 (Tuesday, April 07, 2020)** 
+            **V: 1.3.7 (Tuesday, April 07, 2020)** 
             * Fixed estimated start day bug when "Number of Days to Project" was low
             * Fixed total census to be a sum of ICU and non-ICU
 
