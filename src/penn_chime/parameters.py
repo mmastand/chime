@@ -145,11 +145,18 @@ class Parameters:
             "ventilators": ventilators,
         }
 
-        self.patient_chart_desc = {
+        self.admits_patient_chart_desc = {
             "hospitalized": "Hospitalized COVID-19 Admissions peak at",
             "icu": "ICU COVID-19 Admissions peak at",
             "ventilators": "COVID-19 Ventilators peak at",
             "total": "Total COVID-19 Admissions peaks at"
+        }
+
+        self.census_patient_chart_desc = {
+            "hospitalized": "Hospitalized COVID-19 Census peaks at",
+            "icu": "ICU COVID-19 Census peaks at",
+            "ventilators": "COVID-19 Ventilator usage peaks at",
+            "total": "Total COVID-19 Census peaks at"
         }
         
         self.eqpt_chart_desc = {
