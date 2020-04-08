@@ -391,7 +391,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
     n_days = st.sidebar.number_input(
         "Number of days to project",
-        min_value=30,
+        min_value=7,
         value=d.n_days,
         step=1,
         format="%i",
@@ -799,6 +799,7 @@ def write_footer(st):
         st.markdown("""  
             **V: 1.4.0 (Wednesday, April 08, 2020)** 
             * Added PPE/patient/day functionality
+            * Changed minimum days to project to 7
 
             **V: 1.3.7 (Tuesday, April 07, 2020)** 
             * Fixed estimated start day bug when "Number of Days to Project" was low
@@ -901,7 +902,13 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, model, 
     df["GlovesICU"] = ppe_df.gloves_icu
     df["GownsICU"] = ppe_df.gowns_icu
     df["OtherPPEICU"] = ppe_df.other_ppe_icu
-
+    df["MasksN95Hosp"] = ppe_df.masks_n95_hosp
+    df["MasksSurgicalHosp"] = ppe_df.masks_surgical_hosp
+    df["FaceShieldsHosp"] = ppe_df.face_shield_hosp
+    df["GlovesHosp"] = ppe_df.gloves_hosp
+    df["GownsHosp"] = ppe_df.gowns_hosp
+    df["OtherPPEHosp"] = ppe_df.other_ppe_hosp
+    
     df["Susceptible"] = infect_table["susceptible"]
     df["Infections"] = infect_table["infected"]
     df["Recovered"] = infect_table["recovered"]
@@ -1010,16 +1017,22 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, model, 
         "Recovered",
 
         "MasksN95",
-        "MasksSurgical",
-        "FaceShields",
-        "Gloves",
-        "Gowns",
-        "OtherPPE",
+        "MasksN95Hosp",
         "MasksN95ICU",
+        "MasksSurgical",
+        "MasksSurgicalHosp",
         "MasksSurgicalICU",
+        "FaceShields",
+        "FaceShieldsHosp",
         "FaceShieldsICU",
+        "Gloves",
+        "GlovesHosp",
         "GlovesICU",
+        "Gowns",
+        "GownsHosp",
         "GownsICU",
+        "OtherPPE",
+        "OtherPPEHosp",
         "OtherPPEICU",
         ]]
     return(df)

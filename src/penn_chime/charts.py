@@ -228,10 +228,10 @@ def build_ppe_chart(
     y_axis_label = "Required " + chart_title
     # departments
     ppe_floor_df = ppe_floor_df.rename(columns={
-        p.ppe_labels[plot_columns]["col1_name"]:p.ppe_labels["ncc"],
-        p.ppe_labels[plot_columns]["col2_name"]:p.ppe_labels["cc"],
+        p.ppe_labels[plot_columns]["col1_name"]:p.ppe_labels["total"],
+        p.ppe_labels[plot_columns]["col2_name"]:p.ppe_labels["icu"],
         })
-    plot_columns = [p.ppe_labels["ncc"], p.ppe_labels["cc"]]
+    plot_columns = [p.ppe_labels["total"], p.ppe_labels["icu"]]
     x = dict(shorthand="date:T", title="Date",
              axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title=y_axis_label, scale=y_scale)
@@ -351,7 +351,7 @@ def build_ppe_descriptions(
     """
     messages = []
 
-    cols = ["Non-Critical Care", "Critical Care"]
+    cols = ["Total", "ICU"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
 
@@ -387,4 +387,27 @@ def build_table(
     table_df = df[np.mod(df.day, modulo) == 0].copy()
     table_df.date = table_df.date.dt.strftime(DATE_FORMAT)
     table_df.rename(labels)
+    if "masks_n95" in table_df.columns:
+        table_df = table_df[[
+            "day",
+            "date",
+            "masks_n95",
+            "masks_n95_hosp",
+            "masks_n95_icu",
+            "masks_surgical",
+            "masks_surgical_hosp",
+            "masks_surgical_icu",
+            "face_shield",
+            "face_shield_hosp",
+            "face_shield_icu",
+            "gloves",
+            "gloves_hosp",
+            "gloves_icu",
+            "gowns",
+            "gowns_hosp",
+            "gowns_icu",
+            "other_ppe",
+            "other_ppe_hosp",
+            "other_ppe_icu",
+        ]]
     return table_df

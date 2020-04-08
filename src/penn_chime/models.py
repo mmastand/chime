@@ -397,12 +397,12 @@ def build_ppe_df(
     ppe_df["date"] = census_df["date"]
 
     floored_hospitalized_census = np.floor(census_df.hospitalized)
-    ppe_df["masks_n95"] = p.masks_n95 * floored_hospitalized_census
-    ppe_df["masks_surgical"] = p.masks_surgical * floored_hospitalized_census
-    ppe_df["face_shield"] = p.face_shield * floored_hospitalized_census
-    ppe_df["gloves"] = p.gloves * floored_hospitalized_census
-    ppe_df["gowns"] = p.gowns * floored_hospitalized_census
-    ppe_df["other_ppe"] = p.other_ppe * floored_hospitalized_census
+    ppe_df["masks_n95_hosp"] = p.masks_n95 * floored_hospitalized_census
+    ppe_df["masks_surgical_hosp"] = p.masks_surgical * floored_hospitalized_census
+    ppe_df["face_shield_hosp"] = p.face_shield * floored_hospitalized_census
+    ppe_df["gloves_hosp"] = p.gloves * floored_hospitalized_census
+    ppe_df["gowns_hosp"] = p.gowns * floored_hospitalized_census
+    ppe_df["other_ppe_hosp"] = p.other_ppe * floored_hospitalized_census
 
     floored_icu_census = np.floor(census_df.icu)
     ppe_df["masks_n95_icu"] = p.masks_n95_icu * floored_icu_census
@@ -412,5 +412,12 @@ def build_ppe_df(
     ppe_df["gowns_icu"] = p.gowns_icu * floored_icu_census
     ppe_df["other_ppe_icu"] = p.other_ppe_icu * floored_icu_census
     
+    ppe_df["masks_n95"] = ppe_df["masks_n95_hosp"] + ppe_df["masks_n95_icu"]
+    ppe_df["masks_surgical"] = ppe_df["masks_surgical_hosp"] + ppe_df["masks_surgical_icu"]
+    ppe_df["face_shield"] = ppe_df["face_shield_hosp"] + ppe_df["face_shield_icu"]
+    ppe_df["gloves"] = ppe_df["gloves_hosp"] + ppe_df["gloves_icu"]
+    ppe_df["gowns"] = ppe_df["gowns_hosp"] + ppe_df["gowns_icu"]
+    ppe_df["other_ppe"] = ppe_df["other_ppe_hosp"] + ppe_df["other_ppe_icu"]
+
     return ppe_df
 

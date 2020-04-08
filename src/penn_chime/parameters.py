@@ -197,8 +197,8 @@ class Parameters:
         }
 
         self.ppe_labels = {
-            "ncc": "Non-Critical Care",
-            "cc": "Critical Care",
+            "total": "Total",
+            "icu": "ICU",
             "masks_n95": {
                 "label": "Masks - N95",
                 "col1_name": "masks_n95",

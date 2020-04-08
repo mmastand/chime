@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sidebar parameters to represent PPE supplies needed per patient per day.
 - Charts show PPE needed per day, based on census.
 - Descriptions and file IO now support parameters and required PPE.
+### Modified
+- Minimum days to project is now 7.
 
 ## [1.3.7] - 2020-04-07
 ### Fixed
