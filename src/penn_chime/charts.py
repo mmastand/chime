@@ -256,7 +256,7 @@ def build_ppe_chart(
     return (
         alt.layer(*charts, data=ppe_floor_df)
         .resolve_scale(color="independent")
-        .configure_title(fontSize=24)
+        .configure_title(fontSize=18)
     )
 
 

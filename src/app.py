@@ -130,22 +130,36 @@ if st.checkbox("Show SIR Simulation in tabular form"):
         labels=p.labels)
     st.table(table_df)
 
+### PPE Section
 st.subheader("Personal Protection Equipment")
 st.markdown("The quantity of PPE needed per day")
-
 for pc in list(p.ppe_labels.keys())[2:]:
     ppe_chart = build_ppe_chart(
         alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns=pc)
     st.altair_chart(ppe_chart, use_container_width=True)
     st.markdown(build_ppe_descriptions(chart=ppe_chart, label = p.ppe_labels[pc]["label"]))
     st.markdown("  \n  \n")
-
+display_download_link(
+    st,
+    filename=f"{p.current_date}_projected_ppe_required.csv",
+    df=m.ppe_df,
+)
+if st.checkbox("Show Projected PPE Required in tabular form"):
+    ppe_modulo = 1
+    if not st.checkbox("Show Daily PPE Required"):
+        ppe_modulo = 7
+    table_df = build_table(
+        df=m.ppe_floor_df,
+        labels=p.labels,
+        modulo=ppe_modulo)
+    st.dataframe(table_df)
 
 ### Export Full Data and Parameters
 st.header("Export Full Data and Parameters")
 df = build_data_and_params(projection_admits = m.admits_df, 
                            census_df = m.census_df,
-                           beds_df= m.beds_df, 
+                           beds_df = m.beds_df, 
+                           ppe_df = m.ppe_df,
                            model = m, 
                            parameters = p)
 

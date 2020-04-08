@@ -50,11 +50,13 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         masks_surgical=imported_params.get("MasksSurgical", 7),
         face_shield=imported_params.get("FaceShields", 5),
         gloves=imported_params.get("Gloves", 10),
+        gowns=imported_params.get("Gowns", 10),
         other_ppe=imported_params.get("OtherPPE", 2),
         masks_n95_icu=imported_params.get("MasksN95ICU", 5),
         masks_surgical_icu=imported_params.get("MasksSurgicalICU", 7),
         face_shield_icu=imported_params.get("FaceShieldsICU", 5),
         gloves_icu=imported_params.get("GlovesICU", 10),
+        gowns_icu=imported_params.get("GownsICU", 10),
         other_ppe_icu=imported_params.get("OtherPPEICU", 2),
     )
     return parameters
@@ -94,11 +96,13 @@ def param_download_widget(st, parameters):
         "MasksSurgical": parameters.masks_surgical,
         "FaceShields": parameters.face_shield,
         "Gloves": parameters.gloves,
+        "Gowns": parameters.gowns,
         "OtherPPE": parameters.other_ppe,
         "MasksN95ICU": parameters.masks_n95_icu,
         "MasksSurgicalICU": parameters.masks_surgical_icu,
         "FaceShieldsICU": parameters.face_shield_icu,
         "GlovesICU": parameters.gloves_icu,
+        "GownsICU": parameters.gowns_icu,
         "OtherPPEICU": parameters.other_ppe_icu,
 
     }

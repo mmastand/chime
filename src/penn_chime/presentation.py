@@ -518,8 +518,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     d.other_ppe = other_ppe
 
     # Critical Care
-    st.sidebar.markdown("PPE Required per Patient per Day")
-    st.sidebar.markdown("**Critical Care** PPE Required per Patient per Day")
+    st.sidebar.markdown("**Critical Care**")
     masks_n95_icu = st.sidebar.number_input(
         "Masks - N95 (ICU) /Patient/Day",
         min_value=0,
@@ -798,6 +797,9 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
+            **V: 1.4.0 (Wednesday, April 08, 2020)** 
+            * Added PPE/patient/day functionality
+
             **V: 1.3.7 (Tuesday, April 07, 2020)** 
             * Fixed estimated start day bug when "Number of Days to Project" was low
             * Fixed total census to be a sum of ICU and non-ICU
@@ -839,7 +841,7 @@ def non_date_columns_to_int(df):
             df[column] = df[column].astype(int)
     return df
 
-def build_data_and_params(projection_admits, census_df, beds_df, model, parameters):
+def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, model, parameters):
     # taken from admissions table function:
     admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
     admits_table["day"] = admits_table.index.astype(int)
@@ -887,6 +889,19 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     df["ICUBeds"] = bed_table["icu"]
     df["Ventilators"] = bed_table["ventilators"]
 
+    df["MasksN95"] = ppe_df.masks_n95
+    df["MasksSurgical"] = ppe_df.masks_surgical
+    df["FaceShields"] = ppe_df.face_shield
+    df["Gloves"] = ppe_df.gloves
+    df["Gowns"] = ppe_df.gowns
+    df["OtherPPE"] = ppe_df.other_ppe
+    df["MasksN95ICU"] = ppe_df.masks_n95_icu
+    df["MasksSurgicalICU"] = ppe_df.masks_surgical_icu
+    df["FaceShieldsICU"] = ppe_df.face_shield_icu
+    df["GlovesICU"] = ppe_df.gloves_icu
+    df["GownsICU"] = ppe_df.gowns_icu
+    df["OtherPPEICU"] = ppe_df.other_ppe_icu
+
     df["Susceptible"] = infect_table["susceptible"]
     df["Infections"] = infect_table["infected"]
     df["Recovered"] = infect_table["recovered"]
@@ -917,6 +932,19 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     df["TotalNumberOfBedsForCOVIDPatients"] = parameters.total_covid_beds
     df["TotalNumberOfICUBedsFoCOVIDPatients"] = parameters.icu_covid_beds
     df["TotalNumberOfVentsFoCOVIDPatients"] = parameters.covid_ventilators
+    
+    df["MasksN95Param"] = parameters.masks_n95
+    df["MasksSurgicalParam"] = parameters.masks_surgical
+    df["FaceShieldsParam"] = parameters.face_shield
+    df["GlovesParam"] = parameters.gloves
+    df["GownsParam"] = parameters.gowns
+    df["OtherPPEParam"] = parameters.other_ppe
+    df["MasksN95ICUParam"] = parameters.masks_n95_icu
+    df["MasksSurgicalICUParam"] = parameters.masks_surgical_icu
+    df["FaceShieldsICUParam"] = parameters.face_shield_icu
+    df["GlovesICUParam"] = parameters.gloves_icu
+    df["GownsICUParam"] = parameters.gowns_icu
+    df["OtherPPEICUParam"] = parameters.other_ppe_icu
 
     
     # Reorder columns
@@ -951,6 +979,19 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         # "TotalNumberOfICUBeds",
         # "TotalNumberOfVents",
 
+        "MasksN95Param",
+        "MasksSurgicalParam",
+        "FaceShieldsParam",
+        "GlovesParam",
+        "GownsParam",
+        "OtherPPEParam",
+        "MasksN95ICUParam",
+        "MasksSurgicalICUParam",
+        "FaceShieldsICUParam",
+        "GlovesICUParam",
+        "GownsICUParam",
+        "OtherPPEICUParam",
+
         "Date",
         "TotalAdmissions", 
         "ICUAdmissions", 
@@ -966,6 +1007,19 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
 
         "Susceptible",
         "Infections",
-        "Recovered"
+        "Recovered",
+
+        "MasksN95",
+        "MasksSurgical",
+        "FaceShields",
+        "Gloves",
+        "Gowns",
+        "OtherPPE",
+        "MasksN95ICU",
+        "MasksSurgicalICU",
+        "FaceShieldsICU",
+        "GlovesICU",
+        "GownsICU",
+        "OtherPPEICU",
         ]]
     return(df)

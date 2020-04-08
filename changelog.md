@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2020-04-08
+### Added
+- Sidebar parameters to represent PPE supplies needed per patient per day.
+- Charts show PPE needed per day, based on census.
+- Descriptions and file IO now support parameters and required PPE.
+
 ## [1.3.7] - 2020-04-07
 ### Fixed
 - Setting the number of projected days no longer has any effect on the date of the first admitted case or beginning of the date series.
