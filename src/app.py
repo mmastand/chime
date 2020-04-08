@@ -23,6 +23,7 @@ from penn_chime.charts import (
     build_ppe_chart,
     build_descriptions,
     build_bed_descriptions,
+    build_ppe_descriptions,
     build_sim_sir_w_date_chart,
     build_table,
 )
@@ -131,17 +132,14 @@ if st.checkbox("Show SIR Simulation in tabular form"):
 
 st.subheader("Personal Protection Equipment")
 st.markdown("The quantity of PPE needed per day")
-st.dataframe(m.ppe_floor_df)
-ppe_chart = build_ppe_chart(
-    alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns="masks_n95")
-st.altair_chart(ppe_chart, use_container_width=True)
 
-ppe_chart = build_ppe_chart(
-    alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns="masks_surgical")
-st.altair_chart(ppe_chart, use_container_width=True)
-ppe_chart = build_ppe_chart(
-    alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns="gloves")
-st.altair_chart(ppe_chart, use_container_width=True)
+for pc in list(p.ppe_labels.keys())[2:]:
+    ppe_chart = build_ppe_chart(
+        alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns=pc)
+    st.altair_chart(ppe_chart, use_container_width=True)
+    st.markdown(build_ppe_descriptions(chart=ppe_chart, label = p.ppe_labels[pc]["label"]))
+    st.markdown("  \n  \n")
+
 
 ### Export Full Data and Parameters
 st.header("Export Full Data and Parameters")

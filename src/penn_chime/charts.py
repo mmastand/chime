@@ -341,6 +341,43 @@ def build_bed_descriptions(
 
     return "\n\n".join(messages)
 
+
+def build_ppe_descriptions(
+    *,
+    chart: Chart,
+    label: str,
+) -> str:
+    """
+    """
+    messages = []
+
+    cols = ["Non-Critical Care", "Critical Care"]
+    asterisk = False
+    day = "date" if "date" in chart.data.columns else "day"
+
+    for col in cols:
+        if chart.data[col].idxmax() + 1 == len(chart.data):
+            asterisk = True
+
+        # todo: bring this to an optional arg / i18n
+        on = datetime.strftime(
+            chart.data[day][chart.data[col].idxmax()], "%b %d")
+
+        messages.append(
+            "{} {} peak at {:,} on {}{}".format(
+                col,
+                label,
+                ceil(chart.data[col].max()),
+                on,
+                "*" if asterisk else "",
+            )
+        )
+
+    if asterisk:
+        messages.append(
+            "_* The max is at the upper bound of the data, and therefore may not be the actual max_")
+    return "\n\n".join(messages)
+
 def build_table(
     *,
     df: pd.DataFrame,

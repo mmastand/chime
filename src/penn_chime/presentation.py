@@ -461,11 +461,10 @@ def display_actuals_section(st):
 
 def display_ppe_section(st, d: Parameters) -> Parameters:
     st.sidebar.markdown("### Personal Protection Equipment")
-    st.sidebar.markdown("PPE Required per Patient per Day")
     st.sidebar.markdown("**Non-Critical Care**")
     # Non-critical care
     masks_n95 = st.sidebar.number_input(
-        "Masks - N95",
+        "Masks - N95 /Patient/Day",
         min_value=0,
         value=d.masks_n95,
         step=1,
@@ -474,7 +473,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     d.masks_n95 = masks_n95
 
     masks_surgical = st.sidebar.number_input(
-        "Masks - Surgical",
+        "Masks - Surgical /Patient/Day",
         min_value=0,
         value=d.masks_surgical,
         step=1,
@@ -483,7 +482,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     d.masks_surgical = masks_surgical
 
     face_shield = st.sidebar.number_input(
-        "Face Shields",
+        "Face Shields /Patient/Day",
         min_value=0,
         value=d.face_shield,
         step=1,
@@ -492,7 +491,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     d.face_shield = face_shield
 
     gloves = st.sidebar.number_input(
-        "Gloves",
+        "Gloves /Pair/Patient/Day",
         min_value=0,
         value=d.gloves,
         step=1,
@@ -501,7 +500,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     d.gloves = gloves
 
     gowns = st.sidebar.number_input(
-        "Gowns",
+        "Gowns /Patient/Day",
         min_value=0,
         value=d.gowns,
         step=1,
@@ -510,7 +509,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     d.gowns = gowns
 
     other_ppe = st.sidebar.number_input(
-        "Other",
+        "Other /Patient/Day",
         min_value=0,
         value=d.other_ppe,
         step=1,
@@ -522,7 +521,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     st.sidebar.markdown("PPE Required per Patient per Day")
     st.sidebar.markdown("**Critical Care** PPE Required per Patient per Day")
     masks_n95_icu = st.sidebar.number_input(
-        "Masks - N95 (ICU)",
+        "Masks - N95 (ICU) /Patient/Day",
         min_value=0,
         value=d.masks_n95_icu,
         step=1,
@@ -531,7 +530,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     d.masks_n95_icu = masks_n95_icu
 
     masks_surgical_icu = st.sidebar.number_input(
-        "Masks - Surgical (ICU)",
+        "Masks - Surgical (ICU) /Patient/Day",
         min_value=0,
         value=d.masks_surgical_icu,
         step=1,
@@ -540,7 +539,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     d.masks_surgical_icu = masks_surgical_icu
 
     face_shield_icu = st.sidebar.number_input(
-        "Face Shields (ICU)",
+        "Face Shields (ICU) /Patient/Day",
         min_value=0,
         value=d.face_shield_icu,
         step=1,
@@ -549,7 +548,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     d.face_shield_icu = face_shield_icu
 
     gloves_icu = st.sidebar.number_input(
-        "Gloves (ICU)",
+        "Gloves (ICU) /Pair/Patient/Day",
         min_value=0,
         value=d.gloves_icu,
         step=1,
@@ -558,7 +557,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     d.gloves_icu = gloves_icu
 
     gowns_icu = st.sidebar.number_input(
-        "Gowns (ICU)",
+        "Gowns (ICU) /Patient/Day",
         min_value=0,
         value=d.gowns_icu,
         step=1,
@@ -567,7 +566,7 @@ def display_ppe_section(st, d: Parameters) -> Parameters:
     d.gowns_icu = gowns_icu
 
     other_ppe_icu = st.sidebar.number_input(
-        "Other (ICU)",
+        "Other (ICU) /Patient/Day",
         min_value=0,
         value=d.other_ppe_icu,
         step=1,
