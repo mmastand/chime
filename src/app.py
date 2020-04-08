@@ -133,7 +133,14 @@ st.subheader("Personal Protection Equipment")
 st.markdown("The quantity of PPE needed per day")
 st.dataframe(m.ppe_floor_df)
 ppe_chart = build_ppe_chart(
-    alt=alt, ppe_floor_df=m.ppe_floor_df, parameters=p, plot_columns=["masks_n95", "masks_n95_icu"])
+    alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns="masks_n95")
+st.altair_chart(ppe_chart, use_container_width=True)
+
+ppe_chart = build_ppe_chart(
+    alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns="masks_surgical")
+st.altair_chart(ppe_chart, use_container_width=True)
+ppe_chart = build_ppe_chart(
+    alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns="gloves")
 st.altair_chart(ppe_chart, use_container_width=True)
 
 ### Export Full Data and Parameters

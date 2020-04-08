@@ -210,26 +210,39 @@ def build_ppe_chart(
     *,
     alt,
     ppe_floor_df: pd.DataFrame,
-    parameters: Parameters,
-    plot_columns: list,
+    p: Parameters,
+    plot_columns: str,
 ) -> Chart:
     """Build ppe chart."""
-    y_scale = alt.Scale()
-    if parameters.max_y_axis_set:
-        y_scale.domain = (0, parameters.max_y_axis)
-        y_scale.clamp = True
+    if plot_columns not in ppe_floor_df.columns:
+        k = list(p.ppe_labels.keys())[2:]
+        raise ValueError("PPE type must be in %s" % (k))
 
+    y_scale = alt.Scale()
+    if p.max_y_axis_set:
+        y_scale.domain = (0, p.max_y_axis)
+        y_scale.clamp = True
+    
+    # labels
+    chart_title = p.ppe_labels[plot_columns]["label"]
+    y_axis_label = "Required " + chart_title
+    # departments
+    ppe_floor_df = ppe_floor_df.rename(columns={
+        p.ppe_labels[plot_columns]["col1_name"]:p.ppe_labels["ncc"],
+        p.ppe_labels[plot_columns]["col2_name"]:p.ppe_labels["cc"],
+        })
+    plot_columns = [p.ppe_labels["ncc"], p.ppe_labels["cc"]]
     x = dict(shorthand="date:T", title="Date",
              axis=alt.Axis(format=(DATE_FORMAT)))
-    y = dict(shorthand="value:Q", title="PPE Needed", scale=y_scale)
-    color = alt.Color("key:N", sort=plot_columns)
+    y = dict(shorthand="value:Q", title=y_axis_label, scale=y_scale)
+    color = alt.Color("Department:N", sort=plot_columns)
     tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
-        DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title="PPE Needed"), "key:N"]
+        DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title=chart_title), "Department:N"]
 
     # TODO fix the fold to allow any number of dispositions
     lines = (
-        alt.Chart()
-        .transform_fold(fold=plot_columns)
+        alt.Chart(title=chart_title)
+        .transform_fold(fold=plot_columns, as_=["Department", "value"])
         .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line()
     )
@@ -240,7 +253,11 @@ def build_ppe_chart(
         .mark_rule(color="black", opacity=0.35, size=2)
     )
     charts = [lines, bar]
-    return alt.layer(*charts, data=ppe_floor_df).resolve_scale(color="independent")
+    return (
+        alt.layer(*charts, data=ppe_floor_df)
+        .resolve_scale(color="independent")
+        .configure_title(fontSize=24)
+    )
 
 
 def build_descriptions(
