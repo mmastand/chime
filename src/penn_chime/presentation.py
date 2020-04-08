@@ -391,7 +391,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
     n_days = st.sidebar.number_input(
         "Number of days to project",
-        min_value=30,
+        min_value=7,
         value=d.n_days,
         step=1,
         format="%i",
@@ -433,11 +433,12 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         current_date=covid_census_date,
     )
 
+    actuals = display_actuals_section(st)
+    parameters = display_ppe_section(st, d, parameters)
     param_download_widget(
         st,
         parameters,
     )
-    actuals = display_actuals_section(st)
     return parameters, actuals
 
 
@@ -457,6 +458,121 @@ def display_actuals_section(st):
             st.sidebar.markdown(error_message)
     return actuals
 
+
+def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
+    st.sidebar.markdown("### Personal Protection Equipment")
+    st.sidebar.markdown("**Non-Critical Care**")
+    # Non-critical care
+    masks_n95 = st.sidebar.number_input(
+        "Masks - N95 /Patient/Day",
+        min_value=0,
+        value=d.masks_n95,
+        step=1,
+        format="%i",
+    )
+    p.masks_n95 = masks_n95
+
+    masks_surgical = st.sidebar.number_input(
+        "Masks - Surgical /Patient/Day",
+        min_value=0,
+        value=d.masks_surgical,
+        step=1,
+        format="%i",
+    )
+    p.masks_surgical = masks_surgical
+
+    face_shield = st.sidebar.number_input(
+        "Face Shields /Patient/Day",
+        min_value=0,
+        value=d.face_shield,
+        step=1,
+        format="%i",
+    )
+    p.face_shield = face_shield
+
+    gloves = st.sidebar.number_input(
+        "Gloves /Pair/Patient/Day",
+        min_value=0,
+        value=d.gloves,
+        step=1,
+        format="%i",
+    )
+    p.gloves = gloves
+
+    gowns = st.sidebar.number_input(
+        "Gowns /Patient/Day",
+        min_value=0,
+        value=d.gowns,
+        step=1,
+        format="%i",
+    )
+    p.gowns = gowns
+
+    other_ppe = st.sidebar.number_input(
+        "Other /Patient/Day",
+        min_value=0,
+        value=d.other_ppe,
+        step=1,
+        format="%i",
+    )
+    p.other_ppe = other_ppe
+
+    # Critical Care
+    st.sidebar.markdown("**Critical Care**")
+    masks_n95_icu = st.sidebar.number_input(
+        "Masks - N95 (ICU) /Patient/Day",
+        min_value=0,
+        value=d.masks_n95_icu,
+        step=1,
+        format="%i",
+    )
+    p.masks_n95_icu = masks_n95_icu
+
+    masks_surgical_icu = st.sidebar.number_input(
+        "Masks - Surgical (ICU) /Patient/Day",
+        min_value=0,
+        value=d.masks_surgical_icu,
+        step=1,
+        format="%i",
+    )
+    p.masks_surgical_icu = masks_surgical_icu
+
+    face_shield_icu = st.sidebar.number_input(
+        "Face Shields (ICU) /Patient/Day",
+        min_value=0,
+        value=d.face_shield_icu,
+        step=1,
+        format="%i",
+    )
+    p.face_shield_icu = face_shield_icu
+
+    gloves_icu = st.sidebar.number_input(
+        "Gloves (ICU) /Pair/Patient/Day",
+        min_value=0,
+        value=d.gloves_icu,
+        step=1,
+        format="%i",
+    )
+    p.gloves_icu = gloves_icu
+
+    gowns_icu = st.sidebar.number_input(
+        "Gowns (ICU) /Patient/Day",
+        min_value=0,
+        value=d.gowns_icu,
+        step=1,
+        format="%i",
+    )
+    p.gowns_icu = gowns_icu
+
+    other_ppe_icu = st.sidebar.number_input(
+        "Other (ICU) /Patient/Day",
+        min_value=0,
+        value=d.other_ppe_icu,
+        step=1,
+        format="%i",
+    )
+    p.other_ppe_icu = other_ppe_icu
+    return p
 
 def display_more_info(
     st, model: Model, parameters: Parameters, defaults: Parameters, notes: str = "",
@@ -681,6 +797,10 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
+            **V: 1.4.0 (Wednesday, April 08, 2020)** 
+            * Added PPE/patient/day functionality
+            * Changed minimum days to project to 7
+
             **V: 1.3.7 (Tuesday, April 07, 2020)** 
             * Fixed estimated start day bug when "Number of Days to Project" was low
             * Fixed total census to be a sum of ICU and non-ICU
@@ -722,7 +842,7 @@ def non_date_columns_to_int(df):
             df[column] = df[column].astype(int)
     return df
 
-def build_data_and_params(projection_admits, census_df, beds_df, model, parameters):
+def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, model, parameters):
     # taken from admissions table function:
     admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
     admits_table["day"] = admits_table.index.astype(int)
@@ -770,6 +890,25 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     df["ICUBeds"] = bed_table["icu"]
     df["Ventilators"] = bed_table["ventilators"]
 
+    df["MasksN95"] = ppe_df.masks_n95
+    df["MasksSurgical"] = ppe_df.masks_surgical
+    df["FaceShields"] = ppe_df.face_shield
+    df["Gloves"] = ppe_df.gloves
+    df["Gowns"] = ppe_df.gowns
+    df["OtherPPE"] = ppe_df.other_ppe
+    df["MasksN95ICU"] = ppe_df.masks_n95_icu
+    df["MasksSurgicalICU"] = ppe_df.masks_surgical_icu
+    df["FaceShieldsICU"] = ppe_df.face_shield_icu
+    df["GlovesICU"] = ppe_df.gloves_icu
+    df["GownsICU"] = ppe_df.gowns_icu
+    df["OtherPPEICU"] = ppe_df.other_ppe_icu
+    df["MasksN95Hosp"] = ppe_df.masks_n95_hosp
+    df["MasksSurgicalHosp"] = ppe_df.masks_surgical_hosp
+    df["FaceShieldsHosp"] = ppe_df.face_shield_hosp
+    df["GlovesHosp"] = ppe_df.gloves_hosp
+    df["GownsHosp"] = ppe_df.gowns_hosp
+    df["OtherPPEHosp"] = ppe_df.other_ppe_hosp
+    
     df["Susceptible"] = infect_table["susceptible"]
     df["Infections"] = infect_table["infected"]
     df["Recovered"] = infect_table["recovered"]
@@ -800,6 +939,19 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
     df["TotalNumberOfBedsForCOVIDPatients"] = parameters.total_covid_beds
     df["TotalNumberOfICUBedsFoCOVIDPatients"] = parameters.icu_covid_beds
     df["TotalNumberOfVentsFoCOVIDPatients"] = parameters.covid_ventilators
+    
+    df["MasksN95Param"] = parameters.masks_n95
+    df["MasksSurgicalParam"] = parameters.masks_surgical
+    df["FaceShieldsParam"] = parameters.face_shield
+    df["GlovesParam"] = parameters.gloves
+    df["GownsParam"] = parameters.gowns
+    df["OtherPPEParam"] = parameters.other_ppe
+    df["MasksN95ICUParam"] = parameters.masks_n95_icu
+    df["MasksSurgicalICUParam"] = parameters.masks_surgical_icu
+    df["FaceShieldsICUParam"] = parameters.face_shield_icu
+    df["GlovesICUParam"] = parameters.gloves_icu
+    df["GownsICUParam"] = parameters.gowns_icu
+    df["OtherPPEICUParam"] = parameters.other_ppe_icu
 
     
     # Reorder columns
@@ -834,6 +986,19 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
         # "TotalNumberOfICUBeds",
         # "TotalNumberOfVents",
 
+        "MasksN95Param",
+        "MasksSurgicalParam",
+        "FaceShieldsParam",
+        "GlovesParam",
+        "GownsParam",
+        "OtherPPEParam",
+        "MasksN95ICUParam",
+        "MasksSurgicalICUParam",
+        "FaceShieldsICUParam",
+        "GlovesICUParam",
+        "GownsICUParam",
+        "OtherPPEICUParam",
+
         "Date",
         "TotalAdmissions", 
         "ICUAdmissions", 
@@ -849,6 +1014,25 @@ def build_data_and_params(projection_admits, census_df, beds_df, model, paramete
 
         "Susceptible",
         "Infections",
-        "Recovered"
+        "Recovered",
+
+        "MasksN95",
+        "MasksN95Hosp",
+        "MasksN95ICU",
+        "MasksSurgical",
+        "MasksSurgicalHosp",
+        "MasksSurgicalICU",
+        "FaceShields",
+        "FaceShieldsHosp",
+        "FaceShieldsICU",
+        "Gloves",
+        "GlovesHosp",
+        "GlovesICU",
+        "Gowns",
+        "GownsHosp",
+        "GownsICU",
+        "OtherPPE",
+        "OtherPPEHosp",
+        "OtherPPEICU",
         ]]
     return(df)

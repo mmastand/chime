@@ -76,6 +76,18 @@ class Parameters:
         # Added by the Health Catalyst Team
         author: str = "Jane Doe",
         scenario: str = "Scenario Name",
+        masks_n95: int = 5,
+        masks_surgical: int = 7,
+        face_shield: int = 5,
+        gloves: int = 10,
+        gowns: int = 10,
+        other_ppe: int = 2,
+        masks_n95_icu: int = 5,
+        masks_surgical_icu: int = 7,
+        face_shield_icu: int = 5,
+        gloves_icu: int = 10,
+        gowns_icu: int = 10,
+        other_ppe_icu: int = 2,
     ):
         self.covid_census_value = covid_census_value
         self.covid_census_date = Date(value=covid_census_date)
@@ -126,6 +138,19 @@ class Parameters:
         
         self.author = author
         self.scenario = scenario
+
+        self.masks_n95 = masks_n95
+        self.masks_surgical = masks_surgical
+        self.face_shield = face_shield
+        self.gloves = gloves 
+        self.gowns = gowns
+        self.other_ppe = other_ppe
+        self.masks_n95_icu = masks_n95_icu
+        self.masks_surgical_icu = masks_surgical_icu
+        self.face_shield_icu = face_shield_icu
+        self.gloves_icu = gloves_icu
+        self.gowns_icu = gowns_icu
+        self.other_ppe_icu = other_ppe_icu
             
         self.labels = {
             "hospitalized": "Hospitalized",
@@ -136,6 +161,18 @@ class Parameters:
             "susceptible": "Susceptible",
             "infected": "Infected",
             "recovered": "Recovered",
+            "masks_n95": "Masks - N95",
+            "masks_surgical": "Masks - Surgical",
+            "face_shield": "Face Shields",
+            "gloves": "Gloves",
+            "gowns": "Gowns",
+            "other_ppe": "Other",
+            "masks_n95_icu": "Masks - N95 (ICU)",
+            "masks_surgical_icu": "Masks - Surgical (ICU)",
+            "face_shield_icu": "Face Shields (ICU)",
+            "gloves_icu": "Gloves (ICU)",
+            "gowns_icu": "Gowns (ICU)",
+            "other_ppe_icu": "Other (ICU)",
         }
 
         self.dispositions = {
@@ -149,7 +186,7 @@ class Parameters:
             "hospitalized": "Hospitalized COVID-19 Admissions peak at",
             "icu": "ICU COVID-19 Admissions peak at",
             "ventilators": "COVID-19 Ventilators peak at",
-            "total": "Total COVID-19 Admissions peaks at"
+            "total": "Total COVID-19 Admissions peaks at",
         }
 
         self.census_patient_chart_desc = {
@@ -163,5 +200,40 @@ class Parameters:
             "hospitalized": "Hospitalized COVID-19 Beds",
             "icu": "ICU COVID-19 Beds",
             "ventilators": "COVID-19 Ventilators",
-            "total": "Total COVID-19 Beds"
+            "total": "Total COVID-19 Beds",
+        }
+
+        self.ppe_labels = {
+            "total": "Total",
+            "icu": "ICU",
+            "masks_n95": {
+                "label": "Masks - N95",
+                "col1_name": "masks_n95",
+                "col2_name": "masks_n95_icu",
+            },
+            "masks_surgical": {
+                "label": "Masks - Surgical",
+                "col1_name": "masks_surgical",
+                "col2_name": "masks_surgical_icu",
+            },
+            "face_shield": {
+                "label": "Face Shields",
+                "col1_name": "face_shield",
+                "col2_name": "face_shield_icu",
+            },
+            "gloves": {
+                "label": "Gloves",
+                "col1_name": "gloves",
+                "col2_name": "gloves_icu",
+            },
+            "gowns": {
+                "label": "Gowns",
+                "col1_name": "gowns",
+                "col2_name": "gowns_icu",
+            },
+            "other_ppe": {
+                "label": "Other PPE",
+                "col1_name": "other_ppe",
+                "col2_name": "other_ppe_icu",
+            },
         }

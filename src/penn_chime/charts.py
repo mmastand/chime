@@ -205,6 +205,61 @@ def build_beds_chart(
     )
     return alt.layer(beds, bar, hbar, data=beds_floor_df)
 
+
+def build_ppe_chart(
+    *,
+    alt,
+    ppe_floor_df: pd.DataFrame,
+    p: Parameters,
+    plot_columns: str,
+) -> Chart:
+    """Build ppe chart."""
+    if plot_columns not in ppe_floor_df.columns:
+        k = list(p.ppe_labels.keys())[2:]
+        raise ValueError("PPE type must be in %s" % (k))
+
+    y_scale = alt.Scale()
+    if p.max_y_axis_set:
+        y_scale.domain = (0, p.max_y_axis)
+        y_scale.clamp = True
+    
+    # labels
+    chart_title = p.ppe_labels[plot_columns]["label"]
+    y_axis_label = "Required " + chart_title
+    # departments
+    ppe_floor_df = ppe_floor_df.rename(columns={
+        p.ppe_labels[plot_columns]["col1_name"]:p.ppe_labels["total"],
+        p.ppe_labels[plot_columns]["col2_name"]:p.ppe_labels["icu"],
+        })
+    plot_columns = [p.ppe_labels["total"], p.ppe_labels["icu"]]
+    x = dict(shorthand="date:T", title="Date",
+             axis=alt.Axis(format=(DATE_FORMAT)))
+    y = dict(shorthand="value:Q", title=y_axis_label, scale=y_scale)
+    color = alt.Color("Department:N", sort=plot_columns)
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
+        DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title=chart_title), "Department:N"]
+
+    # TODO fix the fold to allow any number of dispositions
+    lines = (
+        alt.Chart(title=chart_title)
+        .transform_fold(fold=plot_columns, as_=["Department", "value"])
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
+        .mark_line()
+    )
+    bar = (
+        alt.Chart()
+        .encode(x=alt.X(**x))
+        .transform_filter(alt.datum.day == 0)
+        .mark_rule(color="black", opacity=0.35, size=2)
+    )
+    charts = [lines, bar]
+    return (
+        alt.layer(*charts, data=ppe_floor_df)
+        .resolve_scale(color="independent")
+        .configure_title(fontSize=18)
+    )
+
+
 def build_descriptions(
     *,
     chart: Chart,
@@ -286,6 +341,43 @@ def build_bed_descriptions(
 
     return "\n\n".join(messages)
 
+
+def build_ppe_descriptions(
+    *,
+    chart: Chart,
+    label: str,
+) -> str:
+    """
+    """
+    messages = []
+
+    cols = ["Total", "ICU"]
+    asterisk = False
+    day = "date" if "date" in chart.data.columns else "day"
+
+    for col in cols:
+        if chart.data[col].idxmax() + 1 == len(chart.data):
+            asterisk = True
+
+        # todo: bring this to an optional arg / i18n
+        on = datetime.strftime(
+            chart.data[day][chart.data[col].idxmax()], "%b %d")
+
+        messages.append(
+            "{} {} peak at {:,} on {}{}".format(
+                col,
+                label,
+                ceil(chart.data[col].max()),
+                on,
+                "*" if asterisk else "",
+            )
+        )
+
+    if asterisk:
+        messages.append(
+            "_* The max is at the upper bound of the data, and therefore may not be the actual max_")
+    return "\n\n".join(messages)
+
 def build_table(
     *,
     df: pd.DataFrame,
@@ -295,4 +387,27 @@ def build_table(
     table_df = df[np.mod(df.day, modulo) == 0].copy()
     table_df.date = table_df.date.dt.strftime(DATE_FORMAT)
     table_df.rename(labels)
+    if "masks_n95" in table_df.columns:
+        table_df = table_df[[
+            "day",
+            "date",
+            "masks_n95",
+            "masks_n95_hosp",
+            "masks_n95_icu",
+            "masks_surgical",
+            "masks_surgical_hosp",
+            "masks_surgical_icu",
+            "face_shield",
+            "face_shield_hosp",
+            "face_shield_icu",
+            "gloves",
+            "gloves_hosp",
+            "gloves_icu",
+            "gowns",
+            "gowns_hosp",
+            "gowns_icu",
+            "other_ppe",
+            "other_ppe_hosp",
+            "other_ppe_icu",
+        ]]
     return table_df

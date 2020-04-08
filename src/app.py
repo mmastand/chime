@@ -20,8 +20,10 @@ from penn_chime.charts import (
     build_admits_chart,
     build_census_chart,
     build_beds_chart,
+    build_ppe_chart,
     build_descriptions,
     build_bed_descriptions,
+    build_ppe_descriptions,
     build_sim_sir_w_date_chart,
     build_table,
 )
@@ -112,7 +114,6 @@ if st.checkbox("Show Projected Capacity in tabular form"):
         modulo=beds_modulo)
     st.table(table_df)
 
-
 st.subheader("Susceptible, Infected, and Recovered")
 st.markdown("The number of susceptible, infected, and recovered individuals in the hospital catchment region at any given moment")
 sim_sir_w_date_chart = build_sim_sir_w_date_chart(alt=alt, sim_sir_w_date_floor_df=m.sim_sir_w_date_floor_df, actuals=actuals)
@@ -129,11 +130,36 @@ if st.checkbox("Show SIR Simulation in tabular form"):
         labels=p.labels)
     st.table(table_df)
 
+### PPE Section
+st.subheader("Personal Protection Equipment")
+st.markdown("The quantity of PPE needed per day")
+for pc in list(p.ppe_labels.keys())[2:]:
+    ppe_chart = build_ppe_chart(
+        alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns=pc)
+    st.altair_chart(ppe_chart, use_container_width=True)
+    st.markdown(build_ppe_descriptions(chart=ppe_chart, label = p.ppe_labels[pc]["label"]))
+    st.markdown("  \n  \n")
+display_download_link(
+    st,
+    filename=f"{p.current_date}_projected_ppe_required.csv",
+    df=m.ppe_df,
+)
+if st.checkbox("Show Projected PPE Required in tabular form"):
+    ppe_modulo = 1
+    if not st.checkbox("Show Daily PPE Required"):
+        ppe_modulo = 7
+    table_df = build_table(
+        df=m.ppe_floor_df,
+        labels=p.labels,
+        modulo=ppe_modulo)
+    st.dataframe(table_df)
+
 ### Export Full Data and Parameters
 st.header("Export Full Data and Parameters")
 df = build_data_and_params(projection_admits = m.admits_df, 
                            census_df = m.census_df,
-                           beds_df= m.beds_df, 
+                           beds_df = m.beds_df, 
+                           ppe_df = m.ppe_df,
                            model = m, 
                            parameters = p)
 

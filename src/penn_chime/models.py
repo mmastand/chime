@@ -169,6 +169,7 @@ class SimSirModel:
         self.admits_floor_df = build_floor_df(self.admits_df, p.dispositions.keys())
         self.census_floor_df = build_floor_df(self.census_df, p.dispositions.keys())
         self.beds_floor_df = build_floor_df(self.beds_df, p.dispositions.keys())
+        self.ppe_floor_df = build_floor_df(self.ppe_df, self.ppe_df.columns[2:])
 
         self.daily_growth_rate = get_growth_rate(p.doubling_time)
         self.daily_growth_rate_t = get_growth_rate(self.doubling_time_t)
@@ -189,6 +190,7 @@ class SimSirModel:
         self.admits_df = build_admits_df(self.dispositions_df)
         self.census_df = build_census_df(self.admits_df, self.days)
         self.beds_df = build_beds_df(self.census_df, p)
+        self.ppe_df = build_ppe_df(self.census_df, p)
         self.current_infected = self.raw_df.infected.loc[self.i_day]
 
     def get_loss(self) -> float:
@@ -384,3 +386,38 @@ def build_beds_df(
     beds_df["hospitalized"] = new_hosp
     beds_df["icu"] = new_icu
     return beds_df
+
+def build_ppe_df(
+    census_df: pd.DataFrames,
+    p,
+) -> pd.DataFrame:
+    """ALOS for each category of COVID-19 case (total guesses)"""
+    ppe_df = pd.DataFrame()
+    ppe_df["day"] = census_df["day"]
+    ppe_df["date"] = census_df["date"]
+
+    floored_hospitalized_census = np.floor(census_df.hospitalized)
+    ppe_df["masks_n95_hosp"] = p.masks_n95 * floored_hospitalized_census
+    ppe_df["masks_surgical_hosp"] = p.masks_surgical * floored_hospitalized_census
+    ppe_df["face_shield_hosp"] = p.face_shield * floored_hospitalized_census
+    ppe_df["gloves_hosp"] = p.gloves * floored_hospitalized_census
+    ppe_df["gowns_hosp"] = p.gowns * floored_hospitalized_census
+    ppe_df["other_ppe_hosp"] = p.other_ppe * floored_hospitalized_census
+
+    floored_icu_census = np.floor(census_df.icu)
+    ppe_df["masks_n95_icu"] = p.masks_n95_icu * floored_icu_census
+    ppe_df["masks_surgical_icu"] = p.masks_surgical_icu * floored_icu_census
+    ppe_df["face_shield_icu"] = p.face_shield_icu * floored_icu_census
+    ppe_df["gloves_icu"] = p.gloves_icu * floored_icu_census
+    ppe_df["gowns_icu"] = p.gowns_icu * floored_icu_census
+    ppe_df["other_ppe_icu"] = p.other_ppe_icu * floored_icu_census
+    
+    ppe_df["masks_n95"] = ppe_df["masks_n95_hosp"] + ppe_df["masks_n95_icu"]
+    ppe_df["masks_surgical"] = ppe_df["masks_surgical_hosp"] + ppe_df["masks_surgical_icu"]
+    ppe_df["face_shield"] = ppe_df["face_shield_hosp"] + ppe_df["face_shield_icu"]
+    ppe_df["gloves"] = ppe_df["gloves_hosp"] + ppe_df["gloves_icu"]
+    ppe_df["gowns"] = ppe_df["gowns_hosp"] + ppe_df["gowns_icu"]
+    ppe_df["other_ppe"] = ppe_df["other_ppe_hosp"] + ppe_df["other_ppe_icu"]
+
+    return ppe_df
+
