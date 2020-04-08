@@ -186,7 +186,7 @@ and daily growth rate of **{daily_growth_t:.2f}%**.
 #         super().__init__(st_obj.text_input, label, value, kwargs)
 
 
-def display_sidebar(st, d: Parameters) -> Parameters:
+def display_sidebar(st, state, d: Parameters) -> Parameters:
     # Initialize variables
     # these functions create input elements and bind the values they are set to
     # to the variables they are set equal to
@@ -407,6 +407,29 @@ def display_sidebar(st, d: Parameters) -> Parameters:
             format="%i", 
             step=25,
         )
+    PPESelection = st.sidebar.radio("Select type", ('Hospital','ICU','Non-ICU'))
+    PPE_Hospital_N95Masks_Default = state.PPE_Hospital_N95Masks
+    PPE_ICU_N95Masks_Default = state.PPE_ICU_N95Masks
+
+    if PPESelection == 'Hospital' :
+        #st.write("state.PPE_Hospital_N95Masks: ", state.PPE_Hospital_N95Masks)
+        PPE_Hospital_N95Masks = state.PPE_Hospital_N95Masks = st.sidebar.number_input(
+            "N95 Masks - Hospital",
+            min_value=0,
+            value=PPE_Hospital_N95Masks_Default,
+            step=1,
+            format="%i",
+        )
+    
+    if PPESelection == 'ICU' :        
+        # st.write("state.PPE_ICU_N95Masks: ", state.PPE_ICU_N95Masks)
+        PPE_ICU_N95Masks = state.PPE_ICU_N95Masks = st.sidebar.number_input(
+            "N95 Masks - ICU",
+            min_value=0,
+            value=PPE_ICU_N95Masks_Default,
+            step=1,
+            format="%i",
+        )
 
     parameters = Parameters(
         covid_census_value=covid_census_value,
@@ -457,6 +480,40 @@ def display_actuals_section(st):
             st.sidebar.markdown(error_message)
     return actuals
 
+def display_testarea(st):
+    st.markdown(
+        """
+        <table>
+            <tr>
+                <td>
+                    <label style="float=center">N95 Masks - Hospital</label>
+                </td>
+               <td>
+                    <label style="float=center">N95 Masks - ICU</label>
+                </td>
+               <td>
+                    <label style="float=center">N95 Masks - Non-ICU</label>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div>
+                        <input style="float=center" type="text" />
+                    </div>
+                </td>
+                <td>
+                    <div class="left2">
+                        <input style="float=center" type="text" />
+                    </div>
+                </td>
+                <td>
+                    <div class="left2">
+                        <input style="float=center" type="text" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+        """, unsafe_allow_html=True)
 
 def display_more_info(
     st, model: Model, parameters: Parameters, defaults: Parameters, notes: str = "",

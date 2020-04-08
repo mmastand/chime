@@ -13,6 +13,7 @@ from penn_chime.presentation import (
     write_definitions,
     write_footer,
     build_data_and_params,
+    display_testarea
 )
 from penn_chime.settings import get_defaults
 from penn_chime.models import SimSirModel
@@ -27,16 +28,27 @@ from penn_chime.charts import (
 )
 from penn_chime.utils import dataframe_to_base64
 from penn_chime.hc_actuals import census_mismatch_message
+from penn_chime.sessionstate import SessionState
 
 # This is somewhat dangerous:
 # Hide the main menu with "Rerun", "run on Save", "clear cache", and "record a screencast"
 # This should not be hidden in prod, but removed
 # In dev, this should be shown
+state = SessionState.get(PPE_Hospital_N95Masks=5000, PPE_ICU_N95Masks=3000)
+
 st.markdown(hide_menu_style, unsafe_allow_html=True)
 
 d = get_defaults()
-p, actuals = display_sidebar(st, d)
+p, actuals = display_sidebar(st, state, d)
 m = SimSirModel(p)
+
+display_testarea(st)
+if st.button(‘Click to show values’):
+    testFunc();
+
+def testFunc():
+    st.write('fun click')
+    return
 
 display_header(st, m, p)
 
