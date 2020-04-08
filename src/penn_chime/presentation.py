@@ -433,12 +433,12 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         current_date=covid_census_date,
     )
 
+    actuals = display_actuals_section(st)
+    parameters = display_ppe_section(st, d, parameters)
     param_download_widget(
         st,
         parameters,
     )
-    actuals = display_actuals_section(st)
-    parameters = display_ppe_section(st, d, parameters)
     return parameters, actuals
 
 
