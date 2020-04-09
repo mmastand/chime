@@ -228,8 +228,9 @@ def build_ppe_chart(
     y_axis_label = "Required " + chart_title
     # departments
     ppe_floor_df = ppe_floor_df.rename(columns={
-        p.ppe_labels[plot_columns]["col1_name"]:p.ppe_labels["total"],
-        p.ppe_labels[plot_columns]["col2_name"]:p.ppe_labels["icu"],
+        p.ppe_labels[plot_columns]["col1_name"]: p.ppe_labels["total"],
+        p.ppe_labels[plot_columns]["col2_name"]: p.ppe_labels["icu"],
+        p.ppe_labels[plot_columns]["col3_name"]: p.ppe_labels["nonicu"],
         })
     plot_columns = [p.ppe_labels["total"], p.ppe_labels["icu"]]
     x = dict(shorthand="date:T", title="Date",
@@ -281,9 +282,9 @@ def build_staffing_chart(
     y_axis_label = "Required " + chart_title
     # departments
     staffing_floor_df = staffing_floor_df.rename(columns={
-        p.staffing_labels[plot_columns]["col3_name"]: p.staffing_labels["total"],
+        p.staffing_labels[plot_columns]["col1_name"]: p.staffing_labels["total"],
         p.staffing_labels[plot_columns]["col2_name"]: p.staffing_labels["icu"],
-        p.staffing_labels[plot_columns]["col1_name"]: p.staffing_labels["nonicu"],
+        p.staffing_labels[plot_columns]["col3_name"]: p.staffing_labels["nonicu"],
     })
     plot_columns = [
         p.staffing_labels["total"], 
