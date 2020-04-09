@@ -170,6 +170,7 @@ class SimSirModel:
         self.census_floor_df = build_floor_df(self.census_df, p.dispositions.keys())
         self.beds_floor_df = build_floor_df(self.beds_df, p.dispositions.keys())
         self.ppe_floor_df = build_floor_df(self.ppe_df, self.ppe_df.columns[2:])
+        self.staffing_floor_df = build_floor_df(self.staffing_df, self.staffing_df.columns[2:])
 
         self.daily_growth_rate = get_growth_rate(p.doubling_time)
         self.daily_growth_rate_t = get_growth_rate(self.doubling_time_t)
@@ -191,6 +192,7 @@ class SimSirModel:
         self.census_df = build_census_df(self.admits_df, self.days)
         self.beds_df = build_beds_df(self.census_df, p)
         self.ppe_df = build_ppe_df(self.census_df, p)
+        self.staffing_df = build_staffing_df(self.census_df, p)
         self.current_infected = self.raw_df.infected.loc[self.i_day]
 
     def get_loss(self) -> float:
@@ -412,12 +414,42 @@ def build_ppe_df(
     ppe_df["gowns_icu"] = p.gowns_icu * floored_icu_census
     ppe_df["other_ppe_icu"] = p.other_ppe_icu * floored_icu_census
     
-    ppe_df["masks_n95"] = ppe_df["masks_n95_hosp"] + ppe_df["masks_n95_icu"]
-    ppe_df["masks_surgical"] = ppe_df["masks_surgical_hosp"] + ppe_df["masks_surgical_icu"]
-    ppe_df["face_shield"] = ppe_df["face_shield_hosp"] + ppe_df["face_shield_icu"]
-    ppe_df["gloves"] = ppe_df["gloves_hosp"] + ppe_df["gloves_icu"]
-    ppe_df["gowns"] = ppe_df["gowns_hosp"] + ppe_df["gowns_icu"]
-    ppe_df["other_ppe"] = ppe_df["other_ppe_hosp"] + ppe_df["other_ppe_icu"]
+    ppe_df["masks_n95_total"] = ppe_df["masks_n95_hosp"] + ppe_df["masks_n95_icu"]
+    ppe_df["masks_surgical_total"] = ppe_df["masks_surgical_hosp"] + ppe_df["masks_surgical_icu"]
+    ppe_df["face_shield_total"] = ppe_df["face_shield_hosp"] + ppe_df["face_shield_icu"]
+    ppe_df["gloves_total"] = ppe_df["gloves_hosp"] + ppe_df["gloves_icu"]
+    ppe_df["gowns_total"] = ppe_df["gowns_hosp"] + ppe_df["gowns_icu"]
+    ppe_df["other_ppe_total"] = ppe_df["other_ppe_hosp"] + ppe_df["other_ppe_icu"]
 
     return ppe_df
 
+
+def build_staffing_df(
+    census_df: pd.DataFrames,
+    p,
+) -> pd.DataFrame:
+    """ALOS for each category of COVID-19 case (total guesses)"""
+    staffing_df = pd.DataFrame()
+    staffing_df["day"] = census_df["day"]
+    staffing_df["date"] = census_df["date"]
+
+    stf_mul = 24.0 / p.shift_duration # Staffing Multiplier
+    fhc = np.floor(census_df.hospitalized) # floored hospitalized census
+    fic = np.floor(census_df.icu) # floored icu census
+
+    staffing_df["nurses_hosp"] = np.ceil(fhc / p.nurses) * stf_mul
+    staffing_df["physicians_hosp"] = np.ceil(fhc / p.physicians) * stf_mul
+    staffing_df["advanced_practice_providers_hosp"] = np.ceil(fhc / p.advanced_practice_providers) * stf_mul
+    staffing_df["healthcare_assistants_hosp"] = np.ceil(fhc / p.healthcare_assistants) * stf_mul
+
+    staffing_df["nurses_icu"] = np.ceil(fic / p.nurses_icu) * stf_mul
+    staffing_df["physicians_icu"] = np.ceil(fic / p.physicians_icu) * stf_mul
+    staffing_df["advanced_practice_providers_icu"] = np.ceil(fic / p.advanced_practice_providers_icu) * stf_mul
+    staffing_df["healthcare_assistants_icu"] = np.ceil(fic / p.healthcare_assistants_icu) * stf_mul
+
+    staffing_df["nurses_total"] = staffing_df["nurses_hosp"] + staffing_df["nurses_icu"]
+    staffing_df["physicians_total"] = staffing_df["physicians_hosp"] + staffing_df["physicians_icu"]
+    staffing_df["advanced_practice_providers_total"] = staffing_df["advanced_practice_providers_hosp"] + staffing_df["advanced_practice_providers_icu"]
+    staffing_df["healthcare_assistants_total"] = staffing_df["healthcare_assistants_hosp"] + staffing_df["healthcare_assistants_icu"]
+
+    return staffing_df

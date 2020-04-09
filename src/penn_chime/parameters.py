@@ -76,6 +76,7 @@ class Parameters:
         # Added by the Health Catalyst Team
         author: str = "Jane Doe",
         scenario: str = "Scenario Name",
+        # PPE Params
         masks_n95: int = 5,
         masks_surgical: int = 7,
         face_shield: int = 5,
@@ -88,6 +89,20 @@ class Parameters:
         gloves_icu: int = 10,
         gowns_icu: int = 10,
         other_ppe_icu: int = 2,
+        
+        # Staffing Params
+        # Non-ICU
+        nurses: int = 6,
+        physicians: int = 20,
+        advanced_practice_providers: int= 20,
+        healthcare_assistants: int = 10,
+        # ICU
+        nurses_icu: int = 2,
+        physicians_icu: int = 12,
+        advanced_practice_providers_icu: int = 12,
+        healthcare_assistants_icu: int = 6,
+        # Shift Duration
+        shift_duration: int = 12,
     ):
         self.covid_census_value = covid_census_value
         self.covid_census_date = Date(value=covid_census_date)
@@ -138,7 +153,8 @@ class Parameters:
         
         self.author = author
         self.scenario = scenario
-
+        
+        # PPE Params
         self.masks_n95 = masks_n95
         self.masks_surgical = masks_surgical
         self.face_shield = face_shield
@@ -151,7 +167,21 @@ class Parameters:
         self.gloves_icu = gloves_icu
         self.gowns_icu = gowns_icu
         self.other_ppe_icu = other_ppe_icu
-            
+        
+        # Staffing Params
+        # Non-ICU
+        self.nurses = nurses
+        self.physicians = physicians
+        self.advanced_practice_providers = advanced_practice_providers
+        self.healthcare_assistants = healthcare_assistants
+        # ICU
+        self.nurses_icu = nurses_icu
+        self.physicians_icu = physicians_icu
+        self.advanced_practice_providers_icu = advanced_practice_providers_icu
+        self.healthcare_assistants_icu = healthcare_assistants_icu
+        # Shift Duration
+        self.shift_duration = shift_duration
+        
         self.labels = {
             "hospitalized": "Hospitalized",
             "icu": "ICU",
@@ -173,6 +203,15 @@ class Parameters:
             "gloves_icu": "Gloves (ICU)",
             "gowns_icu": "Gowns (ICU)",
             "other_ppe_icu": "Other (ICU)",
+            "nurses": "Patients/Nurse",
+            "physicians": "Physicians",
+            "advanced_practice_providers": "Advanced Practice Providers (APP)",
+            "healthcare_assistants": "Healthcare Assistants (PCT, CNA, etc)",
+            "nurses_icu": "Patients/Nurse (ICU)",
+            "physicians_icu": "Physicians (ICU)",
+            "advanced_practice_providers_icu": "Advanced Practice Providers (APP) (ICU)",
+            "healthcare_assistants_icu": "Healthcare Assistants (PCT, CNA, etc) (ICU)",
+            "shift_duration": "Shift Duration",
         }
 
         self.dispositions = {
@@ -208,32 +247,62 @@ class Parameters:
             "icu": "ICU",
             "masks_n95": {
                 "label": "Masks - N95",
-                "col1_name": "masks_n95",
+                "col1_name": "masks_n95_total",
                 "col2_name": "masks_n95_icu",
             },
             "masks_surgical": {
                 "label": "Masks - Surgical",
-                "col1_name": "masks_surgical",
+                "col1_name": "masks_surgical_total",
                 "col2_name": "masks_surgical_icu",
             },
             "face_shield": {
                 "label": "Face Shields",
-                "col1_name": "face_shield",
+                "col1_name": "face_shield_total",
                 "col2_name": "face_shield_icu",
             },
             "gloves": {
                 "label": "Gloves",
-                "col1_name": "gloves",
+                "col1_name": "gloves_total",
                 "col2_name": "gloves_icu",
             },
             "gowns": {
                 "label": "Gowns",
-                "col1_name": "gowns",
+                "col1_name": "gowns_total",
                 "col2_name": "gowns_icu",
             },
             "other_ppe": {
                 "label": "Other PPE",
-                "col1_name": "other_ppe",
+                "col1_name": "other_ppe_total",
                 "col2_name": "other_ppe_icu",
+            },
+        }
+
+        self.staffing_labels = {
+            "total": "Total",
+            "icu": "ICU",
+            "nonicu": "Non-ICU",
+            "nurses": {
+                "label": "Nurses",
+                "col1_name": "nurses_hosp",
+                "col2_name": "nurses_icu",
+                "col3_name": "nurses_total",
+            },
+            "physicians": {
+                "label": "Physicians",
+                "col1_name": "physicians_hosp",
+                "col2_name": "physicians_icu",
+                "col3_name": "physicians_total",
+            },
+            "advanced_practice_providers": {
+                "label": "Advanced Practice Providers",
+                "col1_name": "advanced_practice_providers_hosp",
+                "col2_name": "advanced_practice_providers_icu",
+                "col3_name": "advanced_practice_providers_total",
+            },
+            "healthcare_assistants": {
+                "label": "Healthcare Assistants",
+                "col1_name": "healthcare_assistants_hosp",
+                "col2_name": "healthcare_assistants_icu",
+                "col3_name": "healthcare_assistants_total",
             },
         }
