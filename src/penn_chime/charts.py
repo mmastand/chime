@@ -214,8 +214,8 @@ def build_ppe_chart(
     plot_columns: str,
 ) -> Chart:
     """Build ppe chart."""
-    if plot_columns not in ppe_floor_df.columns:
-        k = list(p.ppe_labels.keys())[2:]
+    k = list(p.ppe_labels.keys())[2:]
+    if plot_columns not in k:
         raise ValueError("PPE type must be in %s" % (k))
 
     y_scale = alt.Scale()
@@ -487,22 +487,22 @@ def build_table(
         table_df = table_df[[
             "day",
             "date",
-            "masks_n95",
+            "masks_n95_total",
             "masks_n95_hosp",
             "masks_n95_icu",
-            "masks_surgical",
+            "masks_surgical_total",
             "masks_surgical_hosp",
             "masks_surgical_icu",
-            "face_shield",
+            "face_shield_total",
             "face_shield_hosp",
             "face_shield_icu",
-            "gloves",
+            "gloves_total",
             "gloves_hosp",
             "gloves_icu",
-            "gowns",
+            "gowns_total",
             "gowns_hosp",
             "gowns_icu",
-            "other_ppe",
+            "other_ppe_total",
             "other_ppe_hosp",
             "other_ppe_icu",
         ]]

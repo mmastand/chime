@@ -247,32 +247,32 @@ class Parameters:
             "icu": "ICU",
             "masks_n95": {
                 "label": "Masks - N95",
-                "col1_name": "masks_n95",
+                "col1_name": "masks_n95_total",
                 "col2_name": "masks_n95_icu",
             },
             "masks_surgical": {
                 "label": "Masks - Surgical",
-                "col1_name": "masks_surgical",
+                "col1_name": "masks_surgical_total",
                 "col2_name": "masks_surgical_icu",
             },
             "face_shield": {
                 "label": "Face Shields",
-                "col1_name": "face_shield",
+                "col1_name": "face_shield_total",
                 "col2_name": "face_shield_icu",
             },
             "gloves": {
                 "label": "Gloves",
-                "col1_name": "gloves",
+                "col1_name": "gloves_total",
                 "col2_name": "gloves_icu",
             },
             "gowns": {
                 "label": "Gowns",
-                "col1_name": "gowns",
+                "col1_name": "gowns_total",
                 "col2_name": "gowns_icu",
             },
             "other_ppe": {
                 "label": "Other PPE",
-                "col1_name": "other_ppe",
+                "col1_name": "other_ppe_total",
                 "col2_name": "other_ppe_icu",
             },
         }

@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2020-04-09
+### Added
+- Sidebar parameters to represent staffing needs.
+- Charts show staffing needed per day, based on census.
+- Descriptions and file IO now support parameters and required staffing.
+### Modified
+- Exported csv "ventilatorsAdmissions" changed to "VentilatorsAdmissions"
+### Fixed 
+- First row of full downloaded data no longer has NaN values.
+
 ## [1.4.0] - 2020-04-08
 ### Added
 - Sidebar parameters to represent PPE supplies needed per patient per day.

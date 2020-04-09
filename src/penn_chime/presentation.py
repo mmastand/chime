@@ -897,6 +897,11 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
+            **V: 1.5.0 (Thursday, April 09, 2020)** 
+            * Added staffing functionality
+            * Changed exported column name to "VentilatorsAdmissions"
+            * Fixed a bug where first row contained NaNs in full downloaded data
+            
             **V: 1.4.0 (Wednesday, April 08, 2020)** 
             * Added PPE/patient/day functionality
             * Changed minimum days to project to 7
@@ -962,7 +967,10 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     # taken from beds table function:
     bed_table = beds_df[np.mod(beds_df.index, 1) == 0].copy()
     bed_table.index = range(bed_table.shape[0])
-    bed_table.loc[0, :] = 0
+    bed_table.total[0] = parameters.total_covid_beds - 1
+    bed_table.hospitalized[0] = parameters.total_covid_beds - parameters.icu_covid_beds - 1
+    bed_table.icu[0] = parameters.icu_covid_beds - 1
+    bed_table.ventilators[0] = parameters.covid_ventilators - 1
     bed_table = bed_table.dropna()
     bed_table = non_date_columns_to_int(bed_table)
     bed_table.rename(parameters.labels)
@@ -980,7 +988,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
         "date": "Date",
         "total": "TotalAdmissions", 
         "icu": "ICUAdmissions", 
-        "ventilators": "ventilatorsAdmissions"}, )
+        "ventilators": "VentilatorsAdmissions"}, )
     
     df["TotalCensus"] = census_table["total"]
     df["ICUCensus"] = census_table["icu"]
@@ -990,12 +998,13 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     df["ICUBeds"] = bed_table["icu"]
     df["Ventilators"] = bed_table["ventilators"]
 
-    df["MasksN95"] = ppe_df.masks_n95
-    df["MasksSurgical"] = ppe_df.masks_surgical
-    df["FaceShields"] = ppe_df.face_shield
-    df["Gloves"] = ppe_df.gloves
-    df["Gowns"] = ppe_df.gowns
-    df["OtherPPE"] = ppe_df.other_ppe
+    ppe_df.loc[0, :] = 0
+    df["MasksN95Total"] = ppe_df.masks_n95_total
+    df["MasksSurgicalTotal"] = ppe_df.masks_surgical_total
+    df["FaceShieldsTotal"] = ppe_df.face_shield_total
+    df["GlovesTotal"] = ppe_df.gloves_total
+    df["GownsTotal"] = ppe_df.gowns_total
+    df["OtherPPETotal"] = ppe_df.other_ppe_total
     df["MasksN95ICU"] = ppe_df.masks_n95_icu
     df["MasksSurgicalICU"] = ppe_df.masks_surgical_icu
     df["FaceShieldsICU"] = ppe_df.face_shield_icu
@@ -1010,6 +1019,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     df["OtherPPEHosp"] = ppe_df.other_ppe_hosp
     
     # Staffing
+    staffing_df.loc[0, :] = 0
     df["NursesHosp"] = staffing_df.nurses_hosp
     df["PhysiciansHosp"] = staffing_df.physicians_hosp
     df["AdvancedPraticeProvidersHosp"] = staffing_df.advanced_practice_providers_hosp
@@ -1140,7 +1150,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
         "Date",
         "TotalAdmissions", 
         "ICUAdmissions", 
-        "ventilatorsAdmissions",
+        "VentilatorsAdmissions",
 
         "TotalCensus",
         "ICUCensus",
@@ -1154,22 +1164,22 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
         "Infections",
         "Recovered",
 
-        "MasksN95",
+        "MasksN95Total",
         "MasksN95Hosp",
         "MasksN95ICU",
-        "MasksSurgical",
+        "MasksSurgicalTotal",
         "MasksSurgicalHosp",
         "MasksSurgicalICU",
-        "FaceShields",
+        "FaceShieldsTotal",
         "FaceShieldsHosp",
         "FaceShieldsICU",
-        "Gloves",
+        "GlovesTotal",
         "GlovesHosp",
         "GlovesICU",
-        "Gowns",
+        "GownsTotal",
         "GownsHosp",
         "GownsICU",
-        "OtherPPE",
+        "OtherPPETotal",
         "OtherPPEHosp",
         "OtherPPEICU",
 
