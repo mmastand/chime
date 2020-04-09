@@ -897,7 +897,7 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
-            **V: 1.5.0 (Thursday, April 09, 2020)** 
+            **V: 1.5.2 (Thursday, April 09, 2020)** 
             * Added staffing functionality
             * Changed exported column name to "VentilatorsAdmissions"
             * Moved capacity parameters to lower on sidebar
