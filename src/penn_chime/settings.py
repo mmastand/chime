@@ -34,4 +34,17 @@ def get_defaults():
         gloves_icu=10,
         gowns_icu=10,
         other_ppe_icu=2,
+        # Staffing Params
+        # Non-ICU
+        patients_per_nurse = 6,
+        physicians = 10,
+        advanced_practice_providers = 15,
+        healthcare_assistants = 20,
+        # ICU
+        patients_per_nurse_icu = 6,
+        physicians_icu= 10,
+        advanced_practice_providers_icu = 15,
+        healthcare_assistants_icu = 20,
+        # Shift Duration
+        shift_duration = 8,
     )

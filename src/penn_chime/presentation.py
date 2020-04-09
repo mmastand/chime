@@ -386,28 +386,6 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         format="%i",
     )
 
-    st.sidebar.markdown(
-        "### Display Parameters"
-    )
-    n_days = st.sidebar.number_input(
-        "Number of days to project",
-        min_value=7,
-        value=d.n_days,
-        step=1,
-        format="%i",
-    )
-    
-    max_y_axis_set_default = False if uploaded_file is None else d.max_y_axis_set
-    max_y_axis_set = st.sidebar.checkbox("Set the Y-axis on graphs to a static value", value=max_y_axis_set_default)
-    max_y_axis = 500 if uploaded_file is None else d.max_y_axis
-    if max_y_axis_set:
-        max_y_axis = st.sidebar.number_input(
-            "Y-axis static value", 
-            value=max_y_axis, 
-            format="%i", 
-            step=25,
-        )
-
     parameters = Parameters(
         covid_census_value=covid_census_value,
         covid_census_date=covid_census_date,
@@ -423,9 +401,6 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         doubling_time=doubling_time,
         infectious_days=infectious_days,
         market_share=market_share,
-        max_y_axis=max_y_axis,
-        max_y_axis_set=max_y_axis_set,
-        n_days=n_days,
         population=population,
         author=author,
         scenario=scenario,
@@ -433,8 +408,11 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         current_date=covid_census_date,
     )
 
-    actuals = display_actuals_section(st)
     parameters = display_ppe_section(st, d, parameters)
+    parameters = display_staffing_section(st, d, parameters)
+    parameters = display_displayParameters_section(st, d, uploaded_file, parameters)
+
+    actuals = display_actuals_section(st)
     param_download_widget(
         st,
         parameters,
@@ -572,6 +550,128 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
         format="%i",
     )
     p.other_ppe_icu = other_ppe_icu
+    return p
+
+def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
+    st.sidebar.markdown("### Staffing")
+    
+    # Shift Duration - Shared param between ICU and Non-ICU staff
+    shift_duration = st.sidebar.number_input(
+        "Shift Duration",
+        min_value=8,
+        max_value=12,
+        value=d.shift_duration,
+        step=2,
+        format="%i",
+    )
+    p.shift_duration = shift_duration
+
+    st.sidebar.markdown("**Non-Critical Care**")
+    # Non-critical care
+    patients_per_nurse = st.sidebar.number_input(
+        "Patients/Nurse",
+        min_value=0,
+        value=d.patients_per_nurse,
+        step=1,
+        format="%i",
+    )
+    p.patients_per_nurse = patients_per_nurse
+
+    physicians = st.sidebar.number_input(
+        "Physicians",
+        min_value=0,
+        value=d.physicians,
+        step=1,
+        format="%i",
+    )
+    p.physicians = physicians
+
+    advanced_practice_providers = st.sidebar.number_input(
+        "Advanced Practice Providers (APP)",
+        min_value=0,
+        value=d.advanced_practice_providers,
+        step=1,
+        format="%i",
+    )
+    p.advanced_practice_providers = advanced_practice_providers
+
+    healthcare_assistants = st.sidebar.number_input(
+        "Healthcare Assistants (PCT, CNA, etc)",
+        min_value=0,
+        value=d.healthcare_assistants,
+        step=1,
+        format="%i",
+    )
+    p.healthcare_assistants = healthcare_assistants
+
+
+    # Critical Care
+    st.sidebar.markdown("**Critical Care**")
+    patients_per_nurse_icu = st.sidebar.number_input(
+        "Patients/Nurse (ICU)",
+        min_value=0,
+        value=d.patients_per_nurse_icu,
+        step=1,
+        format="%i",
+    )
+    p.patients_per_nurse_icu = patients_per_nurse_icu
+
+    physicians_icu = st.sidebar.number_input(
+        "Physicians (ICU)",
+        min_value=0,
+        value=d.physicians_icu,
+        step=1,
+        format="%i",
+    )
+    p.physicians_icu = physicians_icu
+
+    advanced_practice_providers_icu = st.sidebar.number_input(
+        "Advanced Practice Providers (APP) (ICU)",
+        min_value=0,
+        value=d.advanced_practice_providers_icu,
+        step=1,
+        format="%i",
+    )
+    p.advanced_practice_providers_icu = advanced_practice_providers_icu
+
+    healthcare_assistants_icu = st.sidebar.number_input(
+        "Healthcare Assistants (PCT, CNA, etc) (ICU)",
+        min_value=0,
+        value=d.healthcare_assistants_icu,
+        step=1,
+        format="%i",
+    )
+    p.healthcare_assistants_icu = healthcare_assistants_icu
+
+    return p
+
+def display_displayParameters_section(st, d: Parameters, uploaded_file, p: Parameters) -> Parameters:
+    st.sidebar.markdown(
+        "### Display Parameters"
+    )
+    n_days = st.sidebar.number_input(
+        "Number of days to project",
+        min_value=7,
+        value=d.n_days,
+        step=1,
+        format="%i",
+    )
+    p.n_days = n_days
+    
+    max_y_axis_set_default = False if uploaded_file is None else d.max_y_axis_set
+    max_y_axis_set = st.sidebar.checkbox("Set the Y-axis on graphs to a static value", value=max_y_axis_set_default)
+    max_y_axis = 500 if uploaded_file is None else d.max_y_axis
+    if max_y_axis_set:
+        max_y_axis = st.sidebar.number_input(
+            "Y-axis static value", 
+            value=max_y_axis, 
+            format="%i", 
+            step=25,
+        )
+
+    p.max_y_axis = max_y_axis
+    p.max_y_axis_set = max_y_axis_set
+
     return p
 
 def display_more_info(
@@ -909,6 +1009,19 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, model, 
     df["GownsHosp"] = ppe_df.gowns_hosp
     df["OtherPPEHosp"] = ppe_df.other_ppe_hosp
     
+    # Staffing Params
+    #df["PatientsPerNurse"] = parameters.patients_per_nurse
+    #df["Physicians"] = parameters.physicians
+    #df["AdvancedPraticeProviders"] = parameters.advanced_practice_providers
+    #df["HealthcareAssistants"] = parameters.healthcare_assistants
+    
+    #df["PatientsPerNurseICU"] = parameters.patients_per_nurse_icu
+    #df["PhysiciansICU"] = parameters.physicians_icu
+    #df["AdvancedPraticeProvidersICU"] = parameters.advanced_practice_providers_icu
+    #df["HealthcareAssistantsICU"] = parameters.healthcare_assistants_icu
+
+    #df["ShiftDuration"] = parameters.shift_duration
+
     df["Susceptible"] = infect_table["susceptible"]
     df["Infections"] = infect_table["infected"]
     df["Recovered"] = infect_table["recovered"]
@@ -953,6 +1066,18 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, model, 
     df["GownsICUParam"] = parameters.gowns_icu
     df["OtherPPEICUParam"] = parameters.other_ppe_icu
 
+    # Staffing Params
+    df["PatientsPerNurseParam"] = parameters.patients_per_nurse
+    df["PhysiciansParam"] = parameters.physicians
+    df["AdvancedPraticeProvidersParam"] = parameters.advanced_practice_providers
+    df["HealthcareAssistantsParam"] = parameters.healthcare_assistants
+    
+    df["PatientsPerNurseICUParam"] = parameters.patients_per_nurse_icu
+    df["PhysiciansICUParam"] = parameters.physicians_icu
+    df["AdvancedPraticeProvidersICUParam"] = parameters.advanced_practice_providers_icu
+    df["HealthcareAssistantsICUParam"] = parameters.healthcare_assistants_icu
+
+    df["ShiftDurationParam"] = parameters.shift_duration
     
     # Reorder columns
     df = df[[

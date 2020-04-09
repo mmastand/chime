@@ -46,6 +46,7 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         author=imported_params.get("Author", "Jane Doe"), # Added in v2.0.0
         scenario=imported_params.get("Scenario", "COVID-19 Model"), # Added in v2.0.0
 
+        # PPE Params
         masks_n95=imported_params.get("MasksN95", 5),
         masks_surgical=imported_params.get("MasksSurgical", 7),
         face_shield=imported_params.get("FaceShields", 5),
@@ -58,6 +59,21 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         gloves_icu=imported_params.get("GlovesICU", 10),
         gowns_icu=imported_params.get("GownsICU", 10),
         other_ppe_icu=imported_params.get("OtherPPEICU", 2),
+
+        # Staffing Params
+        # Non-ICU
+        patients_per_nurse=imported_params.get("PatientsPerNurse", 6),
+        physicians=imported_params.get("Physicians", 10),
+        advanced_practice_providers=imported_params.get("AdvancedPraticeProviders", 15),
+        healthcare_assistants=imported_params.get("HealthcareAssistants", 20),
+        # ICU
+        patients_per_nurse_icu=imported_params.get("PatientsPerNurseICU", 6),
+        physicians_icu=imported_params.get("PhysiciansICU", 10),
+        advanced_practice_providers_icu=imported_params.get("AdvancedPraticeProvidersICU", 15),
+        healthcare_assistants_icu=imported_params.get("HealthcareAssistantsICU", 20),
+        # Shift Duration
+        shift_duration=imported_params.get("ShiftDuration", 8),
+
     )
     return parameters
 
@@ -92,6 +108,8 @@ def param_download_widget(st, parameters):
         "CurrentlyHospitalizedCovidPatients": parameters.covid_census_value,
         "CurrentlyHospitalizedCovidPatientsDate": parameters.covid_census_date.isoformat(),
         # "SelectedOffsetDays": parameters.selected_offset,  # Deprecated in v2.0.0
+        
+        # PPE Params
         "MasksN95": parameters.masks_n95,
         "MasksSurgical": parameters.masks_surgical,
         "FaceShields": parameters.face_shield,
@@ -105,6 +123,19 @@ def param_download_widget(st, parameters):
         "GownsICU": parameters.gowns_icu,
         "OtherPPEICU": parameters.other_ppe_icu,
 
+        # Staffing Params
+        # Non-ICU
+        "PatientsPerNurse" : parameters.patients_per_nurse,
+        "Physicians" : parameters.physicians,
+        "AdvancedPraticeProviders" : parameters.advanced_practice_providers,
+        "HealthcareAssistants" : parameters.healthcare_assistants,
+        # ICU
+        "PatientsPerNurseICU" : parameters.patients_per_nurse_icu,
+        "PhysiciansICU" : parameters.physicians_icu,
+        "AdvancedPraticeProvidersICU" : parameters.advanced_practice_providers_icu,
+        "HealthcareAssistantsICU" : parameters.healthcare_assistants_icu,
+        # Shift Duration
+        "ShiftDuration" : parameters.shift_duration,
     }
     out_json = json.dumps(out_obj)
     b64_json = base64.b64encode(out_json.encode()).decode()

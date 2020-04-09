@@ -76,6 +76,7 @@ class Parameters:
         # Added by the Health Catalyst Team
         author: str = "Jane Doe",
         scenario: str = "Scenario Name",
+        # PPE Params
         masks_n95: int = 5,
         masks_surgical: int = 7,
         face_shield: int = 5,
@@ -88,6 +89,20 @@ class Parameters:
         gloves_icu: int = 10,
         gowns_icu: int = 10,
         other_ppe_icu: int = 2,
+        
+        # Staffing Params
+        # Non-ICU
+        patients_per_nurse: int = 6,
+        physicians: int = 10,
+        advanced_practice_providers: int= 15,
+        healthcare_assistants: int = 20,
+        # ICU
+        patients_per_nurse_icu: int = 6,
+        physicians_icu: int = 10,
+        advanced_practice_providers_icu: int = 15,
+        healthcare_assistants_icu: int = 20,
+        # Shift Duration
+        shift_duration: int = 8,
     ):
         self.covid_census_value = covid_census_value
         self.covid_census_date = Date(value=covid_census_date)
@@ -138,7 +153,8 @@ class Parameters:
         
         self.author = author
         self.scenario = scenario
-
+        
+        # PPE Params
         self.masks_n95 = masks_n95
         self.masks_surgical = masks_surgical
         self.face_shield = face_shield
@@ -151,7 +167,21 @@ class Parameters:
         self.gloves_icu = gloves_icu
         self.gowns_icu = gowns_icu
         self.other_ppe_icu = other_ppe_icu
-            
+        
+        # Staffing Params
+        # Non-ICU
+        self.patients_per_nurse = patients_per_nurse
+        self.physicians = physicians
+        self.advanced_practice_providers = advanced_practice_providers
+        self.healthcare_assistants = healthcare_assistants
+        # ICU
+        self.patients_per_nurse_icu = patients_per_nurse_icu
+        self.physicians_icu = physicians_icu
+        self.advanced_practice_providers_icu = advanced_practice_providers_icu
+        self.healthcare_assistants_icu = healthcare_assistants_icu
+        # Shift Duration
+        self.shift_duration = shift_duration
+        
         self.labels = {
             "hospitalized": "Hospitalized",
             "icu": "ICU",
@@ -173,6 +203,15 @@ class Parameters:
             "gloves_icu": "Gloves (ICU)",
             "gowns_icu": "Gowns (ICU)",
             "other_ppe_icu": "Other (ICU)",
+            "patients_per_nurse": "Patients/Nurse",
+            "physicians": "Physicians",
+            "advanced_practice_providers": "Advanced Practice Providers (APP)",
+            "healthcare_assistants": "Healthcare Assistants (PCT, CNA, etc)",
+            "patients_per_nurse_icu": "Patients/Nurse (ICU)",
+            "physicians_icu": "Physicians (ICU)",
+            "advanced_practice_providers_icu": "Advanced Practice Providers (APP) (ICU)",
+            "healthcare_assistants_icu": "Healthcare Assistants (PCT, CNA, etc) (ICU)",
+            "shift_duration": "Shift Duration",
         }
 
         self.dispositions = {
