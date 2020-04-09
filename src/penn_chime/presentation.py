@@ -568,17 +568,17 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
 
     st.sidebar.markdown("**Non-Critical Care**")
     # Non-critical care
-    patients_per_nurse = st.sidebar.number_input(
+    nurses = st.sidebar.number_input(
         "Patients/Nurse",
         min_value=0,
-        value=d.patients_per_nurse,
+        value=d.nurses,
         step=1,
         format="%i",
     )
-    p.patients_per_nurse = patients_per_nurse
+    p.nurses = nurses
 
     physicians = st.sidebar.number_input(
-        "Physicians",
+        "Patients/Physicians",
         min_value=0,
         value=d.physicians,
         step=1,
@@ -587,7 +587,7 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.physicians = physicians
 
     advanced_practice_providers = st.sidebar.number_input(
-        "Advanced Practice Providers (APP)",
+        "Patients/Advanced Practice Providers (APP)",
         min_value=0,
         value=d.advanced_practice_providers,
         step=1,
@@ -596,7 +596,7 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.advanced_practice_providers = advanced_practice_providers
 
     healthcare_assistants = st.sidebar.number_input(
-        "Healthcare Assistants (PCT, CNA, etc)",
+        "Patients/Healthcare Assistants (PCT, CNA, etc)",
         min_value=0,
         value=d.healthcare_assistants,
         step=1,
@@ -607,17 +607,17 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
 
     # Critical Care
     st.sidebar.markdown("**Critical Care**")
-    patients_per_nurse_icu = st.sidebar.number_input(
+    nurses_icu = st.sidebar.number_input(
         "Patients/Nurse (ICU)",
         min_value=0,
-        value=d.patients_per_nurse_icu,
+        value=d.nurses_icu,
         step=1,
         format="%i",
     )
-    p.patients_per_nurse_icu = patients_per_nurse_icu
+    p.nurses_icu = nurses_icu
 
     physicians_icu = st.sidebar.number_input(
-        "Physicians (ICU)",
+        "Patients/Physicians (ICU)",
         min_value=0,
         value=d.physicians_icu,
         step=1,
@@ -626,7 +626,7 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.physicians_icu = physicians_icu
 
     advanced_practice_providers_icu = st.sidebar.number_input(
-        "Advanced Practice Providers (APP) (ICU)",
+        "Patients/Advanced Practice Providers (APP) (ICU)",
         min_value=0,
         value=d.advanced_practice_providers_icu,
         step=1,
@@ -635,7 +635,7 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.advanced_practice_providers_icu = advanced_practice_providers_icu
 
     healthcare_assistants_icu = st.sidebar.number_input(
-        "Healthcare Assistants (PCT, CNA, etc) (ICU)",
+        "Patients/Healthcare Assistants (PCT, CNA, etc) (ICU)",
         min_value=0,
         value=d.healthcare_assistants_icu,
         step=1,
@@ -942,7 +942,7 @@ def non_date_columns_to_int(df):
             df[column] = df[column].astype(int)
     return df
 
-def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, model, parameters):
+def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffing_df, model, parameters):
     # taken from admissions table function:
     admits_table = projection_admits[np.mod(projection_admits.index, 1) == 0].copy()
     admits_table["day"] = admits_table.index.astype(int)
@@ -1009,18 +1009,21 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, model, 
     df["GownsHosp"] = ppe_df.gowns_hosp
     df["OtherPPEHosp"] = ppe_df.other_ppe_hosp
     
-    # Staffing Params
-    #df["PatientsPerNurse"] = parameters.patients_per_nurse
-    #df["Physicians"] = parameters.physicians
-    #df["AdvancedPraticeProviders"] = parameters.advanced_practice_providers
-    #df["HealthcareAssistants"] = parameters.healthcare_assistants
-    
-    #df["PatientsPerNurseICU"] = parameters.patients_per_nurse_icu
-    #df["PhysiciansICU"] = parameters.physicians_icu
-    #df["AdvancedPraticeProvidersICU"] = parameters.advanced_practice_providers_icu
-    #df["HealthcareAssistantsICU"] = parameters.healthcare_assistants_icu
+    # Staffing
+    df["NursesHosp"] = staffing_df.nurses_hosp
+    df["PhysiciansHosp"] = staffing_df.physicians_hosp
+    df["AdvancedPraticeProvidersHosp"] = staffing_df.advanced_practice_providers_hosp
+    df["HealthcareAssistantsHosp"] = staffing_df.healthcare_assistants_hosp
 
-    #df["ShiftDuration"] = parameters.shift_duration
+    df["NursesICU"] = staffing_df.nurses_icu
+    df["PhysiciansICU"] = staffing_df.physicians_icu
+    df["AdvancedPraticeProvidersICU"] = staffing_df.advanced_practice_providers_icu
+    df["HealthcareAssistantsICU"] = staffing_df.healthcare_assistants_icu
+    
+    df["NursesTotal"] = staffing_df.nurses_total
+    df["PhysiciansTotal"] = staffing_df.physicians_total
+    df["AdvancedPraticeProvidersTotal"] = staffing_df.advanced_practice_providers_total
+    df["HealthcareAssistantsTotal"] = staffing_df.healthcare_assistants_total
 
     df["Susceptible"] = infect_table["susceptible"]
     df["Infections"] = infect_table["infected"]
@@ -1067,17 +1070,17 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, model, 
     df["OtherPPEICUParam"] = parameters.other_ppe_icu
 
     # Staffing Params
-    df["PatientsPerNurseParam"] = parameters.patients_per_nurse
-    df["PhysiciansParam"] = parameters.physicians
-    df["AdvancedPraticeProvidersParam"] = parameters.advanced_practice_providers
-    df["HealthcareAssistantsParam"] = parameters.healthcare_assistants
+    df["PatientsPerNurses"] = parameters.nurses
+    df["PatientsPerPhysicians"] = parameters.physicians
+    df["PatientsPerAdvancedPraticeProviders"] = parameters.advanced_practice_providers
+    df["PatientsPerHealthcareAssistants"] = parameters.healthcare_assistants
     
-    df["PatientsPerNurseICUParam"] = parameters.patients_per_nurse_icu
-    df["PhysiciansICUParam"] = parameters.physicians_icu
-    df["AdvancedPraticeProvidersICUParam"] = parameters.advanced_practice_providers_icu
-    df["HealthcareAssistantsICUParam"] = parameters.healthcare_assistants_icu
+    df["PatientsPerNursesICU"] = parameters.nurses_icu
+    df["PatientsPerPhysiciansICU"] = parameters.physicians_icu
+    df["PatientsPerAdvancedPraticeProvidersICU"] = parameters.advanced_practice_providers_icu
+    df["PatientsPerHealthcareAssistantsICU"] = parameters.healthcare_assistants_icu
 
-    df["ShiftDurationParam"] = parameters.shift_duration
+    df["ShiftDuration"] = parameters.shift_duration
     
     # Reorder columns
     df = df[[
@@ -1124,6 +1127,16 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, model, 
         "GownsICUParam",
         "OtherPPEICUParam",
 
+        "PatientsPerNurses",
+        "PatientsPerPhysicians",
+        "PatientsPerAdvancedPraticeProviders",
+        "PatientsPerHealthcareAssistants",
+        "PatientsPerNursesICU",
+        "PatientsPerPhysiciansICU",
+        "PatientsPerAdvancedPraticeProvidersICU",
+        "PatientsPerHealthcareAssistantsICU",
+        "ShiftDuration",
+
         "Date",
         "TotalAdmissions", 
         "ICUAdmissions", 
@@ -1159,5 +1172,18 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, model, 
         "OtherPPE",
         "OtherPPEHosp",
         "OtherPPEICU",
-        ]]
+
+        "NursesTotal",
+        "NursesHosp",
+        "NursesICU",
+        "PhysiciansTotal",
+        "PhysiciansHosp",
+        "PhysiciansICU",
+        "AdvancedPraticeProvidersTotal",
+        "AdvancedPraticeProvidersHosp",
+        "AdvancedPraticeProvidersICU",
+        "HealthcareAssistantsTotal",
+        "HealthcareAssistantsHosp",
+        "HealthcareAssistantsICU",
+    ]]
     return(df)

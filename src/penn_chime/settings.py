@@ -36,15 +36,15 @@ def get_defaults():
         other_ppe_icu=2,
         # Staffing Params
         # Non-ICU
-        patients_per_nurse = 6,
-        physicians = 10,
-        advanced_practice_providers = 15,
-        healthcare_assistants = 20,
+        nurses = 6,
+        physicians = 20,
+        advanced_practice_providers = 20,
+        healthcare_assistants = 10,
         # ICU
-        patients_per_nurse_icu = 6,
-        physicians_icu= 10,
-        advanced_practice_providers_icu = 15,
-        healthcare_assistants_icu = 20,
+        nurses_icu = 2,
+        physicians_icu= 12,
+        advanced_practice_providers_icu = 12,
+        healthcare_assistants_icu = 6,
         # Shift Duration
-        shift_duration = 8,
+        shift_duration = 12,
     )

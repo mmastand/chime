@@ -92,17 +92,17 @@ class Parameters:
         
         # Staffing Params
         # Non-ICU
-        patients_per_nurse: int = 6,
-        physicians: int = 10,
-        advanced_practice_providers: int= 15,
-        healthcare_assistants: int = 20,
+        nurses: int = 6,
+        physicians: int = 20,
+        advanced_practice_providers: int= 20,
+        healthcare_assistants: int = 10,
         # ICU
-        patients_per_nurse_icu: int = 6,
-        physicians_icu: int = 10,
-        advanced_practice_providers_icu: int = 15,
-        healthcare_assistants_icu: int = 20,
+        nurses_icu: int = 2,
+        physicians_icu: int = 12,
+        advanced_practice_providers_icu: int = 12,
+        healthcare_assistants_icu: int = 6,
         # Shift Duration
-        shift_duration: int = 8,
+        shift_duration: int = 12,
     ):
         self.covid_census_value = covid_census_value
         self.covid_census_date = Date(value=covid_census_date)
@@ -170,12 +170,12 @@ class Parameters:
         
         # Staffing Params
         # Non-ICU
-        self.patients_per_nurse = patients_per_nurse
+        self.nurses = nurses
         self.physicians = physicians
         self.advanced_practice_providers = advanced_practice_providers
         self.healthcare_assistants = healthcare_assistants
         # ICU
-        self.patients_per_nurse_icu = patients_per_nurse_icu
+        self.nurses_icu = nurses_icu
         self.physicians_icu = physicians_icu
         self.advanced_practice_providers_icu = advanced_practice_providers_icu
         self.healthcare_assistants_icu = healthcare_assistants_icu
@@ -203,11 +203,11 @@ class Parameters:
             "gloves_icu": "Gloves (ICU)",
             "gowns_icu": "Gowns (ICU)",
             "other_ppe_icu": "Other (ICU)",
-            "patients_per_nurse": "Patients/Nurse",
+            "nurses": "Patients/Nurse",
             "physicians": "Physicians",
             "advanced_practice_providers": "Advanced Practice Providers (APP)",
             "healthcare_assistants": "Healthcare Assistants (PCT, CNA, etc)",
-            "patients_per_nurse_icu": "Patients/Nurse (ICU)",
+            "nurses_icu": "Patients/Nurse (ICU)",
             "physicians_icu": "Physicians (ICU)",
             "advanced_practice_providers_icu": "Advanced Practice Providers (APP) (ICU)",
             "healthcare_assistants_icu": "Healthcare Assistants (PCT, CNA, etc) (ICU)",
@@ -274,5 +274,35 @@ class Parameters:
                 "label": "Other PPE",
                 "col1_name": "other_ppe",
                 "col2_name": "other_ppe_icu",
+            },
+        }
+
+        self.staffing_labels = {
+            "total": "Total",
+            "icu": "ICU",
+            "nonicu": "Non-ICU",
+            "nurses": {
+                "label": "Nurses",
+                "col1_name": "nurses_hosp",
+                "col2_name": "nurses_icu",
+                "col3_name": "nurses_total",
+            },
+            "physicians": {
+                "label": "Physicians",
+                "col1_name": "physicians_hosp",
+                "col2_name": "physicians_icu",
+                "col3_name": "physicians_total",
+            },
+            "advanced_practice_providers": {
+                "label": "Advanced Practice Providers",
+                "col1_name": "advanced_practice_providers_hosp",
+                "col2_name": "advanced_practice_providers_icu",
+                "col3_name": "advanced_practice_providers_total",
+            },
+            "healthcare_assistants": {
+                "label": "Healthcare Assistants",
+                "col1_name": "healthcare_assistants_hosp",
+                "col2_name": "healthcare_assistants_icu",
+                "col3_name": "healthcare_assistants_total",
             },
         }

@@ -170,7 +170,7 @@ class SimSirModel:
         self.census_floor_df = build_floor_df(self.census_df, p.dispositions.keys())
         self.beds_floor_df = build_floor_df(self.beds_df, p.dispositions.keys())
         self.ppe_floor_df = build_floor_df(self.ppe_df, self.ppe_df.columns[2:])
-        self.staffing_df = build_floor_df(self.staffing_df, self.staffing_df.columns[2:])
+        self.staffing_floor_df = build_floor_df(self.staffing_df, self.staffing_df.columns[2:])
 
         self.daily_growth_rate = get_growth_rate(p.doubling_time)
         self.daily_growth_rate_t = get_growth_rate(self.doubling_time_t)
@@ -433,21 +433,21 @@ def build_staffing_df(
     staffing_df["day"] = census_df["day"]
     staffing_df["date"] = census_df["date"]
 
-    staffing_multiplier = 24.0 / p.shift_duration
+    stf_mul = 24.0 / p.shift_duration # Staffing Multiplier
+    fhc = np.floor(census_df.hospitalized) # floored hospitalized census
+    fic = np.floor(census_df.icu) # floored icu census
 
-    floored_hospitalized_census = np.floor(census_df.hospitalized)
-    staffing_df["patients_per_nurse_hosp"] = p.patients_per_nurse * floored_hospitalized_census * staffing_multiplier
-    staffing_df["physicians_hosp"] = p.physicians * floored_hospitalized_census * staffing_multiplier
-    staffing_df["advanced_practice_providers_hosp"] = p.advanced_practice_providers * floored_hospitalized_census * staffing_multiplier
-    staffing_df["healthcare_assistants_hosp"] = p.healthcare_assistants * floored_hospitalized_census * staffing_multiplier
+    staffing_df["nurses_hosp"] = np.ceil(fhc / p.nurses) * stf_mul
+    staffing_df["physicians_hosp"] = np.ceil(fhc / p.physicians) * stf_mul
+    staffing_df["advanced_practice_providers_hosp"] = np.ceil(fhc / p.advanced_practice_providers) * stf_mul
+    staffing_df["healthcare_assistants_hosp"] = np.ceil(fhc / p.healthcare_assistants) * stf_mul
 
-    floored_icu_census = np.floor(census_df.icu) * staffing_multiplier
-    staffing_df["patients_per_nurse_icu"] = p.patients_per_nurse_icu * floored_icu_census * staffing_multiplier
-    staffing_df["physicians_icu"] = p.physicians_icu * floored_icu_census * staffing_multiplier
-    staffing_df["advanced_practice_providers_icu"] = p.advanced_practice_providers_icu * floored_icu_census * staffing_multiplier
-    staffing_df["healthcare_assistants_icu"] = p.healthcare_assistants_icu * floored_icu_census * staffing_multiplier
+    staffing_df["nurses_icu"] = np.ceil(fic / p.nurses_icu) * stf_mul
+    staffing_df["physicians_icu"] = np.ceil(fic / p.physicians_icu) * stf_mul
+    staffing_df["advanced_practice_providers_icu"] = np.ceil(fic / p.advanced_practice_providers_icu) * stf_mul
+    staffing_df["healthcare_assistants_icu"] = np.ceil(fic / p.healthcare_assistants_icu) * stf_mul
 
-    staffing_df["patients_per_nurse_total"] = staffing_df["patients_per_nurse_hosp"] + staffing_df["patients_per_nurse_icu"]
+    staffing_df["nurses_total"] = staffing_df["nurses_hosp"] + staffing_df["nurses_icu"]
     staffing_df["physicians_total"] = staffing_df["physicians_hosp"] + staffing_df["physicians_icu"]
     staffing_df["advanced_practice_providers_total"] = staffing_df["advanced_practice_providers_hosp"] + staffing_df["advanced_practice_providers_icu"]
     staffing_df["healthcare_assistants_total"] = staffing_df["healthcare_assistants_hosp"] + staffing_df["healthcare_assistants_icu"]

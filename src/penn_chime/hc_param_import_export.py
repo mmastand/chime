@@ -62,17 +62,17 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
 
         # Staffing Params
         # Non-ICU
-        patients_per_nurse=imported_params.get("PatientsPerNurse", 6),
-        physicians=imported_params.get("Physicians", 10),
-        advanced_practice_providers=imported_params.get("AdvancedPraticeProviders", 15),
-        healthcare_assistants=imported_params.get("HealthcareAssistants", 20),
+        nurses=imported_params.get("PatientsPerNurse", 6),
+        physicians=imported_params.get("PatientsPerPhysicians", 20),
+        advanced_practice_providers=imported_params.get("PatientsPerAdvancedPraticeProviders", 20),
+        healthcare_assistants=imported_params.get("PatientsPerHealthcareAssistants", 10),
         # ICU
-        patients_per_nurse_icu=imported_params.get("PatientsPerNurseICU", 6),
-        physicians_icu=imported_params.get("PhysiciansICU", 10),
-        advanced_practice_providers_icu=imported_params.get("AdvancedPraticeProvidersICU", 15),
-        healthcare_assistants_icu=imported_params.get("HealthcareAssistantsICU", 20),
+        nurses_icu=imported_params.get("PatientsPerNurseICU", 2),
+        physicians_icu=imported_params.get("PatientsPerPhysiciansICU", 12),
+        advanced_practice_providers_icu=imported_params.get("PatientsPerAdvancedPraticeProvidersICU", 12),
+        healthcare_assistants_icu=imported_params.get("PatientsPerHealthcareAssistantsICU", 6),
         # Shift Duration
-        shift_duration=imported_params.get("ShiftDuration", 8),
+        shift_duration=imported_params.get("ShiftDuration", 12),
 
     )
     return parameters
@@ -125,15 +125,15 @@ def param_download_widget(st, parameters):
 
         # Staffing Params
         # Non-ICU
-        "PatientsPerNurse" : parameters.patients_per_nurse,
-        "Physicians" : parameters.physicians,
-        "AdvancedPraticeProviders" : parameters.advanced_practice_providers,
-        "HealthcareAssistants" : parameters.healthcare_assistants,
+        "PatientsPerNurse" : parameters.nurses,
+        "PatientsPerPhysicians" : parameters.physicians,
+        "PatientsPerAdvancedPraticeProviders" : parameters.advanced_practice_providers,
+        "PatientsPerHealthcareAssistants" : parameters.healthcare_assistants,
         # ICU
-        "PatientsPerNurseICU" : parameters.patients_per_nurse_icu,
-        "PhysiciansICU" : parameters.physicians_icu,
-        "AdvancedPraticeProvidersICU" : parameters.advanced_practice_providers_icu,
-        "HealthcareAssistantsICU" : parameters.healthcare_assistants_icu,
+        "PatientsPerNurseICU" : parameters.nurses_icu,
+        "PatientsPerPhysiciansICU" : parameters.physicians_icu,
+        "PatientsPerAdvancedPraticeProvidersICU" : parameters.advanced_practice_providers_icu,
+        "PatientsPerHealthcareAssistantsICU" : parameters.healthcare_assistants_icu,
         # Shift Duration
         "ShiftDuration" : parameters.shift_duration,
     }

@@ -21,9 +21,11 @@ from penn_chime.charts import (
     build_census_chart,
     build_beds_chart,
     build_ppe_chart,
+    build_staffing_chart,
     build_descriptions,
     build_bed_descriptions,
     build_ppe_descriptions,
+    build_staffing_descriptions,
     build_sim_sir_w_date_chart,
     build_table,
 )
@@ -154,12 +156,38 @@ if st.checkbox("Show Projected PPE Required in tabular form"):
         modulo=ppe_modulo)
     st.dataframe(table_df)
 
+### Staffing Section
+st.subheader("Staffing")
+st.markdown("The number of staff required per day")
+for pc in list(p.staffing_labels.keys())[3:]:
+    staffing_chart = build_staffing_chart(
+        alt=alt, staffing_floor_df=m.staffing_floor_df, p=p, plot_columns=pc)
+    st.altair_chart(staffing_chart, use_container_width=True)
+    st.markdown(build_staffing_descriptions(
+        chart=staffing_chart, label=p.staffing_labels[pc]["label"], shift_duration=p.shift_duration))
+    st.markdown("  \n  \n")
+display_download_link(
+    st,
+    filename=f"{p.current_date}_projected_staffing_required.csv",
+    df=m.staffing_df,
+)
+if st.checkbox("Show Projected Staffing Required in tabular form"):
+    staffing_modulo = 1
+    if not st.checkbox("Show Daily Staffing Required"):
+        staffing_modulo = 7
+    table_df = build_table(
+        df=m.staffing_floor_df,
+        labels=p.labels,
+        modulo=staffing_modulo)
+    st.dataframe(table_df)
+
 ### Export Full Data and Parameters
 st.header("Export Full Data and Parameters")
 df = build_data_and_params(projection_admits = m.admits_df, 
                            census_df = m.census_df,
                            beds_df = m.beds_df, 
                            ppe_df = m.ppe_df,
+                           staffing_df = m.staffing_df,
                            model = m, 
                            parameters = p)
 

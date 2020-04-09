@@ -259,6 +259,63 @@ def build_ppe_chart(
         .configure_title(fontSize=18)
     )
 
+def build_staffing_chart(
+    *,
+    alt,
+    staffing_floor_df: pd.DataFrame,
+    p: Parameters,
+    plot_columns: str,
+) -> Chart:
+    """Build staffing chart."""
+    k = list(p.staffing_labels.keys())[3:]
+    if plot_columns not in k:
+        raise ValueError("Staffing role must be in %s" % (k))
+
+    y_scale = alt.Scale()
+    if p.max_y_axis_set:
+        y_scale.domain = (0, p.max_y_axis)
+        y_scale.clamp = True
+
+    # labels
+    chart_title = p.staffing_labels[plot_columns]["label"]
+    y_axis_label = "Required " + chart_title
+    # departments
+    staffing_floor_df = staffing_floor_df.rename(columns={
+        p.staffing_labels[plot_columns]["col3_name"]: p.staffing_labels["total"],
+        p.staffing_labels[plot_columns]["col2_name"]: p.staffing_labels["icu"],
+        p.staffing_labels[plot_columns]["col1_name"]: p.staffing_labels["nonicu"],
+    })
+    plot_columns = [
+        p.staffing_labels["total"], 
+        p.staffing_labels["icu"],
+        p.staffing_labels["nonicu"],
+    ]
+    x = dict(shorthand="date:T", title="Date",
+             axis=alt.Axis(format=(DATE_FORMAT)))
+    y = dict(shorthand="value:Q", title=y_axis_label, scale=y_scale)
+    color = alt.Color("Department:N", sort=plot_columns)
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
+        DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title=chart_title), "Department:N"]
+
+    # TODO fix the fold to allow any number of dispositions
+    lines = (
+        alt.Chart(title=chart_title)
+        .transform_fold(fold=plot_columns, as_=["Department", "value"])
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
+        .mark_line()
+    )
+    bar = (
+        alt.Chart()
+        .encode(x=alt.X(**x))
+        .transform_filter(alt.datum.day == 0)
+        .mark_rule(color="black", opacity=0.35, size=2)
+    )
+    charts = [lines, bar]
+    return (
+        alt.layer(*charts, data=staffing_floor_df)
+        .resolve_scale(color="independent")
+        .configure_title(fontSize=18)
+    )
 
 def build_descriptions(
     *,
@@ -378,6 +435,45 @@ def build_ppe_descriptions(
             "_* The max is at the upper bound of the data, and therefore may not be the actual max_")
     return "\n\n".join(messages)
 
+def build_staffing_descriptions(
+    *,
+    chart: Chart,
+    label: str,
+    shift_duration: int,
+) -> str:
+    """
+    """
+    messages = []
+
+    cols = ["Total", "ICU", "Non-ICU"]
+    asterisk = False
+    day = "date" if "date" in chart.data.columns else "day"
+
+    messages.append("_Based on {}-hour shift._".format(shift_duration))
+
+    for col in cols:
+        if chart.data[col].idxmax() + 1 == len(chart.data):
+            asterisk = True
+
+        # todo: bring this to an optional arg / i18n
+        on = datetime.strftime(
+            chart.data[day][chart.data[col].idxmax()], "%b %d")
+
+        messages.append(
+            "{} {} peak at {:,} on {}{}".format(
+                col,
+                label,
+                ceil(chart.data[col].max()),
+                on,
+                "*" if asterisk else "",
+            )
+        )
+
+    if asterisk:
+        messages.append(
+            "_* The max is at the upper bound of the data, and therefore may not be the actual max_")
+    return "\n\n".join(messages)
+
 def build_table(
     *,
     df: pd.DataFrame,
@@ -409,5 +505,22 @@ def build_table(
             "other_ppe",
             "other_ppe_hosp",
             "other_ppe_icu",
+        ]]
+    if "nurses_total" in table_df.columns:
+        table_df = table_df[[
+            "day",
+            "date",
+            "nurses_total",
+            "nurses_hosp",
+            "nurses_icu",
+            "physicians_total",
+            "physicians_hosp",
+            "physicians_icu",
+            "advanced_practice_providers_total",
+            "advanced_practice_providers_hosp",
+            "advanced_practice_providers_icu",
+            "healthcare_assistants_total",
+            "healthcare_assistants_hosp",
+            "healthcare_assistants_icu",
         ]]
     return table_df
