@@ -70,7 +70,7 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         nurses_icu=imported_params.get("PatientsPerNurseICU", 2),
         physicians_icu=imported_params.get("PatientsPerPhysiciansICU", 12),
         advanced_practice_providers_icu=imported_params.get("PatientsPerAdvancedPraticeProvidersICU", 12),
-        healthcare_assistants_icu=imported_params.get("PatientsPerHealthcareAssistantsICU", 6),
+        healthcare_assistants_icu=imported_params.get("PatientsPerHealthcareAssistantsICU", 10),
         # Shift Duration
         shift_duration=imported_params.get("ShiftDuration", 12),
 

@@ -344,7 +344,7 @@ def build_descriptions(
         on = datetime.strftime(chart.data[day][chart.data[col].idxmax()], "%b %d")
 
         messages.append(
-            "{} {:,} on {}{}".format(
+            "{} {:,} patients on {}{}".format(
                 labels[col],
                 ceil(chart.data[col].max()),
                 on,
@@ -420,7 +420,7 @@ def build_ppe_descriptions(
             chart.data[day][chart.data[col].idxmax()], "%b %d")
 
         messages.append(
-            "{} {} peak at {:,} on {}{}".format(
+            "{} {} peak at {:,}/day on {}{}".format(
                 col,
                 label,
                 ceil(chart.data[col].max()),
@@ -459,7 +459,7 @@ def build_staffing_descriptions(
             chart.data[day][chart.data[col].idxmax()], "%b %d")
 
         messages.append(
-            "{} {} peak at {:,} on {}{}".format(
+            "{} {} peak at {:,} shifts/day on {}{}".format(
                 col,
                 label,
                 ceil(chart.data[col].max()),

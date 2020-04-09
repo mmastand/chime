@@ -425,7 +425,8 @@ def display_actuals_section(st):
     # If you put this in a checkbox then 
     st.sidebar.markdown("### Actuals")
     st.sidebar.markdown(
-        """<p>For instructions on how to format actual data please see the <a href="#working_with_actuals">Working with Actuals</a> section.</p>""",
+        """<p>For instructions on how to format actual data please see the <a href="#working_with_actuals">Working with Actuals</a> section.
+        Uploaded <b>actuals are for visualizations purposes only</b> and do not affect calculations.</p> """,
         unsafe_allow_html=True,
     )
     uploaded_actuals = st.sidebar.file_uploader("Load Actuals", type=['csv'])
@@ -557,9 +558,9 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     
     # Shift Duration - Shared param between ICU and Non-ICU staff
     shift_duration = st.sidebar.number_input(
-        "Shift Duration",
+        "Shift Duration (hours)",
         min_value=8,
-        max_value=12,
+        max_value=24,
         value=d.shift_duration,
         step=2,
         format="%i",
@@ -897,14 +898,14 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
-            **V: 1.5.2 (Thursday, April 09, 2020)** 
-            * Added staffing functionality
+            **V: 1.5.3 (Thursday, April 09, 2020)** 
+            * Added **staffing functionality**
             * Changed exported column name to "VentilatorsAdmissions"
             * Moved capacity parameters to lower on sidebar
             * Fixed a bug where first row contained NaNs in full downloaded data
             
             **V: 1.4.0 (Wednesday, April 08, 2020)** 
-            * Added PPE/patient/day functionality
+            * Added **PPE/patient/day functionality**
             * Changed minimum days to project to 7
 
             **V: 1.3.7 (Tuesday, April 07, 2020)** 

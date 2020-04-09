@@ -100,7 +100,7 @@ class Parameters:
         nurses_icu: int = 2,
         physicians_icu: int = 12,
         advanced_practice_providers_icu: int = 12,
-        healthcare_assistants_icu: int = 6,
+        healthcare_assistants_icu: int = 10,
         # Shift Duration
         shift_duration: int = 12,
     ):
