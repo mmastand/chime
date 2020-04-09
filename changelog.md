@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Descriptions and file IO now support parameters and required staffing.
 ### Modified
 - Exported csv "ventilatorsAdmissions" changed to "VentilatorsAdmissions"
+- Moved capacity parameters to lower on sidebar
 ### Fixed 
 - First row of full downloaded data no longer has NaN values.
 

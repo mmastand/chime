@@ -273,31 +273,6 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
 
     st.sidebar.markdown(
-        "### COVID-19 Hospital Capacity"
-    )
-    total_covid_beds = st.sidebar.number_input(
-        "Total # of Beds for COVID-19 Patients",
-        min_value=0,
-        value=d.total_covid_beds,
-        step=10,
-        format="%i",
-    )
-    icu_covid_beds = st.sidebar.number_input(
-        "Total # of ICU Beds for COVID-19 Patients",
-        min_value=0,
-        value=d.icu_covid_beds,
-        step=5,
-        format="%i",
-    )
-    covid_ventilators = st.sidebar.number_input(
-        "Total # of Ventilators for COVID-19 Patients",
-        min_value=0,
-        value=d.covid_ventilators,
-        step=5,
-        format="%i",
-    )
-
-    st.sidebar.markdown(
         "### Spread and Contact Parameters"
     )
 
@@ -386,6 +361,31 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         format="%i",
     )
 
+    st.sidebar.markdown(
+        "### COVID-19 Hospital Capacity"
+    )
+    total_covid_beds = st.sidebar.number_input(
+        "Total # of Beds for COVID-19 Patients",
+        min_value=0,
+        value=d.total_covid_beds,
+        step=10,
+        format="%i",
+    )
+    icu_covid_beds = st.sidebar.number_input(
+        "Total # of ICU Beds for COVID-19 Patients",
+        min_value=0,
+        value=d.icu_covid_beds,
+        step=5,
+        format="%i",
+    )
+    covid_ventilators = st.sidebar.number_input(
+        "Total # of Ventilators for COVID-19 Patients",
+        min_value=0,
+        value=d.covid_ventilators,
+        step=5,
+        format="%i",
+    )
+
     parameters = Parameters(
         covid_census_value=covid_census_value,
         covid_census_date=covid_census_date,
@@ -442,7 +442,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     st.sidebar.markdown("**Non-Critical Care**")
     # Non-critical care
     masks_n95 = st.sidebar.number_input(
-        "Masks - N95 /Patient/Day",
+        "Masks - N95/Patient/Day",
         min_value=0,
         value=d.masks_n95,
         step=1,
@@ -451,7 +451,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.masks_n95 = masks_n95
 
     masks_surgical = st.sidebar.number_input(
-        "Masks - Surgical /Patient/Day",
+        "Masks - Surgical/Patient/Day",
         min_value=0,
         value=d.masks_surgical,
         step=1,
@@ -460,7 +460,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.masks_surgical = masks_surgical
 
     face_shield = st.sidebar.number_input(
-        "Face Shields /Patient/Day",
+        "Face Shields/Patient/Day",
         min_value=0,
         value=d.face_shield,
         step=1,
@@ -469,7 +469,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.face_shield = face_shield
 
     gloves = st.sidebar.number_input(
-        "Gloves /Pair/Patient/Day",
+        "Gloves/Pair/Patient/Day",
         min_value=0,
         value=d.gloves,
         step=1,
@@ -478,7 +478,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.gloves = gloves
 
     gowns = st.sidebar.number_input(
-        "Gowns /Patient/Day",
+        "Gowns/Patient/Day",
         min_value=0,
         value=d.gowns,
         step=1,
@@ -487,7 +487,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.gowns = gowns
 
     other_ppe = st.sidebar.number_input(
-        "Other /Patient/Day",
+        "Other/Patient/Day",
         min_value=0,
         value=d.other_ppe,
         step=1,
@@ -498,7 +498,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     # Critical Care
     st.sidebar.markdown("**Critical Care**")
     masks_n95_icu = st.sidebar.number_input(
-        "Masks - N95 (ICU) /Patient/Day",
+        "Masks - N95/Patient/Day (ICU)",
         min_value=0,
         value=d.masks_n95_icu,
         step=1,
@@ -507,7 +507,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.masks_n95_icu = masks_n95_icu
 
     masks_surgical_icu = st.sidebar.number_input(
-        "Masks - Surgical (ICU) /Patient/Day",
+        "Masks - Surgical/Patient/Day (ICU)",
         min_value=0,
         value=d.masks_surgical_icu,
         step=1,
@@ -516,7 +516,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.masks_surgical_icu = masks_surgical_icu
 
     face_shield_icu = st.sidebar.number_input(
-        "Face Shields (ICU) /Patient/Day",
+        "Face Shields/Patient/Day (ICU)",
         min_value=0,
         value=d.face_shield_icu,
         step=1,
@@ -525,7 +525,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.face_shield_icu = face_shield_icu
 
     gloves_icu = st.sidebar.number_input(
-        "Gloves (ICU) /Pair/Patient/Day",
+        "Gloves/Pair/Patient/Day (ICU)",
         min_value=0,
         value=d.gloves_icu,
         step=1,
@@ -534,7 +534,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.gloves_icu = gloves_icu
 
     gowns_icu = st.sidebar.number_input(
-        "Gowns (ICU) /Patient/Day",
+        "Gowns/Patient/Day (ICU)",
         min_value=0,
         value=d.gowns_icu,
         step=1,
@@ -543,7 +543,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.gowns_icu = gowns_icu
 
     other_ppe_icu = st.sidebar.number_input(
-        "Other (ICU) /Patient/Day",
+        "Other/Patient/Day (ICU)",
         min_value=0,
         value=d.other_ppe_icu,
         step=1,
@@ -578,7 +578,7 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.nurses = nurses
 
     physicians = st.sidebar.number_input(
-        "Patients/Physicians",
+        "Patients/Physician",
         min_value=0,
         value=d.physicians,
         step=1,
@@ -587,7 +587,7 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.physicians = physicians
 
     advanced_practice_providers = st.sidebar.number_input(
-        "Patients/Advanced Practice Providers (APP)",
+        "Patients/Advanced Practice Provider (APP)",
         min_value=0,
         value=d.advanced_practice_providers,
         step=1,
@@ -596,7 +596,7 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.advanced_practice_providers = advanced_practice_providers
 
     healthcare_assistants = st.sidebar.number_input(
-        "Patients/Healthcare Assistants (PCT, CNA, etc)",
+        "Patients/Healthcare Assistant (PCT, CNA, etc)",
         min_value=0,
         value=d.healthcare_assistants,
         step=1,
@@ -617,7 +617,7 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.nurses_icu = nurses_icu
 
     physicians_icu = st.sidebar.number_input(
-        "Patients/Physicians (ICU)",
+        "Patients/Physician (ICU)",
         min_value=0,
         value=d.physicians_icu,
         step=1,
@@ -626,7 +626,7 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.physicians_icu = physicians_icu
 
     advanced_practice_providers_icu = st.sidebar.number_input(
-        "Patients/Advanced Practice Providers (APP) (ICU)",
+        "Patients/Advanced Practice Provider (APP) (ICU)",
         min_value=0,
         value=d.advanced_practice_providers_icu,
         step=1,
@@ -635,7 +635,7 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.advanced_practice_providers_icu = advanced_practice_providers_icu
 
     healthcare_assistants_icu = st.sidebar.number_input(
-        "Patients/Healthcare Assistants (PCT, CNA, etc) (ICU)",
+        "Patients/Healthcare Assistant (PCT, CNA, etc) (ICU)",
         min_value=0,
         value=d.healthcare_assistants_icu,
         step=1,
@@ -900,6 +900,7 @@ def write_footer(st):
             **V: 1.5.0 (Thursday, April 09, 2020)** 
             * Added staffing functionality
             * Changed exported column name to "VentilatorsAdmissions"
+            * Moved capacity parameters to lower on sidebar
             * Fixed a bug where first row contained NaNs in full downloaded data
             
             **V: 1.4.0 (Wednesday, April 08, 2020)** 

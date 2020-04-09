@@ -288,7 +288,6 @@ def build_staffing_chart(
     plot_columns = [
         p.staffing_labels["total"], 
         p.staffing_labels["icu"],
-        p.staffing_labels["nonicu"],
     ]
     x = dict(shorthand="date:T", title="Date",
              axis=alt.Axis(format=(DATE_FORMAT)))
@@ -445,7 +444,7 @@ def build_staffing_descriptions(
     """
     messages = []
 
-    cols = ["Total", "ICU", "Non-ICU"]
+    cols = ["Total", "ICU"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
 
