@@ -15,7 +15,7 @@ from .hc_actuals import ADMISSIONS_COLUMNS, CENSUS_COLUMNS
 def get_actual_columns_and_colors(possible_columns, projections_df, actuals_df, alt):
     actuals_plot_columns = []
     actuals_color_domain = []
-    actuals_colors_defaults = ['#4C78A8', '#F58518', '#E45756']
+    actuals_colors_defaults = ['black', '#4C78A8', '#F58518', '#E45756']
     actuals_color_range=[]
     combined = projections_df.merge(actuals_df, on="date", how="left")
     for index, possible_column in enumerate(possible_columns):
@@ -26,29 +26,54 @@ def get_actual_columns_and_colors(possible_columns, projections_df, actuals_df, 
     actuals_color = alt.Color("Actual:N", scale=alt.Scale(domain=actuals_color_domain, range=actuals_color_range))
     return combined, actuals_plot_columns, actuals_color
         
+def get_admits_census_colors(df, p, alt):
+    # departments
+    df = df.rename(columns={
+        "total": p.labels["total"],
+        "non_icu": p.labels["non_icu"],
+        "icu": p.labels["icu"],
+        "ventilators": p.labels["ventilators"],
+    })
+    plot_columns = [
+        p.labels["total"],
+        p.labels["non_icu"],
+        p.labels["icu"],
+        p.labels["ventilators"]
+    ]
+
+    proj_color = alt.Color(
+        "Projected:N",
+        sort=plot_columns,
+        scale=alt.Scale(
+            domain=plot_columns,
+            range=['black', '#4C78A8', '#F58518', '#E45756'],
+        )
+    )
+    return df, plot_columns, proj_color
 
 def build_admits_chart(
     *,
     alt,
     admits_floor_df: pd.DataFrame,
-    parameters: Parameters,
+    p: Parameters,
     actuals: Union[pd.DataFrame, None],
 ) -> Chart:
     """Build admits chart."""
     y_scale = alt.Scale()
-    if parameters.max_y_axis_set:
-        y_scale.domain = (0, parameters.max_y_axis)
+    if p.max_y_axis_set:
+        y_scale.domain = (0, p.max_y_axis)
         y_scale.clamp = True
 
-    plot_columns = ["total", "icu", "ventilators"]
+    admits_floor_df, plot_columns, proj_color = get_admits_census_colors(
+        admits_floor_df, p, alt)
+
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="Daily admissions", scale=y_scale)
-    color = alt.Color("Projected:N", sort = plot_columns)
     tooltip=[alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f"), "Projected:N"]
     lines = (
         alt.Chart()
         .transform_fold(fold=plot_columns, as_=["Projected", "value"])
-        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=proj_color, tooltip=tooltip)
         .mark_line()
     )
     bar = (
@@ -79,27 +104,27 @@ def build_census_chart(
     *,
     alt,
     census_floor_df: pd.DataFrame,
-    parameters: Parameters,
+    p: Parameters,
     actuals: Union[pd.DataFrame, None],
 ) -> Chart:
     """Build census chart."""
     y_scale = alt.Scale()
-    if parameters.max_y_axis_set:
-        y_scale.domain = (0, parameters.max_y_axis)
+    if p.max_y_axis_set:
+        y_scale.domain = (0, p.max_y_axis)
         y_scale.clamp = True
 
-    plot_columns = ["total", "icu", "ventilators"]
+    census_floor_df, plot_columns, proj_color = get_admits_census_colors(
+        census_floor_df, p, alt)
+
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="Census", scale=y_scale)
-    color = alt.Color("Projected:N", sort = plot_columns)
-    # tooltip = [alt.Tooltip("date:T", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title="Census"), "Projected:N"]
     tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title="Census"), "Projected:N"]
 
     # TODO fix the fold to allow any number of dispositions
     lines = (
         alt.Chart()
         .transform_fold(fold=plot_columns, as_=["Projected", "value"])
-        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=proj_color, tooltip=tooltip)
         .mark_line()
     )
     bar = (
@@ -320,8 +345,7 @@ def build_staffing_chart(
 def build_descriptions(
     *,
     chart: Chart,
-    labels: Dict[str, str],
-    suffix: str = ""
+    labels: dict,
 ) -> str:
     """
 
@@ -333,7 +357,7 @@ def build_descriptions(
     """
     messages = []
 
-    cols = ["total", "icu", "ventilators"]
+    cols = ["Total", "Non-ICU", "ICU", "Ventilators"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
 

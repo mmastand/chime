@@ -56,7 +56,7 @@ class Parameters:
         total_covid_beds: int,
         icu_covid_beds: int,
         covid_ventilators: int,
-        hospitalized: Disposition,
+        non_icu: Disposition,
         icu: Disposition,
         relative_contact_rate: float,
         ventilators: Disposition, # used to be ventilated
@@ -113,10 +113,10 @@ class Parameters:
         self.total_covid_beds = total_covid_beds
         self.icu_covid_beds = icu_covid_beds
         self.covid_ventilators = covid_ventilators
-        Rate(value=hospitalized.rate)
+        Rate(value=non_icu.rate)
         Rate(value=icu.rate)
 
-        self.hospitalized = hospitalized
+        self.non_icu = non_icu
         self.icu = icu
 
         self.ventilators = ventilators
@@ -188,6 +188,8 @@ class Parameters:
             "hospitalized": "Hospitalized",
             "icu": "ICU",
             "ventilators": "Ventilators",
+            "total": "Total",
+            "non_icu": "Non-ICU",
             "day": "Day",
             "date": "Date",
             "susceptible": "Susceptible",
@@ -217,31 +219,31 @@ class Parameters:
         }
 
         self.dispositions = {
-            "total": hospitalized,
-            "hospitalized": hospitalized,
+            "total": non_icu,
+            "non_icu": non_icu,
             "icu": icu,
             "ventilators": ventilators,
         }
 
         self.admits_patient_chart_desc = {
-            "hospitalized": "Hospitalized COVID-19 Admissions peak at",
-            "icu": "ICU COVID-19 Admissions peak at",
-            "ventilators": "COVID-19 Ventilators peak at",
-            "total": "Total COVID-19 Admissions peaks at",
+            "Non-ICU": "Non-ICU COVID-19 Admissions peak at",
+            "ICU": "ICU COVID-19 Admissions peak at",
+            "Ventilators": "COVID-19 Ventilators peak at",
+            "Total": "Total COVID-19 Admissions peaks at",
         }
 
         self.census_patient_chart_desc = {
-            "hospitalized": "Hospitalized COVID-19 Census peaks at",
-            "icu": "ICU COVID-19 Census peaks at",
-            "ventilators": "COVID-19 Ventilator usage peaks at",
-            "total": "Total COVID-19 Census peaks at"
+            "Non-ICU": "Non-ICU COVID-19 Census peaks at",
+            "ICU": "ICU COVID-19 Census peaks at",
+            "Ventilators": "COVID-19 Ventilator usage peaks at",
+            "Total": "Total COVID-19 Census peaks at"
         }
         
         self.eqpt_chart_desc = {
-            "hospitalized": "Hospitalized COVID-19 Beds",
-            "icu": "ICU COVID-19 Beds",
-            "ventilators": "COVID-19 Ventilators",
-            "total": "Total COVID-19 Beds",
+            "Non-ICU": "Non-ICU COVID-19 Beds",
+            "ICU": "ICU COVID-19 Beds",
+            "Ventilators": "COVID-19 Ventilators",
+            "Total": "Total COVID-19 Beds",
         }
 
         self.ppe_labels = {

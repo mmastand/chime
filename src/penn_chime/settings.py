@@ -15,7 +15,7 @@ def get_defaults():
         covid_ventilators=10,
         date_first_hospitalized=datetime.date(2020,3,1),
         doubling_time=4.0,
-        hospitalized=Disposition(0.025, 7),
+        non_icu=Disposition(0.025, 7),
         icu=Disposition(0.0075, 9),
         infectious_days=14,
         market_share=0.15,

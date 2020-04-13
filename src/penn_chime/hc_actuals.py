@@ -7,12 +7,14 @@ import pandas as pd
 
 ADMISSIONS_COLUMNS = [
     "total_admissions_actual",
+    "non_icu_admissions_actual",
     "icu_admissions_actual",
     "intubated_actual",
 ]
 
 CENSUS_COLUMNS = [
     "total_census_actual",
+    "non_icu_census_actual",
     "icu_census_actual",
     "ventilators_in_use_actual",
 ]

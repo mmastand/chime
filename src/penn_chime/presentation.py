@@ -96,7 +96,7 @@ and daily growth rate of **{daily_growth_t:.2f}%**.
 """.format(
             total_infections=m.infected,
             current_hosp=p.covid_census_value,
-            hosp_rate=p.hospitalized.rate,
+            hosp_rate=p.non_icu.rate,
             S=p.population,
             market_share=p.market_share,
             recovery_days=p.infectious_days,
@@ -328,9 +328,9 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         "### Severity Parameters"
     )
     
-    hospitalized_rate = st.sidebar.number_input(
+    non_icu_rate = st.sidebar.number_input(
         "Hospitalization %(total infections)", 
-        value=d.hospitalized.rate * 100.,
+        value=d.non_icu.rate * 100.,
         min_value=0.0000000001,
     ) / 100.
     icu_rate = st.sidebar.number_input(
@@ -350,10 +350,10 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         step=1,
         format="%i",
     )
-    hospitalized_days = st.sidebar.number_input(
+    non_icu_days = st.sidebar.number_input(
         "Average Hospital Length of Stay (days)",
         min_value=0,
-        value=d.hospitalized.days,
+        value=d.non_icu.days,
         step=1,
         format="%i",
     )
@@ -400,7 +400,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     parameters = Parameters(
         covid_census_value=covid_census_value,
         covid_census_date=covid_census_date,
-        hospitalized=Disposition(hospitalized_rate, hospitalized_days),
+        non_icu=Disposition(non_icu_rate, non_icu_days),
         total_covid_beds=total_covid_beds,
         icu_covid_beds=icu_covid_beds,
         covid_ventilators=covid_ventilators,
