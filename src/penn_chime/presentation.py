@@ -910,6 +910,9 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
+            **V: 1.6.0 (Monday, April 13, 2020)**
+            * Added ability to select a social distancing start date that is independent of the current date. This is to maintain **consistency with Penn Med's functionality**.
+
             **V: 1.5.3 (Thursday, April 09, 2020)** 
             * Added **staffing functionality**
             * Changed exported column name to "VentilatorsAdmissions"

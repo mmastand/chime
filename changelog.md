@@ -6,12 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
 ## [1.6.0] - 2020-04-13
 ### Added
 - A date picker to allow the user to select the date that social distancing started, behind a checkbox like Penn has it.
 ### Changed
 - Model calculations now take this date into account and use the new Penn modeling code to do so. We also added back in our fix to allow the model to project a small number of days without misbehaiving.
-
 
 ## [1.5.3] - 2020-04-09
 ### Added
