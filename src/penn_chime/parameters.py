@@ -61,7 +61,8 @@ class Parameters:
         relative_contact_rate: float,
         ventilators: Disposition, # used to be ventilated
         current_date: datetime.date = datetime.date.today() - datetime.timedelta(hours=6),
-        social_distancing_start_date: datetime.date = datetime.date.today()  - datetime.timedelta(hours=6),
+        social_distancing_is_implemented: bool = False,
+        mitigation_date: datetime.date = datetime.date.today()  - datetime.timedelta(hours=6),
         date_first_hospitalized: Optional[datetime.date] = None,
         first_hospitalized_date_known: bool = False,
         doubling_time: Optional[float] = None,
@@ -129,7 +130,8 @@ class Parameters:
         else:
             raise AssertionError('population or regions must be provided.')
 
-        self.social_distancing_start_date = Date(value=social_distancing_start_date)
+        self.mitigation_date = mitigation_date
+        self.social_distancing_is_implemented = social_distancing_is_implemented
 
         ####
         if date_first_hospitalized is None: 

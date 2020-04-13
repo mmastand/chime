@@ -14,6 +14,7 @@ from .constants import (
     DOCS_URL,
     FLOAT_INPUT_MIN,
     FLOAT_INPUT_STEP,
+    EPSILON,
 )
 
 from .utils import dataframe_to_base64
@@ -268,7 +269,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         format="%i",
     )
     covid_census_date = st.sidebar.date_input(
-        "Current Date (default is today)",
+        "Current date (default is today)",
         value = d.covid_census_date,
     )
 
@@ -293,7 +294,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         doubling_time = None
     else:
         doubling_time = st.sidebar.number_input(
-            "Doubling time in days (up to today)",
+            "Doubling time in days (before social distancing)",
             min_value=0.5,
             value=d.doubling_time,
             step=0.25,
@@ -302,16 +303,26 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         first_hospitalized_date_known = False
         date_first_hospitalized = None
 
-    relative_contact_rate = st.sidebar.number_input(
-        "Social distancing (% reduction in social contact going forward)",
-        min_value=0.0,
-        max_value=100.0,
-        value=d.relative_contact_rate * 100.,
-        step=1.0,
-    ) / 100.
+    
 
     # social_distancing_start_date = social_distancing_start_date_input()
     social_distancing_start_date = (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).date()
+
+    mitigation_date = None
+    relative_contact_rate = EPSILON
+    social_distancing_is_implemented = st.sidebar.checkbox("Social distancing measures have been implemented.", value=d.social_distancing_is_implemented)
+    if social_distancing_is_implemented:
+        mitigation_date = st.sidebar.date_input(
+            "Date of social distancing measures effect (may be delayed from implementation)",
+            value=d.mitigation_date
+        )
+        relative_contact_rate = st.sidebar.number_input(
+            "Social distancing (% reduction in social contact going forward)",
+            min_value=0.0,
+            max_value=100.0,
+            value=d.relative_contact_rate * 100.,
+            step=1.0,
+        ) / 100.
 
     st.sidebar.markdown(
         "### Severity Parameters"
@@ -395,8 +406,9 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         covid_ventilators=covid_ventilators,
         icu=Disposition(icu_rate, icu_days),
         relative_contact_rate=relative_contact_rate,
+        mitigation_date=mitigation_date,
+        social_distancing_is_implemented=social_distancing_is_implemented,
         ventilators=Disposition(ventilators_rate, ventilators_days),
-        social_distancing_start_date=social_distancing_start_date,
         date_first_hospitalized=date_first_hospitalized,
         doubling_time=doubling_time,
         infectious_days=infectious_days,
@@ -978,7 +990,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     bed_table.rename(parameters.labels)
 
     # taken from raw sir table function:
-    projection_area = model.raw_df
+    projection_area = model.raw_df[['susceptible', 'infected', 'recovered']]
     infect_table = (projection_area.iloc[::1, :]).apply(np.floor)
     infect_table.index = range(infect_table.shape[0])
     infect_table["day"] = infect_table.index
@@ -1049,7 +1061,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     df["CovidCensusDate"] = parameters.covid_census_date
     df["DoublingTimeBeforeSocialDistancing"] = parameters.doubling_time
     df["SocialDistancingPercentReduction"] = parameters.relative_contact_rate
-    df["SocialDistancingStartDate"] = parameters.social_distancing_start_date
+    df["SocialDistancingStartDate"] = parameters.mitigation_date
     df["DateFirstHospitalized"] = parameters.date_first_hospitalized
     df["InfectiousDays"] = parameters.infectious_days
 

@@ -178,16 +178,17 @@ def build_beds_chart(
         y_scale.domain = (-parameters.max_y_axis, parameters.max_y_axis)
         y_scale.clamp = True
 
+    beds_columns = ["total", "icu", "ventilators"]
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="COVID-19 Capacity", scale=y_scale)
-    color = alt.Color("Projected:N", sort = ["total", "icu", "ventilators"])
+    color = alt.Color("Projected:N", sort = beds_columns)
     tooltip = ["Projected:N", alt.Tooltip("value:Q", format=".0f")]
     
     beds_floor_df["zero"] = 0
     # TODO fix the fold to allow any number of dispositions
     beds = (
         alt.Chart()
-        .transform_fold(fold=["total", "icu", "ventilators"], as_=["Projected", "value"])
+        .transform_fold(fold=beds_columns, as_=["Projected", "value"])
         .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line()
     )
@@ -360,7 +361,7 @@ def build_bed_descriptions(
     *,
     chart: Chart,
     labels: Dict[str, str],
-    suffix: str = ""
+    suffix: str = "",
 ) -> str:
     """
 

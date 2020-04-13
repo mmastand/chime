@@ -16,6 +16,15 @@ from .parameters import (
 
 def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
     imported_params = json.loads(file.read())
+    if "SocialDistancingStartDate" in imported_params:
+        if imported_params["SocialDistancingStartDate"] is None:
+            mitigation_date = None
+        else:
+            # value is ISO date
+            mitigation_date = date.fromisoformat(imported_params["SocialDistancingStartDate"])
+    else:
+        mitigation_date = (date.today() - timedelta(hours=6))
+      
     parameters = Parameters(
         population=imported_params["RegionalPopulation"],
         doubling_time=float(imported_params["DoublingTimeBeforeSocialDistancing"]) if "DoublingTimeBeforeSocialDistancing" in imported_params else 4.0,
@@ -25,7 +34,8 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         n_days=imported_params["NumberOfDaysToProject"],
         market_share=float(imported_params["HospitalMarketShare"]),
         relative_contact_rate=float(imported_params["SocialDistancingPercentReduction"]),
-        social_distancing_start_date=date.fromisoformat(imported_params["SocialDistancingStartDate"]) if "SocialDistancingStartDate" in imported_params else (date.today() - timedelta(hours=6)),
+        mitigation_date=mitigation_date,
+        social_distancing_is_implemented=imported_params["SocialDistancingIsImplemented"] if "SocialDistancingIsImplemented" in imported_params else False,
         hospitalized=Disposition(float(imported_params["HospitalizationPercentage"]), imported_params["HospitalLengthOfStay"]),
         icu=Disposition(float(imported_params["ICUPercentage"]), imported_params["ICULengthOfStay"]),
         ventilators=Disposition(float(imported_params["VentilatorsPercentage"]),imported_params["VentLengthOfStay"]),
@@ -84,7 +94,8 @@ def param_download_widget(st, parameters):
         
         "FirstHospitalizedCaseDate": date.today().isoformat() if parameters.date_first_hospitalized == None else parameters.date_first_hospitalized.isoformat(),
         "FirstHospitalizedDateKnown": parameters.first_hospitalized_date_known,
-        "SocialDistancingStartDate": parameters.social_distancing_start_date.isoformat(),
+        "SocialDistancingStartDate": parameters.mitigation_date.isoformat() if parameters.mitigation_date is not None else parameters.mitigation_date,
+        "SocialDistancingIsImplemented": parameters.social_distancing_is_implemented,
         "Author": parameters.author,
         "Scenario": parameters.scenario,
         "NumberOfDaysToProject": parameters.n_days,
