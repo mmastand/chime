@@ -6,12 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.7.0] - 2020-04-14
+## [1.7.1] - 2020-04-14
 ### Added
 - Non-ICU is now displayed on all charts. 
+- Category for other staff
+- Ability to borrow beds from non-icu to icu
 ### Changed
 - "Hospitalized" was renamed to "Non-ICU" across the whole app.
 - Total is now black, non-icu is blue. This matches penn.
+- Top text and chart descriptions are improved.
 
 ## [1.6.0] - 2020-04-13
 ### Added
