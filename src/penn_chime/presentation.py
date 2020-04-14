@@ -833,6 +833,10 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
+            **V: x.x.x (, 2020)**
+            * Added Non-ICU to all charts. This corresponds to Hospitalized in Penn Med.
+            * Changed Total color to black, other colors match Penn Med.
+
             **V: 1.6.0 (Monday, April 13, 2020)**
             * Added ability to select a social distancing start date that is independent of the current date. This is to maintain **consistency with Penn Med's functionality**.
 

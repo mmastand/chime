@@ -120,7 +120,7 @@ if st.checkbox("Show Projected Capacity in tabular form"):
 
 st.subheader("Susceptible, Infected, and Recovered")
 st.markdown("The number of susceptible, infected, and recovered individuals in the hospital catchment region at any given moment")
-sim_sir_w_date_chart = build_sim_sir_w_date_chart(alt=alt, sim_sir_w_date_floor_df=m.sim_sir_w_date_floor_df, actuals=actuals)
+sim_sir_w_date_chart = build_sim_sir_w_date_chart(alt=alt, sim_sir_w_date_floor_df=m.sim_sir_w_date_floor_df, actuals=actuals, p = p)
 st.altair_chart(sim_sir_w_date_chart, use_container_width=True)
 display_download_link(
     st,

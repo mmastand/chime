@@ -12,12 +12,15 @@ from .parameters import Parameters
 from .hc_actuals import ADMISSIONS_COLUMNS, CENSUS_COLUMNS
 
 
-def get_actual_columns_and_colors(possible_columns, projections_df, actuals_df, alt):
+def get_actual_columns_and_colors(possible_columns, projections_df, actuals_df, p, alt):
     actuals_plot_columns = []
     actuals_color_domain = []
     actuals_colors_defaults = ['black', '#4C78A8', '#F58518', '#E45756']
+    if "daily_regional_infections" in possible_columns:
+        actuals_colors_defaults = ['#4C78A8']
     actuals_color_range=[]
     combined = projections_df.merge(actuals_df, on="date", how="left")
+    # combined = combined.rename(columns=p.actuals_labels)
     for index, possible_column in enumerate(possible_columns):
         if possible_column in actuals_df.columns:
             actuals_plot_columns.append(possible_column)
@@ -85,7 +88,7 @@ def build_admits_chart(
     charts = [lines, bar]
     if actuals is not None:
         admits_floor_df, actuals_plot_columns, actuals_color = get_actual_columns_and_colors(
-            ADMISSIONS_COLUMNS, admits_floor_df, actuals, alt,
+            ADMISSIONS_COLUMNS, admits_floor_df, actuals, p, alt,
         )
         actuals_tooltip=[alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f"), "Actual:N"]
         actuals_lines = (
@@ -136,7 +139,7 @@ def build_census_chart(
     charts = [lines, bar]
     if actuals is not None:
         census_floor_df, actuals_plot_columns, actuals_color = get_actual_columns_and_colors(
-            CENSUS_COLUMNS, census_floor_df, actuals, alt,
+            CENSUS_COLUMNS, census_floor_df, actuals, p, alt,
         )
         actuals_tooltip=[alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title="Census"), "Actual:N"]
         actuals_lines = (
@@ -154,6 +157,7 @@ def build_sim_sir_w_date_chart(
     alt,
     sim_sir_w_date_floor_df: pd.DataFrame,
     actuals: Union[pd.DataFrame, None],
+    p: Parameters,
 ) -> Chart:
     """Build sim sir w date chart."""
     y_scale = alt.Scale()
@@ -180,7 +184,7 @@ def build_sim_sir_w_date_chart(
     charts = [lines, bar]
     if actuals is not None:
         sim_sir_w_date_floor_df, actuals_plot_columns, actuals_color = get_actual_columns_and_colors(
-            ["daily_regional_infections"], sim_sir_w_date_floor_df, actuals, alt,
+            ["daily_regional_infections"], sim_sir_w_date_floor_df, actuals, p, alt,
         )
         actuals_tooltip=[alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f"), "Actual:N"]
         actuals_lines = (

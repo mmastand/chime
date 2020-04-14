@@ -225,8 +225,19 @@ class Parameters:
             "ventilators": ventilators,
         }
 
+        self.actuals_labels = {
+            "total_admissions_actual": "Total ",
+            "non_icu_admissions_actual": "Non-ICU ",
+            "icu_admissions_actual": "ICU ",
+            "intubated_actual": "Intubated ",
+            "total_census_actual": "Total ",
+            "non_icu_census_actual": "Non-ICU ",
+            "icu_census_actual": "ICU ",
+            "ventilators_in_use_actual": "Ventialtors In Use ",
+        }
+        
         self.admits_patient_chart_desc = {
-            "Non-ICU": "Non-ICU COVID-19 Admissions peak at",
+            "Non-ICU": "Non-ICU COVID-19 census peak at",
             "ICU": "ICU COVID-19 Admissions peak at",
             "Ventilators": "COVID-19 Ventilators peak at",
             "Total": "Total COVID-19 Admissions peaks at",
