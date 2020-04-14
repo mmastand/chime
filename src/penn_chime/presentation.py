@@ -46,38 +46,30 @@ def display_header(st, m, p):
         else ""
     )
 
-    st.subheader("Information About This Tool")
+    st.subheader("HealthCatalyst® COVID-19 Capacity Planning Tool")
 
     st.markdown(
         f"""
-        This tool was developed by Health Catalyst to assist healthcare systems with their modeling and forecasting of COVID-19 infection 
-        rates in their local catchment region, and the subsequent impact of those rates on care delivery capacity. We extend our deep 
-        thanks to the [Predictive Healthcare team at Penn Medicine] (http://predictivehealthcare.pennmedicine.org/)  for their [COVID-19 
-        Hospital Impact Model for Epidemics] (https://penn-chime.phl.io/), and making the code for their tool available to the opensource community. We leveraged the Penn 
-        epidemiology models, and added new features in our tool such as the ability to run multiple scenarios, store those scenarios on 
-        users' local desktops, then upload those scenarios again for later use. We also added additional features that reflect hospital 
-        operations, such as the ability to understand capacity.
-        We've done our best to test and validate this tool, balancing time-to-value with thorough test and validation. 
-        * If you find a bug, please report it [here] (mailto:covidcapacitybugs@healthcatalyst.com).
-        * If you have an enhancement request, please provide it [here] (mailto:covidcapacityenhancements@healthcatalyst.com).
-        
+        Forecast local COVID-19 demand in the context of local system capacity to set 
+        expectations and inform mitigation strategy:  
+        * Built on the outstanding [Penn Med](http://predictivehealthcare.pennmedicine.org/) [epidemic model] (https://penn-chime.phl.io/)
+        * Easily manage multiple scenarios 
+        * Overlay demand forecasts on your capacity (beds and ventilators) 
+        * Compare model estimates to actuals 
+        * Estimate demand for personal protective equipment (PPE) and staff 
+        * Export assumptions and results for further use 
+
+        Questions, comments, support, or requests: [covidcapacity@healthcatalyst.com](mailto:covidcapacity@healthcatalyst.com)  
+        <p>See <strong><a href="#application_guidance">Application Guidance</a></strong> section below for more information.</p>
         """,
         unsafe_allow_html=True,
     )
-    st.markdown(
-        """<p>See <strong><a href="#application_guidance">Application Guidance</a></strong> section below for more information.</p>""",
-        unsafe_allow_html=True,
-    )
-
     st.markdown(
         """
-        <link rel="stylesheet" href="https://www1.pennmedicine.org/styles/shared/penn-medicine-header.css">
-        <div class="penn-medicine-header__content">
-            <a id="title" class="penn-medicine-header__title" style="font-size:24pt;color:#00aeff">COVID-19 Hospital Impact Model for Epidemics</a>
-        </div> 
-        <br>
-        """,
-        unsafe_allow_html=True,
+        **Notice**: _There is a high degree of uncertainty about the details of COVID-19 infection, transmission, 
+        and the effectiveness of social distancing measures. Long-term projections made using this simplified 
+        model of outbreak progression should be treated with extreme caution._ 
+        """
     )
 
     st.markdown(
