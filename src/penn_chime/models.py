@@ -436,22 +436,23 @@ def build_beds_df(
 
     # Shift people to ICU if main hospital is full and ICU is not.
     # And vice versa
-    new_hosp = []
-    new_icu = []
-    for row in beds_df.itertuples():
-        if row.non_icu < 0 and row.icu > 0: # ICU to Non-ICU
-            needed = min(abs(row.non_icu), row.icu)
-            new_hosp.append(row.non_icu + needed)
-            new_icu.append(row.icu - needed)
-        elif row.non_icu > 0 and row.icu < 0: # Non-ICU to ICU
-            needed = min(abs(row.icu), row.non_icu)
-            new_hosp.append(row.icu + needed)
-            new_icu.append(row.non_icu - needed)
-        else: 
-            new_hosp.append(row.non_icu)
-            new_icu.append(row.icu)
-    beds_df["non_icu"] = new_hosp
-    beds_df["icu"] = new_icu
+    if p.beds_borrow:
+        new_hosp = []
+        new_icu = []
+        for row in beds_df.itertuples():
+            if row.non_icu < 0 and row.icu > 0: # ICU to Non-ICU
+                needed = min(abs(row.non_icu), row.icu)
+                new_hosp.append(row.non_icu + needed)
+                new_icu.append(row.icu - needed)
+            elif row.non_icu > 0 and row.icu < 0: # Non-ICU to ICU
+                needed = min(abs(row.icu), row.non_icu)
+                new_hosp.append(row.non_icu - needed)
+                new_icu.append(row.icu + needed)
+            else: 
+                new_hosp.append(row.non_icu)
+                new_icu.append(row.icu)
+        beds_df["non_icu"] = new_hosp
+        beds_df["icu"] = new_icu
     return beds_df
 
 def build_ppe_df(
@@ -510,6 +511,8 @@ def build_staffing_df(
         fnic / p.advanced_practice_providers) * stf_mul) if p.advanced_practice_providers != 0 else 0
     staffing_df["healthcare_assistants_non_icu"] = np.ceil(np.ceil(
         fnic / p.healthcare_assistants) * stf_mul) if p.healthcare_assistants != 0 else 0
+    staffing_df["other_staff_non_icu"] = np.ceil(np.ceil(
+    fnic / p.other_staff) * stf_mul) if p.other_staff != 0 else 0
 
     staffing_df["nurses_icu"] = np.ceil(np.ceil(
         fic / p.nurses_icu) * stf_mul) if p.nurses_icu !=0 else 0
@@ -519,10 +522,12 @@ def build_staffing_df(
         fic / p.advanced_practice_providers_icu) * stf_mul) if p.advanced_practice_providers_icu !=0 else 0
     staffing_df["healthcare_assistants_icu"] = np.ceil(np.ceil(
         fic / p.healthcare_assistants_icu) * stf_mul) if p.healthcare_assistants_icu !=0 else 0
+    staffing_df["other_staff_icu"] = np.ceil(np.ceil(
+        fic / p.other_staff_icu) * stf_mul) if p.other_staff_icu != 0 else 0
 
     staffing_df["nurses_total"] = np.ceil(staffing_df["nurses_non_icu"] + staffing_df["nurses_icu"])
     staffing_df["physicians_total"] = np.ceil(staffing_df["physicians_non_icu"] + staffing_df["physicians_icu"])
     staffing_df["advanced_practice_providers_total"] = np.ceil(staffing_df["advanced_practice_providers_non_icu"] + staffing_df["advanced_practice_providers_icu"])
     staffing_df["healthcare_assistants_total"] = np.ceil(staffing_df["healthcare_assistants_non_icu"] + staffing_df["healthcare_assistants_icu"])
-
+    staffing_df["other_staff_total"] = np.ceil(staffing_df["other_staff_non_icu"] + staffing_df["other_staff_icu"])
     return staffing_df

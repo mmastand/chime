@@ -40,6 +40,7 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         icu=Disposition(float(imported_params["ICUPercentage"]), imported_params["ICULengthOfStay"]),
         ventilators=Disposition(float(imported_params["VentilatorsPercentage"]),imported_params["VentLengthOfStay"]),
 
+        beds_borrow=imported_params.get("BedBorrowing", True),
         # total_beds=imported_params.get("TotalNumberOfBeds", 10), # Deprecated in v1.1.1
         total_covid_beds=imported_params["TotalNumberOfBedsForNCPatients"],
         # total_icu_beds=imported_params.get("TotalNumberOfICUBeds", 10), # Deprecated in v1.1.1
@@ -76,11 +77,13 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         physicians=imported_params.get("PatientsPerPhysicians", 20),
         advanced_practice_providers=imported_params.get("PatientsPerAdvancedPraticeProviders", 20),
         healthcare_assistants=imported_params.get("PatientsPerHealthcareAssistants", 10),
+        other_staff=imported_params.get("PatientsPerOtherStaff", 10),
         # ICU
         nurses_icu=imported_params.get("PatientsPerNurseICU", 2),
         physicians_icu=imported_params.get("PatientsPerPhysiciansICU", 12),
         advanced_practice_providers_icu=imported_params.get("PatientsPerAdvancedPraticeProvidersICU", 12),
         healthcare_assistants_icu=imported_params.get("PatientsPerHealthcareAssistantsICU", 10),
+        other_staff_icu=imported_params.get("PatientsPerOtherStaffICU", 10),
         # Shift Duration
         shift_duration=imported_params.get("ShiftDuration", 12),
 
@@ -112,6 +115,7 @@ def param_download_widget(st, parameters):
         "MaxYAxisSet":parameters.max_y_axis_set,
         "MaxYAxis":parameters.max_y_axis,
         
+        "BedBorrowing": parameters.beds_borrow,
         "TotalNumberOfBedsForNCPatients": parameters.total_covid_beds,
         "TotalNumberOfICUBedsForNCPatients": parameters.icu_covid_beds,
         "TotalNumberOfVentsForNCPatients": parameters.covid_ventilators,
@@ -139,12 +143,14 @@ def param_download_widget(st, parameters):
         "PatientsPerNurse" : parameters.nurses,
         "PatientsPerPhysicians" : parameters.physicians,
         "PatientsPerAdvancedPraticeProviders" : parameters.advanced_practice_providers,
-        "PatientsPerHealthcareAssistants" : parameters.healthcare_assistants,
+        "PatientsPerHealthcareAssistants": parameters.healthcare_assistants,
+        "PatientsPerOtherStaff": parameters.other_staff,
         # ICU
         "PatientsPerNurseICU" : parameters.nurses_icu,
         "PatientsPerPhysiciansICU" : parameters.physicians_icu,
         "PatientsPerAdvancedPraticeProvidersICU" : parameters.advanced_practice_providers_icu,
-        "PatientsPerHealthcareAssistantsICU" : parameters.healthcare_assistants_icu,
+        "PatientsPerHealthcareAssistantsICU": parameters.healthcare_assistants_icu,
+        "PatientsPerOtherStaffICU": parameters.other_staff_icu,
         # Shift Duration
         "ShiftDuration" : parameters.shift_duration,
     }

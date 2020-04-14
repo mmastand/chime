@@ -40,11 +40,13 @@ def get_defaults():
         physicians = 20,
         advanced_practice_providers = 20,
         healthcare_assistants = 10,
+        other_staff=10,
         # ICU
         nurses_icu = 2,
         physicians_icu= 12,
         advanced_practice_providers_icu = 12,
         healthcare_assistants_icu = 10,
+        other_staff_icu=10,
         # Shift Duration
         shift_duration = 12,
     )

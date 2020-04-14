@@ -209,9 +209,12 @@ def build_beds_chart(
 
     beds_floor_df, beds_columns, proj_color = get_proj_columns_and_colors(
         beds_floor_df, parameters, alt)
+    beds_floor_df["zero"] = 0
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="COVID-19 Capacity", scale=y_scale)
     tooltip = ["Projected:N", alt.Tooltip("value:Q", format=".0f")]
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f"), "Projected:N"]
+
     
     beds = (
         alt.Chart()
@@ -393,7 +396,7 @@ def build_descriptions(
         on = datetime.strftime(chart.data[day][chart.data[col].idxmax()], "%b %d")
 
         messages.append(
-            "{} {:,} patients on {}{}".format(
+            "* {} {:,} patients on {}{}".format(
                 labels[col],
                 ceil(chart.data[col].max()),
                 on,
@@ -403,7 +406,7 @@ def build_descriptions(
 
     if asterisk:
         messages.append("_* The max is at the upper bound of the data, and therefore may not be the actual max_")
-    return "\n\n".join(messages)
+    return "  \n".join(messages)
 
 def build_bed_descriptions(
     *,
@@ -424,8 +427,9 @@ def build_bed_descriptions(
     asterisk = False
     
     # Add note if lines overlap.
-    if sum(np.where(chart.data["Total"] == chart.data["ICU"], 1, 0)) > 1:
-        messages.append("_The overlapping lines represent non-ICU patients being housed in the ICU._")
+    if sum(np.where(chart.data["Total"] == chart.data["ICU"], 1, 0)) > 1 or \
+         sum(np.where(chart.data["Total"] == chart.data["Non-ICU"], 1, 0)) > 1:
+        messages.append("_The overlapping lines represent non-ICU patients being housed in the ICU or vice versa._")
 
     for col in cols:
         if np.nanmin(chart.data[col]) > 0:
@@ -437,13 +441,13 @@ def build_bed_descriptions(
         on = datetime.strftime(on, "%b %d")  # todo: bring this to an optional arg / i18n
 
         messages.append(
-            "{} are exhausted on {}".format(
+            "* {} are exhausted on {}".format(
                 labels[col],
                 on,
             )
         )
 
-    return "\n\n".join(messages)
+    return "  \n".join(messages)
 
 
 def build_ppe_descriptions(
@@ -468,7 +472,7 @@ def build_ppe_descriptions(
             chart.data[day][chart.data[col].idxmax()], "%b %d")
 
         messages.append(
-            "{} {} peak at {:,}/day on {}{}".format(
+            "* {} {} peak at {:,}/day on {}{}".format(
                 col,
                 label,
                 ceil(chart.data[col].max()),
@@ -480,7 +484,7 @@ def build_ppe_descriptions(
     if asterisk:
         messages.append(
             "_* The max is at the upper bound of the data, and therefore may not be the actual max_")
-    return "\n\n".join(messages)
+    return "  \n".join(messages)
 
 def build_staffing_descriptions(
     *,
@@ -507,7 +511,7 @@ def build_staffing_descriptions(
             chart.data[day][chart.data[col].idxmax()], "%b %d")
 
         messages.append(
-            "{} {} peak at {:,} shifts/day on {}{}".format(
+            "* {} {} peak at {:,} shifts/day on {}{}".format(
                 col,
                 label,
                 ceil(chart.data[col].max()),
@@ -519,7 +523,7 @@ def build_staffing_descriptions(
     if asterisk:
         messages.append(
             "_* The max is at the upper bound of the data, and therefore may not be the actual max_")
-    return "\n\n".join(messages)
+    return "  \n".join(messages)
 
 def build_table(
     *,
