@@ -46,18 +46,24 @@ def display_header(st, m, p):
         else ""
     )
 
-    st.subheader("HealthCatalyst® COVID-19 Capacity Planning Tool")
+    st.subheader("Health Catalyst® COVID-19 Capacity Planning Tool")
 
     st.markdown(
         f"""
         Forecast local COVID-19 demand in the context of local system capacity to set 
-        expectations and inform mitigation strategy:  
+        expectations and inform mitigation strategy:
         * Built on the outstanding [Penn Med](http://predictivehealthcare.pennmedicine.org/) [epidemic model] (https://penn-chime.phl.io/)
         * Easily manage multiple scenarios 
         * Overlay demand forecasts on your capacity (beds and ventilators) 
         * Compare model estimates to actuals 
         * Estimate demand for personal protective equipment (PPE) and staff 
         * Export assumptions and results for further use 
+
+        Important note on definitions (<span style="color:red;"><i>different from Penn Med model</i></span>):
+        * Non-ICU: Inpatient hospital beds  outside of critical care 
+        * ICU:  Beds used for critical care patients 
+        * Total:  Sum of beds/patients in non-ICU plus ICU 
+        * Ventilators:  Devices used to assist with patient breathing, counted independently of beds (not a subset of ICU or Total patients/beds) 
 
         Questions, comments, support, or requests: [covidcapacity@healthcatalyst.com](mailto:covidcapacity@healthcatalyst.com)  
         <p>See <strong><a href="#application_guidance">Application Guidance</a></strong> section below for more information.</p>
@@ -74,7 +80,7 @@ def display_header(st, m, p):
 
     st.markdown(
         """The estimated number of currently infected individuals is **{total_infections:.0f}**. This is based on current inputs for
-    Hospitalizations (**{current_hosp}**), Hospitalization rate (**{hosp_rate:.0%}**), Region size (**{S}**),
+    Hospitalizations (**{current_hosp}**), Hospitalization rate (**{hosp_rate:.2%}**), Region size (**{S}**),
     and Hospital market share (**{market_share:.0%}**).
 
 {infected_population_warning_str}
@@ -132,33 +138,9 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     if uploaded_file is not None:
         d = constants_from_uploaded_file(uploaded_file)
 
-    # st.sidebar.markdown("""
-    #     <span style="color:red;font-size:small;">Known Limitation: You must refresh your browser window before loading scenario, otherwise the projections will not be updated.</span> 
-    # """, unsafe_allow_html=True)
     st.sidebar.markdown("""
         <span style="color:red;font-size:small;">Please refresh your browser window before loading a scenario.</span> 
     """, unsafe_allow_html=True)
-
-    
-    
-    # social_distancing_start_date_input = DateInput(
-    #     st_obj, "Date when Social Distancing Protocols Started (Default is today)", value=d.social_distancing_start_date,
-    # )
-    
-    
-    # max_y_axis_set_input = CheckboxInput(
-    #     st_obj, 
-    #     "Set the Y-axis on graphs to a static value",
-    # )
-    # max_y_axis_input = NumberInput(
-    #     st_obj, 
-    #     "Y-axis static value", 
-    #     value=500, 
-    #     format="%i", 
-    #     step=25,
-    # )
-
-    # Build in desired order
 
     author = st.sidebar.text_input(
         "Author Name", 
@@ -199,10 +181,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     st.sidebar.markdown(
         "### Spread and Contact Parameters"
     )
-
-    
-    # parameter.first_hospitalized_date_known = st.sidebar.checkbox("Set the Y-axis on graphs to a static value", value=max_y_axis_set_default)
-    
+ 
     first_hospitalized_date_known_default = False if uploaded_file is None else d.first_hospitalized_date_known
 
     if st.sidebar.checkbox(
@@ -226,9 +205,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         first_hospitalized_date_known = False
         date_first_hospitalized = None
 
-    
 
-    # social_distancing_start_date = social_distancing_start_date_input()
     social_distancing_start_date = (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).date()
 
     mitigation_date = None
@@ -252,7 +229,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     )
     
     non_icu_rate = st.sidebar.number_input(
-        "Hospitalization %(total infections)", 
+        "Non-ICU %(total infections)", 
         value=d.non_icu.rate * 100.,
         min_value=0.0000000001,
     ) / 100.
@@ -274,7 +251,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         format="%i",
     )
     non_icu_days = st.sidebar.number_input(
-        "Average Hospital Length of Stay (days)",
+        "Average Non-ICU Length of Stay (days)",
         min_value=0,
         value=d.non_icu.days,
         step=1,
@@ -298,6 +275,9 @@ def display_sidebar(st, d: Parameters) -> Parameters:
     st.sidebar.markdown(
         "### COVID-19 Hospital Capacity"
     )
+    beds_borrow_default = True if uploaded_file is None else d.beds_borrow
+    beds_borrow_input = st.sidebar.checkbox("Allow borrowing beds between departments", value=beds_borrow_default)
+    
     total_covid_beds = st.sidebar.number_input(
         "Total # of Beds for COVID-19 Patients",
         min_value=0,
@@ -341,6 +321,7 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         scenario=scenario,
         first_hospitalized_date_known=first_hospitalized_date_known,
         current_date=covid_census_date,
+        beds_borrow=beds_borrow_input,
     )
 
     parameters = display_ppe_section(st, d, parameters)
@@ -375,7 +356,7 @@ def display_actuals_section(st):
 
 def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     st.sidebar.markdown("### Personal Protection Equipment")
-    st.sidebar.markdown("**Non-Critical Care**")
+    st.sidebar.markdown("**Non-ICU**")
     # Non-critical care
     masks_n95 = st.sidebar.number_input(
         "Masks - N95/Patient/Day",
@@ -432,7 +413,7 @@ def display_ppe_section(st, d: Parameters, p: Parameters) -> Parameters:
     p.other_ppe = other_ppe
 
     # Critical Care
-    st.sidebar.markdown("**Critical Care**")
+    st.sidebar.markdown("**ICU**")
     masks_n95_icu = st.sidebar.number_input(
         "Masks - N95/Patient/Day (ICU)",
         min_value=0,
@@ -502,7 +483,7 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     )
     p.shift_duration = shift_duration
 
-    st.sidebar.markdown("**Non-Critical Care**")
+    st.sidebar.markdown("**Non-ICU**")
     # Non-critical care
     nurses = st.sidebar.number_input(
         "Patients/Nurse",
@@ -540,9 +521,17 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     )
     p.healthcare_assistants = healthcare_assistants
 
+    other_staff = st.sidebar.number_input(
+        "Patients/Other Staff",
+        min_value=0,
+        value=d.other_staff,
+        step=1,
+        format="%i",
+    )
+    p.other_staff = other_staff
 
     # Critical Care
-    st.sidebar.markdown("**Critical Care**")
+    st.sidebar.markdown("**ICU**")
     nurses_icu = st.sidebar.number_input(
         "Patients/Nurse (ICU)",
         min_value=0,
@@ -579,6 +568,14 @@ def display_staffing_section(st, d: Parameters, p: Parameters) -> Parameters:
     )
     p.healthcare_assistants_icu = healthcare_assistants_icu
 
+    other_staff_icu = st.sidebar.number_input(
+        "Patients/Other Staff (ICU)",
+        min_value=0,
+        value=d.other_staff_icu,
+        step=1,
+        format="%i",
+    )
+    p.other_staff_icu = other_staff_icu
     return p
 
 def display_displayParameters_section(st, d: Parameters, uploaded_file, p: Parameters) -> Parameters:
@@ -833,7 +830,7 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
-            **V: 1.7.0 (Tuesday, April 14, 2020)**
+            **V: 1.7.1 (Tuesday, April 14, 2020)**
             * Added Non-ICU to all charts. This corresponds to Hospitalized in Penn Med.
             * Changed Total color to black, other colors match Penn Med.
 
@@ -955,6 +952,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     df["RegionalPopulation"] = parameters.population
 
     # Bed Params
+    df["BedBorrowing"] = parameters.beds_borrow
     df["TotalNumberOfBedsForCOVIDPatients"] = parameters.total_covid_beds
     df["TotalNumberOfICUBedsFoCOVIDPatients"] = parameters.icu_covid_beds
     df["TotalNumberOfVentsFoCOVIDPatients"] = parameters.covid_ventilators
@@ -1052,4 +1050,8 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     df["HealthcareAssistantsTotal"] = staffing_df.healthcare_assistants_total
     df["HealthcareAssistantsNonICU"] = staffing_df.healthcare_assistants_non_icu
     df["HealthcareAssistantsICU"] = staffing_df.healthcare_assistants_icu
+
+    df["OtherStaffTotal"] = staffing_df.other_staff_total
+    df["OtherStaffNonICU"] = staffing_df.other_staff_non_icu
+    df["OtherStaffICU"] = staffing_df.other_staff_icu
     return(df)

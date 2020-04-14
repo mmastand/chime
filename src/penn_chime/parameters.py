@@ -53,6 +53,7 @@ class Parameters:
         *,
         covid_census_value: int, # used to be current_hospitalized
         covid_census_date: datetime.date, # added by Health Catalyst team
+        beds_borrow: bool = True,
         total_covid_beds: int,
         icu_covid_beds: int,
         covid_ventilators: int,
@@ -97,11 +98,13 @@ class Parameters:
         physicians: int = 20,
         advanced_practice_providers: int= 20,
         healthcare_assistants: int = 10,
+        other_staff=10,
         # ICU
         nurses_icu: int = 2,
         physicians_icu: int = 12,
         advanced_practice_providers_icu: int = 12,
         healthcare_assistants_icu: int = 10,
+        other_staff_icu=10,
         # Shift Duration
         shift_duration: int = 12,
     ):
@@ -110,6 +113,7 @@ class Parameters:
         self.current_date = Date(value=current_date)
         self.relative_contact_rate = Rate(value=relative_contact_rate)
 
+        self.beds_borrow = beds_borrow
         self.total_covid_beds = total_covid_beds
         self.icu_covid_beds = icu_covid_beds
         self.covid_ventilators = covid_ventilators
@@ -176,11 +180,13 @@ class Parameters:
         self.physicians = physicians
         self.advanced_practice_providers = advanced_practice_providers
         self.healthcare_assistants = healthcare_assistants
+        self.other_staff = other_staff
         # ICU
         self.nurses_icu = nurses_icu
         self.physicians_icu = physicians_icu
         self.advanced_practice_providers_icu = advanced_practice_providers_icu
         self.healthcare_assistants_icu = healthcare_assistants_icu
+        self.other_staff_icu = other_staff_icu
         # Shift Duration
         self.shift_duration = shift_duration
         
@@ -326,5 +332,11 @@ class Parameters:
                 "col1_name": "healthcare_assistants_total",
                 "col2_name": "healthcare_assistants_non_icu",
                 "col3_name": "healthcare_assistants_icu",
+            },
+            "other_staff": {
+                "label": "Other Staff",
+                "col1_name": "other_staff_total",
+                "col2_name": "other_staff_non_icu",
+                "col3_name": "other_staff_icu",
             },
         }
