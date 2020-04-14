@@ -50,9 +50,10 @@ if st.checkbox("Show more info about this tool"):
 
 st.subheader("New Hospital Admissions")
 st.markdown("Projected number of **daily** COVID-19 admissions. \n\n _NOTE: Now including estimates of prior admissions for comparison._")
-admits_chart = build_admits_chart(alt=alt, admits_floor_df=m.admits_floor_df, parameters=p, actuals=actuals)
+admits_chart = build_admits_chart(alt=alt, admits_floor_df=m.admits_floor_df, p=p, actuals=actuals)
 st.altair_chart(admits_chart, use_container_width=True)
-st.markdown(build_descriptions(chart=admits_chart, labels=p.admits_patient_chart_desc))
+st.markdown(build_descriptions(chart=admits_chart,
+                               labels=p.admits_patient_chart_desc,))
 display_download_link(
     st,
     filename=f"{p.current_date}_projected_admits.csv",
@@ -72,11 +73,12 @@ if st.checkbox("Show Projected Admissions in tabular form"):
 
 st.subheader("Hospital Census")
 st.markdown("Projected **census** of COVID-19 patients, accounting for arrivals and discharges \n\n _NOTE: Now including estimates of prior census for comparison._")
-census_chart = build_census_chart(alt=alt, census_floor_df=m.census_floor_df, parameters=p, actuals=actuals)
+census_chart = build_census_chart(alt=alt, census_floor_df=m.census_floor_df, p=p, actuals=actuals)
 st.altair_chart(census_chart, use_container_width=True)
 # Display census mismatch message if appropriate
 census_mismatch_message(parameters=p, actuals=actuals, st=st)
-st.markdown(build_descriptions(chart=census_chart, labels=p.census_patient_chart_desc))
+st.markdown(build_descriptions(chart=census_chart,
+                               labels=p.census_patient_chart_desc,))
 display_download_link(
     st,
     filename=f"{p.current_date}_projected_census.csv",
@@ -99,7 +101,7 @@ st.markdown(
 )  
 beds_chart = build_beds_chart(alt=alt, beds_floor_df=m.beds_df, parameters=p)
 st.altair_chart(beds_chart, use_container_width=True)
-st.markdown(build_bed_descriptions(chart=beds_chart, labels=p.eqpt_chart_desc))
+st.markdown(build_bed_descriptions(chart=beds_chart, labels=p.beds_chart_desc))
 display_download_link(
     st,
     filename=f"{p.current_date}_projected_capacity.csv",
@@ -118,7 +120,7 @@ if st.checkbox("Show Projected Capacity in tabular form"):
 
 st.subheader("Susceptible, Infected, and Recovered")
 st.markdown("The number of susceptible, infected, and recovered individuals in the hospital catchment region at any given moment")
-sim_sir_w_date_chart = build_sim_sir_w_date_chart(alt=alt, sim_sir_w_date_floor_df=m.sim_sir_w_date_floor_df, actuals=actuals)
+sim_sir_w_date_chart = build_sim_sir_w_date_chart(alt=alt, sim_sir_w_date_floor_df=m.sim_sir_w_date_floor_df, actuals=actuals, p = p)
 st.altair_chart(sim_sir_w_date_chart, use_container_width=True)
 display_download_link(
     st,
@@ -135,7 +137,7 @@ if st.checkbox("Show SIR Simulation in tabular form"):
 ### PPE Section
 st.subheader("Personal Protection Equipment")
 st.markdown("The quantity of PPE needed per day")
-for pc in list(p.ppe_labels.keys())[2:]:
+for pc in list(p.ppe_labels.keys())[3:]:
     ppe_chart = build_ppe_chart(
         alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns=pc)
     st.altair_chart(ppe_chart, use_container_width=True)

@@ -7,12 +7,14 @@ import pandas as pd
 
 ADMISSIONS_COLUMNS = [
     "total_admissions_actual",
+    "non_icu_admissions_actual",
     "icu_admissions_actual",
     "intubated_actual",
 ]
 
 CENSUS_COLUMNS = [
     "total_census_actual",
+    "non_icu_census_actual",
     "icu_census_actual",
     "ventilators_in_use_actual",
 ]
@@ -56,7 +58,11 @@ def parse_actuals(uploaded_actuals) -> Tuple[Union[pd.DataFrame, None], Union[st
     
 
 def actuals_download_widget(st):
-    column_order = ["date", "total_admissions_actual", "icu_admissions_actual", "intubated_actual", "total_census_actual", "icu_census_actual", "ventilators_in_use_actual", "cumulative_regional_infections"]
+    column_order = [
+        "date", 
+        "total_admissions_actual", "non_icu_admissions_actual", "icu_admissions_actual", "intubated_actual",
+        "total_census_actual", "non_icu_census_actual", "icu_census_actual", "ventilators_in_use_actual", 
+        "cumulative_regional_infections"]
     rows = 25
     t = np.arange(rows) # Time
     tau = 7 # Time required to increase by a factor of b.
@@ -67,13 +73,17 @@ def actuals_download_widget(st):
         "date": pd.date_range("2020-03-10", periods=rows, freq='D'),
         "cumulative_regional_infections": np.floor(infections), 
     }).assign(
-        total_admissions_actual=lambda d: np.floor(d.cumulative_regional_infections * .025 * .15),
-        icu_admissions_actual=lambda d: np.floor(d.total_admissions_actual * .25),
-        intubated_actual=lambda d: np.floor(d.icu_admissions_actual * .5),
-        total_census_actual=lambda d: (d.total_admissions_actual.cumsum() - d.total_admissions_actual.cumsum().shift(7, fill_value=0)),
+        non_icu_admissions_actual=lambda d: np.floor(d.cumulative_regional_infections * .025 * .15),
+        icu_admissions_actual=lambda d: np.floor(d.cumulative_regional_infections * .0075 * .15),
+        intubated_actual=lambda d: np.floor(d.cumulative_regional_infections * .005 * .15),
+        non_icu_census_actual=lambda d: (d.non_icu_admissions_actual.cumsum() - d.non_icu_admissions_actual.cumsum().shift(7, fill_value=0)),
         icu_census_actual=lambda d: (d.icu_admissions_actual.cumsum() - d.icu_admissions_actual.cumsum().shift(9, fill_value=0)),
         ventilators_in_use_actual=lambda d: (d.intubated_actual.cumsum() - d.intubated_actual.cumsum().shift(10, fill_value=0)),
-    )[column_order]
+    )
+    sample_df["total_admissions_actual"] = sample_df.icu_admissions_actual + sample_df.non_icu_admissions_actual
+    sample_df["total_census_actual"] = sample_df.icu_census_actual + sample_df.non_icu_census_actual
+    sample_df = sample_df[column_order]
+
     buffer = io.StringIO()
     sample_df.to_csv(buffer, index=False)
     csv_string = buffer.getvalue()

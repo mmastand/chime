@@ -56,7 +56,7 @@ class Parameters:
         total_covid_beds: int,
         icu_covid_beds: int,
         covid_ventilators: int,
-        hospitalized: Disposition,
+        non_icu: Disposition,
         icu: Disposition,
         relative_contact_rate: float,
         ventilators: Disposition, # used to be ventilated
@@ -113,10 +113,10 @@ class Parameters:
         self.total_covid_beds = total_covid_beds
         self.icu_covid_beds = icu_covid_beds
         self.covid_ventilators = covid_ventilators
-        Rate(value=hospitalized.rate)
+        Rate(value=non_icu.rate)
         Rate(value=icu.rate)
 
-        self.hospitalized = hospitalized
+        self.non_icu = non_icu
         self.icu = icu
 
         self.ventilators = ventilators
@@ -188,6 +188,8 @@ class Parameters:
             "hospitalized": "Hospitalized",
             "icu": "ICU",
             "ventilators": "Ventilators",
+            "total": "Total",
+            "non_icu": "Non-ICU",
             "day": "Day",
             "date": "Date",
             "susceptible": "Susceptible",
@@ -217,94 +219,112 @@ class Parameters:
         }
 
         self.dispositions = {
-            "total": hospitalized,
-            "hospitalized": hospitalized,
+            "total": non_icu,
+            "non_icu": non_icu,
             "icu": icu,
             "ventilators": ventilators,
         }
 
+        self.actuals_labels = {
+            "total_admissions_actual": "Total ",
+            "non_icu_admissions_actual": "Non-ICU ",
+            "icu_admissions_actual": "ICU ",
+            "intubated_actual": "Intubated ",
+            "total_census_actual": "Total ",
+            "non_icu_census_actual": "Non-ICU ",
+            "icu_census_actual": "ICU ",
+            "ventilators_in_use_actual": "Ventialtors In Use ",
+        }
+        
         self.admits_patient_chart_desc = {
-            "hospitalized": "Hospitalized COVID-19 Admissions peak at",
-            "icu": "ICU COVID-19 Admissions peak at",
-            "ventilators": "COVID-19 Ventilators peak at",
-            "total": "Total COVID-19 Admissions peaks at",
+            "Non-ICU": "Non-ICU COVID-19 census peak at",
+            "ICU": "ICU COVID-19 Admissions peak at",
+            "Ventilators": "COVID-19 Ventilators peak at",
+            "Total": "Total COVID-19 Admissions peaks at",
         }
 
         self.census_patient_chart_desc = {
-            "hospitalized": "Hospitalized COVID-19 Census peaks at",
-            "icu": "ICU COVID-19 Census peaks at",
-            "ventilators": "COVID-19 Ventilator usage peaks at",
-            "total": "Total COVID-19 Census peaks at"
+            "Non-ICU": "Non-ICU COVID-19 Census peaks at",
+            "ICU": "ICU COVID-19 Census peaks at",
+            "Ventilators": "COVID-19 Ventilator usage peaks at",
+            "Total": "Total COVID-19 Census peaks at"
         }
         
-        self.eqpt_chart_desc = {
-            "hospitalized": "Hospitalized COVID-19 Beds",
-            "icu": "ICU COVID-19 Beds",
-            "ventilators": "COVID-19 Ventilators",
-            "total": "Total COVID-19 Beds",
+        self.beds_chart_desc = {
+            "Non-ICU": "Non-ICU COVID-19 Beds",
+            "ICU": "ICU COVID-19 Beds",
+            "Ventilators": "COVID-19 Ventilators",
+            "Total": "Total COVID-19 Beds",
         }
 
         self.ppe_labels = {
             "total": "Total",
+            "non_icu": "Non-ICU",
             "icu": "ICU",
             "masks_n95": {
                 "label": "Masks - N95",
                 "col1_name": "masks_n95_total",
-                "col2_name": "masks_n95_icu",
+                "col2_name": "masks_n95_non_icu",
+                "col3_name": "masks_n95_icu",
             },
             "masks_surgical": {
                 "label": "Masks - Surgical",
                 "col1_name": "masks_surgical_total",
-                "col2_name": "masks_surgical_icu",
+                "col2_name": "masks_surgical_non_icu",
+                "col3_name": "masks_surgical_icu",
             },
             "face_shield": {
                 "label": "Face Shields",
                 "col1_name": "face_shield_total",
-                "col2_name": "face_shield_icu",
+                "col2_name": "face_shield_non_icu",
+                "col3_name": "face_shield_icu",
             },
             "gloves": {
                 "label": "Gloves",
                 "col1_name": "gloves_total",
-                "col2_name": "gloves_icu",
+                "col2_name": "gloves_non_icu",
+                "col3_name": "gloves_icu",
             },
             "gowns": {
                 "label": "Gowns",
                 "col1_name": "gowns_total",
-                "col2_name": "gowns_icu",
+                "col2_name": "gowns_non_icu",
+                "col3_name": "gowns_icu",
             },
             "other_ppe": {
                 "label": "Other PPE",
                 "col1_name": "other_ppe_total",
-                "col2_name": "other_ppe_icu",
+                "col2_name": "other_ppe_non_icu",
+                "col3_name": "other_ppe_icu",
             },
         }
 
         self.staffing_labels = {
             "total": "Total",
             "icu": "ICU",
-            "nonicu": "Non-ICU",
+            "non_icu": "Non-ICU",
             "nurses": {
                 "label": "Nurses",
-                "col1_name": "nurses_hosp",
-                "col2_name": "nurses_icu",
-                "col3_name": "nurses_total",
+                "col1_name": "nurses_total",
+                "col2_name": "nurses_non_icu",
+                "col3_name": "nurses_icu",
             },
             "physicians": {
                 "label": "Physicians",
-                "col1_name": "physicians_hosp",
-                "col2_name": "physicians_icu",
-                "col3_name": "physicians_total",
+                "col1_name": "physicians_total",
+                "col2_name": "physicians_non_icu",
+                "col3_name": "physicians_icu",
             },
             "advanced_practice_providers": {
                 "label": "Advanced Practice Providers",
-                "col1_name": "advanced_practice_providers_hosp",
-                "col2_name": "advanced_practice_providers_icu",
-                "col3_name": "advanced_practice_providers_total",
+                "col1_name": "advanced_practice_providers_total",
+                "col2_name": "advanced_practice_providers_non_icu",
+                "col3_name": "advanced_practice_providers_icu",
             },
             "healthcare_assistants": {
                 "label": "Healthcare Assistants",
-                "col1_name": "healthcare_assistants_hosp",
-                "col2_name": "healthcare_assistants_icu",
-                "col3_name": "healthcare_assistants_total",
+                "col1_name": "healthcare_assistants_total",
+                "col2_name": "healthcare_assistants_non_icu",
+                "col3_name": "healthcare_assistants_icu",
             },
         }

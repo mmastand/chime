@@ -47,7 +47,7 @@ class SimSirModel:
         #
         # Note: this should not be an integer.
         infected = (
-            1.0 / p.market_share / p.hospitalized.rate
+            1.0 / p.market_share / p.non_icu.rate
         )
 
         susceptible = p.population - infected
@@ -72,7 +72,7 @@ class SimSirModel:
                 temp_n_days = p.n_days
                 p.n_days = 1000
                 raw = self.run_projection(p, [(self.beta, p.n_days)])
-                self.i_day = i_day = int(get_argmin_ds(raw["census_hospitalized"], p.covid_census_value))
+                self.i_day = i_day = int(get_argmin_ds(raw["census_non_icu"], p.covid_census_value))
                 p.n_days = temp_n_days
 
                 self.raw = self.run_projection(p, self.gen_policy(p))
@@ -90,10 +90,10 @@ class SimSirModel:
 
 
                     # Don't fit against results that put the peak before the present day
-                    if raw["census_hospitalized"].argmax() < i_day:
+                    if raw["census_non_icu"].argmax() < i_day:
                         continue
 
-                    loss = get_loss(raw["census_hospitalized"][i_day], p.covid_census_value)
+                    loss = get_loss(raw["census_non_icu"][i_day], p.covid_census_value)
                     if loss < best_i_day_loss:
                         best_i_day_loss = loss
                         best_i_day = i_day
@@ -152,14 +152,14 @@ class SimSirModel:
         self.dispositions_df = pd.DataFrame(data={
             'day': self.raw['day'],
             'date': self.raw['date'],
-            'ever_hospitalized': self.raw['ever_hospitalized'],
+            'ever_non_icu': self.raw['ever_non_icu'],
             'ever_icu': self.raw['ever_icu'],
             'ever_ventilators': self.raw['ever_ventilators'],
         })
         self.admits_df = pd.DataFrame(data={
             'day': self.raw['day'],
             'date': self.raw['date'],
-            'hospitalized': self.raw['admits_hospitalized'],
+            'non_icu': self.raw['admits_non_icu'],
             'icu': self.raw['admits_icu'],
             'ventilators': self.raw['admits_ventilators'],
             'total': self.raw['admits_total']
@@ -167,7 +167,7 @@ class SimSirModel:
         self.census_df = pd.DataFrame(data={
             'day': self.raw['day'],
             'date': self.raw['date'],
-            'hospitalized': self.raw['census_hospitalized'],
+            'non_icu': self.raw['census_non_icu'],
             'icu': self.raw['census_icu'],
             'ventilators': self.raw['census_ventilators'],
             'total': self.raw['census_total'],
@@ -215,11 +215,11 @@ class SimSirModel:
             raw = self.run_projection(p, self.gen_policy(p))
 
             # Skip values the would put the fit past peak
-            peak_admits_day = raw["admits_hospitalized"].argmax()
+            peak_admits_day = raw["admits_non_icu"].argmax()
             if peak_admits_day < 0:
                 continue
 
-            predicted = raw["census_hospitalized"][self.i_day]
+            predicted = raw["census_non_icu"][self.i_day]
             loss = get_loss(self.covid_census_value, predicted)
             losses[i] = loss
 
@@ -399,7 +399,7 @@ def calculate_admits(raw: Dict, rates):
         admit[1:] = ever[1:] - ever[:-1]
         raw["admits_"+key] = admit
         raw[key] = admit
-    raw['admits_total'] = np.floor(raw['admits_hospitalized']) + np.floor(raw['admits_icu'])
+    raw['admits_total'] = np.floor(raw['admits_non_icu']) + np.floor(raw['admits_icu'])
 
 
 def calculate_census(
@@ -415,7 +415,7 @@ def calculate_census(
 
         census = cumsum[los:] - cumsum[:-los]
         raw["census_" + key] = census
-    raw['census_total'] = np.floor(raw['census_hospitalized']) + np.floor(raw['census_icu'])
+    raw['census_total'] = np.floor(raw['census_non_icu']) + np.floor(raw['census_icu'])
 
 def build_beds_df(
     census_df: pd.DataFrames,
@@ -428,24 +428,24 @@ def build_beds_df(
 
     # If hospitalized < 0 and there's space in icu, start borrowing if possible
     # If ICU < 0, raise alarms. No changes.
-    beds_df["hospitalized"] = p.total_covid_beds - p.icu_covid_beds - census_df["hospitalized"]
+    beds_df["non_icu"] = p.total_covid_beds - p.icu_covid_beds - census_df["non_icu"]
     beds_df["icu"] = p.icu_covid_beds - census_df["icu"]
     beds_df["ventilators"] = p.covid_ventilators - census_df["ventilators"]
-    beds_df["total"] = p.total_covid_beds - census_df["hospitalized"] - census_df["icu"]
+    beds_df["total"] = p.total_covid_beds - census_df["non_icu"] - census_df["icu"]
     # beds_df = beds_df.head(n_days)
 
     # Shift people to ICU if main hospital is full and ICU is not.
     new_hosp = []
     new_icu = []
     for row in beds_df.itertuples():
-        if row.hospitalized < 0 and row.icu > 0:
-            needed = min(abs(row.hospitalized), row.icu)
-            new_hosp.append(row.hospitalized + needed)
+        if row.non_icu < 0 and row.icu > 0:
+            needed = min(abs(row.non_icu), row.icu)
+            new_hosp.append(row.non_icu + needed)
             new_icu.append(row.icu - needed)
         else: 
-            new_hosp.append(row.hospitalized)
+            new_hosp.append(row.non_icu)
             new_icu.append(row.icu)
-    beds_df["hospitalized"] = new_hosp
+    beds_df["non_icu"] = new_hosp
     beds_df["icu"] = new_icu
     return beds_df
 
@@ -458,28 +458,28 @@ def build_ppe_df(
     ppe_df["day"] = census_df["day"]
     ppe_df["date"] = census_df["date"]
 
-    floored_hospitalized_census = np.floor(census_df.hospitalized)
-    ppe_df["masks_n95_hosp"] = p.masks_n95 * floored_hospitalized_census
-    ppe_df["masks_surgical_hosp"] = p.masks_surgical * floored_hospitalized_census
-    ppe_df["face_shield_hosp"] = p.face_shield * floored_hospitalized_census
-    ppe_df["gloves_hosp"] = p.gloves * floored_hospitalized_census
-    ppe_df["gowns_hosp"] = p.gowns * floored_hospitalized_census
-    ppe_df["other_ppe_hosp"] = p.other_ppe * floored_hospitalized_census
+    fnic = np.floor(census_df.non_icu) # floored non-icu census
+    ppe_df["masks_n95_non_icu"] = p.masks_n95 * fnic
+    ppe_df["masks_surgical_non_icu"] = p.masks_surgical * fnic
+    ppe_df["face_shield_non_icu"] = p.face_shield * fnic
+    ppe_df["gloves_non_icu"] = p.gloves * fnic
+    ppe_df["gowns_non_icu"] = p.gowns * fnic
+    ppe_df["other_ppe_non_icu"] = p.other_ppe * fnic
 
-    floored_icu_census = np.floor(census_df.icu)
-    ppe_df["masks_n95_icu"] = p.masks_n95_icu * floored_icu_census
-    ppe_df["masks_surgical_icu"] = p.masks_surgical_icu * floored_icu_census
-    ppe_df["face_shield_icu"] = p.face_shield_icu * floored_icu_census
-    ppe_df["gloves_icu"] = p.gloves_icu * floored_icu_census
-    ppe_df["gowns_icu"] = p.gowns_icu * floored_icu_census
-    ppe_df["other_ppe_icu"] = p.other_ppe_icu * floored_icu_census
+    fic = np.floor(census_df.icu) # floored icu census
+    ppe_df["masks_n95_icu"] = p.masks_n95_icu * fic
+    ppe_df["masks_surgical_icu"] = p.masks_surgical_icu * fic
+    ppe_df["face_shield_icu"] = p.face_shield_icu * fic
+    ppe_df["gloves_icu"] = p.gloves_icu * fic
+    ppe_df["gowns_icu"] = p.gowns_icu * fic
+    ppe_df["other_ppe_icu"] = p.other_ppe_icu * fic
     
-    ppe_df["masks_n95_total"] = ppe_df["masks_n95_hosp"] + ppe_df["masks_n95_icu"]
-    ppe_df["masks_surgical_total"] = ppe_df["masks_surgical_hosp"] + ppe_df["masks_surgical_icu"]
-    ppe_df["face_shield_total"] = ppe_df["face_shield_hosp"] + ppe_df["face_shield_icu"]
-    ppe_df["gloves_total"] = ppe_df["gloves_hosp"] + ppe_df["gloves_icu"]
-    ppe_df["gowns_total"] = ppe_df["gowns_hosp"] + ppe_df["gowns_icu"]
-    ppe_df["other_ppe_total"] = ppe_df["other_ppe_hosp"] + ppe_df["other_ppe_icu"]
+    ppe_df["masks_n95_total"] = ppe_df["masks_n95_non_icu"] + ppe_df["masks_n95_icu"]
+    ppe_df["masks_surgical_total"] = ppe_df["masks_surgical_non_icu"] + ppe_df["masks_surgical_icu"]
+    ppe_df["face_shield_total"] = ppe_df["face_shield_non_icu"] + ppe_df["face_shield_icu"]
+    ppe_df["gloves_total"] = ppe_df["gloves_non_icu"] + ppe_df["gloves_icu"]
+    ppe_df["gowns_total"] = ppe_df["gowns_non_icu"] + ppe_df["gowns_icu"]
+    ppe_df["other_ppe_total"] = ppe_df["other_ppe_non_icu"] + ppe_df["other_ppe_icu"]
 
     return ppe_df
 
@@ -494,17 +494,17 @@ def build_staffing_df(
     staffing_df["date"] = census_df["date"]
 
     stf_mul = 24.0 / p.shift_duration # Staffing Multiplier
-    fhc = np.floor(census_df.hospitalized) # floored hospitalized census
+    fnic = np.floor(census_df.non_icu) # floored non-icu census
     fic = np.floor(census_df.icu) # floored icu census
 
-    staffing_df["nurses_hosp"] = np.ceil(np.ceil(
-        fhc / p.nurses) * stf_mul) if p.nurses !=0 else 0
-    staffing_df["physicians_hosp"] = np.ceil(np.ceil(
-        fhc / p.physicians) * stf_mul) if p.physicians != 0 else 0
-    staffing_df["advanced_practice_providers_hosp"] = np.ceil(np.ceil(
-        fhc / p.advanced_practice_providers) * stf_mul) if p.advanced_practice_providers != 0 else 0
-    staffing_df["healthcare_assistants_hosp"] = np.ceil(np.ceil(
-        fhc / p.healthcare_assistants) * stf_mul) if p.healthcare_assistants != 0 else 0
+    staffing_df["nurses_non_icu"] = np.ceil(np.ceil(
+        fnic / p.nurses) * stf_mul) if p.nurses !=0 else 0
+    staffing_df["physicians_non_icu"] = np.ceil(np.ceil(
+        fnic / p.physicians) * stf_mul) if p.physicians != 0 else 0
+    staffing_df["advanced_practice_providers_non_icu"] = np.ceil(np.ceil(
+        fnic / p.advanced_practice_providers) * stf_mul) if p.advanced_practice_providers != 0 else 0
+    staffing_df["healthcare_assistants_non_icu"] = np.ceil(np.ceil(
+        fnic / p.healthcare_assistants) * stf_mul) if p.healthcare_assistants != 0 else 0
 
     staffing_df["nurses_icu"] = np.ceil(np.ceil(
         fic / p.nurses_icu) * stf_mul) if p.nurses_icu !=0 else 0
@@ -515,9 +515,9 @@ def build_staffing_df(
     staffing_df["healthcare_assistants_icu"] = np.ceil(np.ceil(
         fic / p.healthcare_assistants_icu) * stf_mul) if p.healthcare_assistants_icu !=0 else 0
 
-    staffing_df["nurses_total"] = np.ceil(staffing_df["nurses_hosp"] + staffing_df["nurses_icu"])
-    staffing_df["physicians_total"] = np.ceil(staffing_df["physicians_hosp"] + staffing_df["physicians_icu"])
-    staffing_df["advanced_practice_providers_total"] = np.ceil(staffing_df["advanced_practice_providers_hosp"] + staffing_df["advanced_practice_providers_icu"])
-    staffing_df["healthcare_assistants_total"] = np.ceil(staffing_df["healthcare_assistants_hosp"] + staffing_df["healthcare_assistants_icu"])
+    staffing_df["nurses_total"] = np.ceil(staffing_df["nurses_non_icu"] + staffing_df["nurses_icu"])
+    staffing_df["physicians_total"] = np.ceil(staffing_df["physicians_non_icu"] + staffing_df["physicians_icu"])
+    staffing_df["advanced_practice_providers_total"] = np.ceil(staffing_df["advanced_practice_providers_non_icu"] + staffing_df["advanced_practice_providers_icu"])
+    staffing_df["healthcare_assistants_total"] = np.ceil(staffing_df["healthcare_assistants_non_icu"] + staffing_df["healthcare_assistants_icu"])
 
     return staffing_df
