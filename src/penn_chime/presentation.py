@@ -833,7 +833,7 @@ def write_footer(st):
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
-            **V: x.x.x (, 2020)**
+            **V: 1.7.0 (Tuesday, April 14, 2020)**
             * Added Non-ICU to all charts. This corresponds to Hospitalized in Penn Med.
             * Changed Total color to black, other colors match Penn Med.
 
