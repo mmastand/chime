@@ -118,75 +118,6 @@ and daily growth rate of **{daily_growth_t:.2f}%**.
 
     return None
 
-
-# class Input:
-#     """Helper to separate Streamlit input definition from creation/rendering"""
-
-#     def __init__(self, st_obj, label, value, kwargs):
-#         self.st_obj = st_obj
-#         self.label = label
-#         self.value = value
-#         self.kwargs = kwargs
-
-#     def __call__(self):
-#         return self.st_obj(self.label, value=self.value, **self.kwargs)
-
-
-# class NumberInput(Input):
-#     def __init__(
-#         self,
-#         st_obj,
-#         label,
-#         min_value=None,
-#         max_value=None,
-#         value=None,
-#         step=None,
-#         format=None,
-#         key=None,
-#     ):
-#         kwargs = dict(
-#             min_value=min_value, max_value=max_value, step=step, format=format, key=key
-#         )
-#         super().__init__(st_obj.number_input, label, value, kwargs)
-
-
-# class DateInput(Input):
-#     def __init__(self, st_obj, label, value=None, key=None):
-#         kwargs = dict(key=key)
-#         super().__init__(st_obj.date_input, label, value, kwargs)
-
-
-# class PercentInput(NumberInput):
-#     def __init__(
-#         self,
-#         st_obj,
-#         label,
-#         min_value=0.0,
-#         max_value=100.0,
-#         value=None,
-#         step=FLOAT_INPUT_STEP,
-#         format="%f",
-#         key=None,
-#     ):
-#         super().__init__(
-#             st_obj, label, min_value, max_value, value * 100.0, step, format, key
-#         )
-
-#     def __call__(self):
-#         return super().__call__() / 100.0
-
-
-# class CheckboxInput(Input):
-#     def __init__(self, st_obj, label, value=None, key=None):
-#         kwargs = dict(key=key)
-#         super().__init__(st_obj.checkbox, label, value, kwargs)
-
-# class TextInput(Input):
-#     def __init__(self, st_obj, label, value=None, key=None):
-#         kwargs = dict(key=key)
-#         super().__init__(st_obj.text_input, label, value, kwargs)
-
-
 def display_sidebar(st, d: Parameters) -> Parameters:
     # Initialize variables
     # these functions create input elements and bind the values they are set to
@@ -985,7 +916,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     bed_table = beds_df[np.mod(beds_df.index, 1) == 0].copy()
     bed_table.index = range(bed_table.shape[0])
     bed_table.total[0] = parameters.total_covid_beds - 1
-    bed_table.hospitalized[0] = parameters.total_covid_beds - parameters.icu_covid_beds - 1
+    bed_table.non_icu[0] = parameters.total_covid_beds - parameters.icu_covid_beds - 1
     bed_table.icu[0] = parameters.icu_covid_beds - 1
     bed_table.ventilators[0] = parameters.covid_ventilators - 1
     bed_table = bed_table.dropna()
@@ -1000,66 +931,14 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     infect_table = non_date_columns_to_int(infect_table)
 
     # Build full dataset
-    df = admits_table.copy()
-    df = df.rename(columns = {
-        "date": "Date",
-        "total": "TotalAdmissions", 
-        "icu": "ICUAdmissions", 
-        "ventilators": "VentilatorsAdmissions"}, )
-    
-    df["TotalCensus"] = census_table["total"]
-    df["ICUCensus"] = census_table["icu"]
-    df["VentilatorsCensus"] = census_table["ventilators"]
+    df = pd.DataFrame(index=np.arange(admits_table.shape[0]))
 
-    df["TotalBeds"] = bed_table["total"]
-    df["ICUBeds"] = bed_table["icu"]
-    df["Ventilators"] = bed_table["ventilators"]
-
-    ppe_df.loc[0, :] = 0
-    df["MasksN95Total"] = ppe_df.masks_n95_total
-    df["MasksSurgicalTotal"] = ppe_df.masks_surgical_total
-    df["FaceShieldsTotal"] = ppe_df.face_shield_total
-    df["GlovesTotal"] = ppe_df.gloves_total
-    df["GownsTotal"] = ppe_df.gowns_total
-    df["OtherPPETotal"] = ppe_df.other_ppe_total
-    df["MasksN95ICU"] = ppe_df.masks_n95_icu
-    df["MasksSurgicalICU"] = ppe_df.masks_surgical_icu
-    df["FaceShieldsICU"] = ppe_df.face_shield_icu
-    df["GlovesICU"] = ppe_df.gloves_icu
-    df["GownsICU"] = ppe_df.gowns_icu
-    df["OtherPPEICU"] = ppe_df.other_ppe_icu
-    df["MasksN95Hosp"] = ppe_df.masks_n95_hosp
-    df["MasksSurgicalHosp"] = ppe_df.masks_surgical_hosp
-    df["FaceShieldsHosp"] = ppe_df.face_shield_hosp
-    df["GlovesHosp"] = ppe_df.gloves_hosp
-    df["GownsHosp"] = ppe_df.gowns_hosp
-    df["OtherPPEHosp"] = ppe_df.other_ppe_hosp
-    
-    # Staffing
-    staffing_df.loc[0, :] = 0
-    df["NursesHosp"] = staffing_df.nurses_hosp
-    df["PhysiciansHosp"] = staffing_df.physicians_hosp
-    df["AdvancedPraticeProvidersHosp"] = staffing_df.advanced_practice_providers_hosp
-    df["HealthcareAssistantsHosp"] = staffing_df.healthcare_assistants_hosp
-
-    df["NursesICU"] = staffing_df.nurses_icu
-    df["PhysiciansICU"] = staffing_df.physicians_icu
-    df["AdvancedPraticeProvidersICU"] = staffing_df.advanced_practice_providers_icu
-    df["HealthcareAssistantsICU"] = staffing_df.healthcare_assistants_icu
-    
-    df["NursesTotal"] = staffing_df.nurses_total
-    df["PhysiciansTotal"] = staffing_df.physicians_total
-    df["AdvancedPraticeProvidersTotal"] = staffing_df.advanced_practice_providers_total
-    df["HealthcareAssistantsTotal"] = staffing_df.healthcare_assistants_total
-
-    df["Susceptible"] = infect_table["susceptible"]
-    df["Infections"] = infect_table["infected"]
-    df["Recovered"] = infect_table["recovered"]
-
+    ########## Params ###########
     df["Author"] = parameters.author
     df["Scenario"] = parameters.scenario
     df["DateGenerated"] = (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).isoformat()
-
+    
+    # Census and Severity
     df["CovidCensusValue"] = parameters.covid_census_value
     df["CovidCensusDate"] = parameters.covid_census_date
     df["DoublingTimeBeforeSocialDistancing"] = parameters.doubling_time
@@ -1068,21 +947,23 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     df["DateFirstHospitalized"] = parameters.date_first_hospitalized
     df["InfectiousDays"] = parameters.infectious_days
 
-    df["HospitalizationPercentage"] = parameters.hospitalized.rate
+    df["NonICUPercentage"] = parameters.non_icu.rate
     df["ICUPercentage"] = parameters.icu.rate
     df["VentilatorsPercentage"] = parameters.ventilators.rate
 
-    df["HospitalLengthOfStay"] = parameters.hospitalized.days
+    df["NonICULengthOfStay"] = parameters.non_icu.days
     df["ICULengthOfStay"] = parameters.icu.days
     df["VentLengthOfStay"] = parameters.ventilators.days
 
     df["HospitalMarketShare"] = parameters.market_share
     df["RegionalPopulation"] = parameters.population
-    
+
+    # Bed Params
     df["TotalNumberOfBedsForCOVIDPatients"] = parameters.total_covid_beds
     df["TotalNumberOfICUBedsFoCOVIDPatients"] = parameters.icu_covid_beds
     df["TotalNumberOfVentsFoCOVIDPatients"] = parameters.covid_ventilators
-    
+
+    # PPE Params
     df["MasksN95Param"] = parameters.masks_n95
     df["MasksSurgicalParam"] = parameters.masks_surgical
     df["FaceShieldsParam"] = parameters.face_shield
@@ -1101,116 +982,78 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     df["PatientsPerPhysicians"] = parameters.physicians
     df["PatientsPerAdvancedPraticeProviders"] = parameters.advanced_practice_providers
     df["PatientsPerHealthcareAssistants"] = parameters.healthcare_assistants
-    
+
     df["PatientsPerNursesICU"] = parameters.nurses_icu
     df["PatientsPerPhysiciansICU"] = parameters.physicians_icu
     df["PatientsPerAdvancedPraticeProvidersICU"] = parameters.advanced_practice_providers_icu
     df["PatientsPerHealthcareAssistantsICU"] = parameters.healthcare_assistants_icu
 
     df["ShiftDuration"] = parameters.shift_duration
+
+    ########## Projected ###########
+    df["Date"] = admits_table["date"]
+
+    # Admits, Census, SIR, Beds
+    df["TotalAdmissions"] = admits_table["total"]
+    df["NonICUAdmissions"] = admits_table["non_icu"]
+    df["ICUAdmissions"] = admits_table["icu"]
+    df["VentilatorsAdmissions"] = admits_table["ventilators"]
+
+    df["TotalCensus"] = census_table["total"]
+    df["NonICUCensus"] = census_table["non_icu"]
+    df["ICUCensus"] = census_table["icu"]
+    df["VentilatorsCensus"] = census_table["ventilators"]
+
+    df["Susceptible"] = infect_table["susceptible"]
+    df["Infections"] = infect_table["infected"]
+    df["Recovered"] = infect_table["recovered"]
     
-    # Reorder columns
-    df = df[[
-        "Author", 
-        "Scenario", 
-        "DateGenerated",
+    df["TotalBeds"] = bed_table["total"]
+    df["NonICUBeds"] = bed_table["non_icu"]
+    df["ICUBeds"] = bed_table["icu"]
+    df["Ventilators"] = bed_table["ventilators"]
 
-        "CovidCensusValue",
-        "CovidCensusDate",
-        "DoublingTimeBeforeSocialDistancing",
-        "SocialDistancingPercentReduction",
-        "SocialDistancingStartDate",
-        "DateFirstHospitalized",
-        "InfectiousDays",
-        "HospitalizationPercentage",
-        "ICUPercentage",
-        "VentilatorsPercentage",
+    # PPE
+    ppe_df.loc[0, :] = 0
+    df["MasksN95Total"] = ppe_df.masks_n95_total
+    df["MasksN95NonICU"] = ppe_df.masks_n95_non_icu
+    df["MasksN95ICU"] = ppe_df.masks_n95_icu
 
-        "HospitalLengthOfStay",
-        "ICULengthOfStay",
-        "VentLengthOfStay",
+    df["MasksSurgicalTotal"] = ppe_df.masks_surgical_total
+    df["MasksSurgicalNonICU"] = ppe_df.masks_surgical_non_icu
+    df["MasksSurgicalICU"] = ppe_df.masks_surgical_icu
+    
+    df["FaceShieldsTotal"] = ppe_df.face_shield_total
+    df["FaceShieldsNonICU"] = ppe_df.face_shield_non_icu
+    df["FaceShieldsICU"] = ppe_df.face_shield_icu
+    
+    df["GlovesTotal"] = ppe_df.gloves_total
+    df["GlovesNonICU"] = ppe_df.gloves_non_icu
+    df["GlovesICU"] = ppe_df.gloves_icu
+    
+    df["GownsTotal"] = ppe_df.gowns_total
+    df["GownsNonICU"] = ppe_df.gowns_non_icu
+    df["GownsICU"] = ppe_df.gowns_icu
+    
+    df["OtherPPETotal"] = ppe_df.other_ppe_total
+    df["OtherPPENonICU"] = ppe_df.other_ppe_non_icu
+    df["OtherPPEICU"] = ppe_df.other_ppe_icu
+    
+    # Staffing
+    staffing_df.loc[0, :] = 0
+    df["NursesTotal"] = staffing_df.nurses_total
+    df["NursesNonICU"] = staffing_df.nurses_non_icu
+    df["NursesICU"] = staffing_df.nurses_icu
 
-        "HospitalMarketShare",
-        "RegionalPopulation",
-        # "CurrentlyKnownRegionalInfections",
-        
-        "TotalNumberOfBedsForCOVIDPatients",
-        "TotalNumberOfICUBedsFoCOVIDPatients",
-        "TotalNumberOfVentsFoCOVIDPatients",
-        # "TotalNumberOfBeds",
-        # "TotalNumberOfICUBeds",
-        # "TotalNumberOfVents",
+    df["PhysiciansTotal"] = staffing_df.physicians_total
+    df["PhysiciansNonICU"] = staffing_df.physicians_non_icu
+    df["PhysiciansICU"] = staffing_df.physicians_icu
 
-        "MasksN95Param",
-        "MasksSurgicalParam",
-        "FaceShieldsParam",
-        "GlovesParam",
-        "GownsParam",
-        "OtherPPEParam",
-        "MasksN95ICUParam",
-        "MasksSurgicalICUParam",
-        "FaceShieldsICUParam",
-        "GlovesICUParam",
-        "GownsICUParam",
-        "OtherPPEICUParam",
+    df["AdvancedPraticeProvidersTotal"] = staffing_df.advanced_practice_providers_total
+    df["AdvancedPraticeProvidersNonICU"] = staffing_df.advanced_practice_providers_non_icu
+    df["AdvancedPraticeProvidersICU"] = staffing_df.advanced_practice_providers_icu
 
-        "PatientsPerNurses",
-        "PatientsPerPhysicians",
-        "PatientsPerAdvancedPraticeProviders",
-        "PatientsPerHealthcareAssistants",
-        "PatientsPerNursesICU",
-        "PatientsPerPhysiciansICU",
-        "PatientsPerAdvancedPraticeProvidersICU",
-        "PatientsPerHealthcareAssistantsICU",
-        "ShiftDuration",
-
-        "Date",
-        "TotalAdmissions", 
-        "ICUAdmissions", 
-        "VentilatorsAdmissions",
-
-        "TotalCensus",
-        "ICUCensus",
-        "VentilatorsCensus",
-        
-        "TotalBeds",
-        "ICUBeds",
-        "Ventilators", 
-
-        "Susceptible",
-        "Infections",
-        "Recovered",
-
-        "MasksN95Total",
-        "MasksN95Hosp",
-        "MasksN95ICU",
-        "MasksSurgicalTotal",
-        "MasksSurgicalHosp",
-        "MasksSurgicalICU",
-        "FaceShieldsTotal",
-        "FaceShieldsHosp",
-        "FaceShieldsICU",
-        "GlovesTotal",
-        "GlovesHosp",
-        "GlovesICU",
-        "GownsTotal",
-        "GownsHosp",
-        "GownsICU",
-        "OtherPPETotal",
-        "OtherPPEHosp",
-        "OtherPPEICU",
-
-        "NursesTotal",
-        "NursesHosp",
-        "NursesICU",
-        "PhysiciansTotal",
-        "PhysiciansHosp",
-        "PhysiciansICU",
-        "AdvancedPraticeProvidersTotal",
-        "AdvancedPraticeProvidersHosp",
-        "AdvancedPraticeProvidersICU",
-        "HealthcareAssistantsTotal",
-        "HealthcareAssistantsHosp",
-        "HealthcareAssistantsICU",
-    ]]
+    df["HealthcareAssistantsTotal"] = staffing_df.healthcare_assistants_total
+    df["HealthcareAssistantsNonICU"] = staffing_df.healthcare_assistants_non_icu
+    df["HealthcareAssistantsICU"] = staffing_df.healthcare_assistants_icu
     return(df)

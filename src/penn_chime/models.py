@@ -459,12 +459,12 @@ def build_ppe_df(
     ppe_df["date"] = census_df["date"]
 
     fnic = np.floor(census_df.non_icu) # floored non-icu census
-    ppe_df["masks_n95_hosp"] = p.masks_n95 * fnic
-    ppe_df["masks_surgical_hosp"] = p.masks_surgical * fnic
-    ppe_df["face_shield_hosp"] = p.face_shield * fnic
-    ppe_df["gloves_hosp"] = p.gloves * fnic
-    ppe_df["gowns_hosp"] = p.gowns * fnic
-    ppe_df["other_ppe_hosp"] = p.other_ppe * fnic
+    ppe_df["masks_n95_non_icu"] = p.masks_n95 * fnic
+    ppe_df["masks_surgical_non_icu"] = p.masks_surgical * fnic
+    ppe_df["face_shield_non_icu"] = p.face_shield * fnic
+    ppe_df["gloves_non_icu"] = p.gloves * fnic
+    ppe_df["gowns_non_icu"] = p.gowns * fnic
+    ppe_df["other_ppe_non_icu"] = p.other_ppe * fnic
 
     fic = np.floor(census_df.icu) # floored icu census
     ppe_df["masks_n95_icu"] = p.masks_n95_icu * fic
@@ -474,12 +474,12 @@ def build_ppe_df(
     ppe_df["gowns_icu"] = p.gowns_icu * fic
     ppe_df["other_ppe_icu"] = p.other_ppe_icu * fic
     
-    ppe_df["masks_n95_total"] = ppe_df["masks_n95_hosp"] + ppe_df["masks_n95_icu"]
-    ppe_df["masks_surgical_total"] = ppe_df["masks_surgical_hosp"] + ppe_df["masks_surgical_icu"]
-    ppe_df["face_shield_total"] = ppe_df["face_shield_hosp"] + ppe_df["face_shield_icu"]
-    ppe_df["gloves_total"] = ppe_df["gloves_hosp"] + ppe_df["gloves_icu"]
-    ppe_df["gowns_total"] = ppe_df["gowns_hosp"] + ppe_df["gowns_icu"]
-    ppe_df["other_ppe_total"] = ppe_df["other_ppe_hosp"] + ppe_df["other_ppe_icu"]
+    ppe_df["masks_n95_total"] = ppe_df["masks_n95_non_icu"] + ppe_df["masks_n95_icu"]
+    ppe_df["masks_surgical_total"] = ppe_df["masks_surgical_non_icu"] + ppe_df["masks_surgical_icu"]
+    ppe_df["face_shield_total"] = ppe_df["face_shield_non_icu"] + ppe_df["face_shield_icu"]
+    ppe_df["gloves_total"] = ppe_df["gloves_non_icu"] + ppe_df["gloves_icu"]
+    ppe_df["gowns_total"] = ppe_df["gowns_non_icu"] + ppe_df["gowns_icu"]
+    ppe_df["other_ppe_total"] = ppe_df["other_ppe_non_icu"] + ppe_df["other_ppe_icu"]
 
     return ppe_df
 

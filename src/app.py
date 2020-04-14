@@ -101,7 +101,7 @@ st.markdown(
 )  
 beds_chart = build_beds_chart(alt=alt, beds_floor_df=m.beds_df, parameters=p)
 st.altair_chart(beds_chart, use_container_width=True)
-st.markdown(build_bed_descriptions(chart=beds_chart, labels=p.eqpt_chart_desc))
+st.markdown(build_bed_descriptions(chart=beds_chart, labels=p.beds_chart_desc))
 display_download_link(
     st,
     filename=f"{p.current_date}_projected_capacity.csv",
@@ -137,7 +137,7 @@ if st.checkbox("Show SIR Simulation in tabular form"):
 ### PPE Section
 st.subheader("Personal Protection Equipment")
 st.markdown("The quantity of PPE needed per day")
-for pc in list(p.ppe_labels.keys())[2:]:
+for pc in list(p.ppe_labels.keys())[3:]:
     ppe_chart = build_ppe_chart(
         alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns=pc)
     st.altair_chart(ppe_chart, use_container_width=True)

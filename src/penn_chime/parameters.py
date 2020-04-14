@@ -239,7 +239,7 @@ class Parameters:
             "Total": "Total COVID-19 Census peaks at"
         }
         
-        self.eqpt_chart_desc = {
+        self.beds_chart_desc = {
             "Non-ICU": "Non-ICU COVID-19 Beds",
             "ICU": "ICU COVID-19 Beds",
             "Ventilators": "COVID-19 Ventilators",
@@ -248,65 +248,72 @@ class Parameters:
 
         self.ppe_labels = {
             "total": "Total",
+            "non_icu": "Non-ICU",
             "icu": "ICU",
             "masks_n95": {
                 "label": "Masks - N95",
                 "col1_name": "masks_n95_total",
-                "col2_name": "masks_n95_icu",
+                "col2_name": "masks_n95_non_icu",
+                "col3_name": "masks_n95_icu",
             },
             "masks_surgical": {
                 "label": "Masks - Surgical",
                 "col1_name": "masks_surgical_total",
-                "col2_name": "masks_surgical_icu",
+                "col2_name": "masks_surgical_non_icu",
+                "col3_name": "masks_surgical_icu",
             },
             "face_shield": {
                 "label": "Face Shields",
                 "col1_name": "face_shield_total",
-                "col2_name": "face_shield_icu",
+                "col2_name": "face_shield_non_icu",
+                "col3_name": "face_shield_icu",
             },
             "gloves": {
                 "label": "Gloves",
                 "col1_name": "gloves_total",
-                "col2_name": "gloves_icu",
+                "col2_name": "gloves_non_icu",
+                "col3_name": "gloves_icu",
             },
             "gowns": {
                 "label": "Gowns",
                 "col1_name": "gowns_total",
-                "col2_name": "gowns_icu",
+                "col2_name": "gowns_non_icu",
+                "col3_name": "gowns_icu",
             },
             "other_ppe": {
                 "label": "Other PPE",
                 "col1_name": "other_ppe_total",
-                "col2_name": "other_ppe_icu",
+                "col2_name": "other_ppe_non_icu",
+                "col3_name": "other_ppe_icu",
             },
         }
 
         self.staffing_labels = {
             "total": "Total",
             "icu": "ICU",
-            "nonicu": "Non-ICU",
+            "non_icu": "Non-ICU",
             "nurses": {
                 "label": "Nurses",
-                "col1_name": "nurses_hosp",
-                "col2_name": "nurses_icu",
-                "col3_name": "nurses_total",
+                "col1_name": "nurses_total",
+                "col2_name": "nurses_non_icu",
+                "col3_name": "nurses_icu",
             },
             "physicians": {
                 "label": "Physicians",
-                "col1_name": "physicians_hosp",
-                "col2_name": "physicians_icu",
-                "col3_name": "physicians_total",
+                "col1_name": "physicians_total",
+                "col2_name": "physicians_non_icu",
+                "col3_name": "physicians_icu",
             },
             "advanced_practice_providers": {
                 "label": "Advanced Practice Providers",
-                "col1_name": "advanced_practice_providers_hosp",
-                "col2_name": "advanced_practice_providers_icu",
-                "col3_name": "advanced_practice_providers_total",
+                "col1_name": "advanced_practice_providers_total",
+                "col2_name": "advanced_practice_providers_non_icu",
+                "col3_name": "advanced_practice_providers_icu",
             },
             "healthcare_assistants": {
                 "label": "Healthcare Assistants",
-                "col1_name": "healthcare_assistants_hosp",
-                "col2_name": "healthcare_assistants_icu",
-                "col3_name": "healthcare_assistants_total",
+                "col1_name": "healthcare_assistants_total",
+                "col2_name": "healthcare_assistants_non_icu",
+                "col3_name": "healthcare_assistants_icu",
             },
         }

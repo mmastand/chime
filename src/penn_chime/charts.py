@@ -26,7 +26,7 @@ def get_actual_columns_and_colors(possible_columns, projections_df, actuals_df, 
     actuals_color = alt.Color("Actual:N", scale=alt.Scale(domain=actuals_color_domain, range=actuals_color_range))
     return combined, actuals_plot_columns, actuals_color
         
-def get_admits_census_colors(df, p, alt):
+def get_proj_columns_and_colors(df, p, alt):
     # departments
     df = df.rename(columns={
         "total": p.labels["total"],
@@ -64,7 +64,7 @@ def build_admits_chart(
         y_scale.domain = (0, p.max_y_axis)
         y_scale.clamp = True
 
-    admits_floor_df, plot_columns, proj_color = get_admits_census_colors(
+    admits_floor_df, plot_columns, proj_color = get_proj_columns_and_colors(
         admits_floor_df, p, alt)
 
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
@@ -113,7 +113,7 @@ def build_census_chart(
         y_scale.domain = (0, p.max_y_axis)
         y_scale.clamp = True
 
-    census_floor_df, plot_columns, proj_color = get_admits_census_colors(
+    census_floor_df, plot_columns, proj_color = get_proj_columns_and_colors(
         census_floor_df, p, alt)
 
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
@@ -203,18 +203,16 @@ def build_beds_chart(
         y_scale.domain = (-parameters.max_y_axis, parameters.max_y_axis)
         y_scale.clamp = True
 
-    beds_columns = ["total", "icu", "ventilators"]
+    beds_floor_df, beds_columns, proj_color = get_proj_columns_and_colors(
+        beds_floor_df, parameters, alt)
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title="COVID-19 Capacity", scale=y_scale)
-    color = alt.Color("Projected:N", sort = beds_columns)
     tooltip = ["Projected:N", alt.Tooltip("value:Q", format=".0f")]
     
-    beds_floor_df["zero"] = 0
-    # TODO fix the fold to allow any number of dispositions
     beds = (
         alt.Chart()
         .transform_fold(fold=beds_columns, as_=["Projected", "value"])
-        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=proj_color, tooltip=tooltip)
         .mark_line()
     )
     bar = (
@@ -240,7 +238,7 @@ def build_ppe_chart(
     plot_columns: str,
 ) -> Chart:
     """Build ppe chart."""
-    k = list(p.ppe_labels.keys())[2:]
+    k = list(p.ppe_labels.keys())[3:]
     if plot_columns not in k:
         raise ValueError("PPE type must be in %s" % (k))
 
@@ -254,14 +252,27 @@ def build_ppe_chart(
     y_axis_label = "Required " + chart_title
     # departments
     ppe_floor_df = ppe_floor_df.rename(columns={
-        p.ppe_labels[plot_columns]["col1_name"]:p.ppe_labels["total"],
-        p.ppe_labels[plot_columns]["col2_name"]:p.ppe_labels["icu"],
-        })
-    plot_columns = [p.ppe_labels["total"], p.ppe_labels["icu"]]
+        p.ppe_labels[plot_columns]["col1_name"]: p.ppe_labels["total"],
+        p.ppe_labels[plot_columns]["col2_name"]: p.ppe_labels["non_icu"],
+        p.ppe_labels[plot_columns]["col3_name"]:p.ppe_labels["icu"],
+    })
+    plot_columns = [
+        p.ppe_labels["total"],
+        p.ppe_labels["non_icu"],
+        p.ppe_labels["icu"],
+    ]
+    # Set colors
+    proj_color = alt.Color(
+        "Department:N", 
+        sort=plot_columns,
+        scale = alt.Scale(
+            domain=plot_columns,
+            range=['black', '#4C78A8', '#F58518'],
+        )
+    )
     x = dict(shorthand="date:T", title="Date",
              axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title=y_axis_label, scale=y_scale)
-    color = alt.Color("Department:N", sort=plot_columns)
     tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
         DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title=chart_title), "Department:N"]
 
@@ -269,7 +280,7 @@ def build_ppe_chart(
     lines = (
         alt.Chart(title=chart_title)
         .transform_fold(fold=plot_columns, as_=["Department", "value"])
-        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=proj_color, tooltip=tooltip)
         .mark_line()
     )
     bar = (
@@ -307,18 +318,27 @@ def build_staffing_chart(
     y_axis_label = "Required " + chart_title
     # departments
     staffing_floor_df = staffing_floor_df.rename(columns={
-        p.staffing_labels[plot_columns]["col3_name"]: p.staffing_labels["total"],
-        p.staffing_labels[plot_columns]["col2_name"]: p.staffing_labels["icu"],
-        p.staffing_labels[plot_columns]["col1_name"]: p.staffing_labels["nonicu"],
+        p.staffing_labels[plot_columns]["col1_name"]: p.staffing_labels["total"],
+        p.staffing_labels[plot_columns]["col2_name"]: p.staffing_labels["non_icu"],
+        p.staffing_labels[plot_columns]["col3_name"]: p.staffing_labels["icu"],
     })
     plot_columns = [
         p.staffing_labels["total"], 
+        p.staffing_labels["non_icu"],
         p.staffing_labels["icu"],
-    ]
+    ] 
+    # Set colors
+    proj_color = alt.Color(
+        "Department:N",
+        sort=plot_columns,
+        scale=alt.Scale(
+            domain=plot_columns,
+            range=['black', '#4C78A8', '#F58518'],
+        )
+    )
     x = dict(shorthand="date:T", title="Date",
              axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="value:Q", title=y_axis_label, scale=y_scale)
-    color = alt.Color("Department:N", sort=plot_columns)
     tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
         DATE_FORMAT)), alt.Tooltip("value:Q", format=".0f", title=chart_title), "Department:N"]
 
@@ -326,7 +346,7 @@ def build_staffing_chart(
     lines = (
         alt.Chart(title=chart_title)
         .transform_fold(fold=plot_columns, as_=["Department", "value"])
-        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=proj_color, tooltip=tooltip)
         .mark_line()
     )
     bar = (
@@ -384,8 +404,7 @@ def build_descriptions(
 def build_bed_descriptions(
     *,
     chart: Chart,
-    labels: Dict[str, str],
-    suffix: str = "",
+    labels: dict,
 ) -> str:
     """
 
@@ -397,11 +416,11 @@ def build_bed_descriptions(
     """
     messages = []
 
-    cols = ["total", "icu", "ventilators"]
+    cols = ["Total", "Non-ICU", "ICU", "Ventilators"]
     asterisk = False
     
     # Add note if lines overlap.
-    if sum(np.where(chart.data["total"] == chart.data["icu"], 1, 0)) > 1:
+    if sum(np.where(chart.data["Total"] == chart.data["ICU"], 1, 0)) > 1:
         messages.append("_The overlapping lines represent non-ICU patients being housed in the ICU._")
 
     for col in cols:
@@ -432,7 +451,7 @@ def build_ppe_descriptions(
     """
     messages = []
 
-    cols = ["Total", "ICU"]
+    cols = ["Total", "Non-ICU", "ICU"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
 
@@ -469,7 +488,7 @@ def build_staffing_descriptions(
     """
     messages = []
 
-    cols = ["Total", "ICU"]
+    cols = ["Total", "Non-ICU", "ICU"]
     asterisk = False
     day = "date" if "date" in chart.data.columns else "day"
 
@@ -512,22 +531,22 @@ def build_table(
             "day",
             "date",
             "masks_n95_total",
-            "masks_n95_hosp",
+            "masks_n95_non_icu",
             "masks_n95_icu",
             "masks_surgical_total",
-            "masks_surgical_hosp",
+            "masks_surgical_non_icu",
             "masks_surgical_icu",
             "face_shield_total",
-            "face_shield_hosp",
+            "face_shield_non_icu",
             "face_shield_icu",
             "gloves_total",
-            "gloves_hosp",
+            "gloves_non_icu",
             "gloves_icu",
             "gowns_total",
-            "gowns_hosp",
+            "gowns_non_icu",
             "gowns_icu",
             "other_ppe_total",
-            "other_ppe_hosp",
+            "other_ppe_non_icu",
             "other_ppe_icu",
         ]]
     if "nurses_total" in table_df.columns:
@@ -535,16 +554,16 @@ def build_table(
             "day",
             "date",
             "nurses_total",
-            "nurses_hosp",
+            "nurses_non_icu",
             "nurses_icu",
             "physicians_total",
-            "physicians_hosp",
+            "physicians_non_icu",
             "physicians_icu",
             "advanced_practice_providers_total",
-            "advanced_practice_providers_hosp",
+            "advanced_practice_providers_non_icu",
             "advanced_practice_providers_icu",
             "healthcare_assistants_total",
-            "healthcare_assistants_hosp",
+            "healthcare_assistants_non_icu",
             "healthcare_assistants_icu",
         ]]
     return table_df
