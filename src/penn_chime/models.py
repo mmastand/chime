@@ -435,13 +435,18 @@ def build_beds_df(
     # beds_df = beds_df.head(n_days)
 
     # Shift people to ICU if main hospital is full and ICU is not.
+    # And vice versa
     new_hosp = []
     new_icu = []
     for row in beds_df.itertuples():
-        if row.non_icu < 0 and row.icu > 0:
+        if row.non_icu < 0 and row.icu > 0: # ICU to Non-ICU
             needed = min(abs(row.non_icu), row.icu)
             new_hosp.append(row.non_icu + needed)
             new_icu.append(row.icu - needed)
+        elif row.non_icu > 0 and row.icu < 0: # Non-ICU to ICU
+            needed = min(abs(row.icu), row.non_icu)
+            new_hosp.append(row.icu + needed)
+            new_icu.append(row.non_icu - needed)
         else: 
             new_hosp.append(row.non_icu)
             new_icu.append(row.icu)
