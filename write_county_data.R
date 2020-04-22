@@ -1,0 +1,1 @@
+write.csv(covdata::nytcovcounty, file="./src/nytcovcounty.csv", row.names=FALSE)

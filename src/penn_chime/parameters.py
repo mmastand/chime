@@ -32,7 +32,9 @@ from .validators import (
 
 
 Disposition = namedtuple("Disposition", ("rate", "days"))
-
+class Mode:
+    PENN_MODEL = "Penn Model"
+    EMPIRICAL = "Empirical Model"
 
 class Regions:
     """Arbitrary regions to sum population."""

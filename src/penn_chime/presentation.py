@@ -18,8 +18,8 @@ from .constants import (
 )
 
 from .utils import dataframe_to_base64
-from .parameters import Parameters, Disposition
-from .models import SimSirModel as Model
+from .parameters import Parameters, Disposition, Mode
+from .models import PennModel as Model
 from .hc_param_import_export import (
     constants_from_uploaded_file, 
     param_download_widget
@@ -116,7 +116,7 @@ and daily growth rate of **{daily_growth_t:.2f}%**.
 
     return None
 
-def display_sidebar(st, d: Parameters) -> Parameters:
+def display_sidebar(st, d: Parameters, mode: Mode) -> Parameters:
     # Initialize variables
     # these functions create input elements and bind the values they are set to
     # to the variables they are set equal to
@@ -166,63 +166,76 @@ def display_sidebar(st, d: Parameters) -> Parameters:
         min_value=0.5,
         value=d.market_share * 100.,
     ) / 100.
-    covid_census_value = st.sidebar.number_input(
-        "Current COVID-19 Total Hospital Census",
-        min_value=0,
-        value=d.covid_census_value,
-        step=1,
-        format="%i",
-    )
-    covid_census_date = st.sidebar.date_input(
-        "Current date (default is today)",
-        value = d.covid_census_date,
-    )
 
-    st.sidebar.markdown(
-        "### Spread and Contact Parameters"
-    )
- 
-    first_hospitalized_date_known_default = False if uploaded_file is None else d.first_hospitalized_date_known
-
-    if st.sidebar.checkbox(
-        "I know the date of the first hospitalized case.", value=first_hospitalized_date_known_default
-    ):
-        st.sidebar.markdown("""First Hospitalized Date Must Be Before Current Date""")
-        date_first_hospitalized = st.sidebar.date_input(
-            "Date of first hospitalized case - Enter this date to have chime estimate the initial doubling time",
-            value=d.date_first_hospitalized,
+    if mode == Mode.PENN_MODEL:
+        # Take values from the inputs
+        covid_census_value = st.sidebar.number_input(
+            "Current COVID-19 Total Hospital Census",
+            min_value=0,
+            value=d.covid_census_value,
+            step=1,
+            format="%i",
         )
-        first_hospitalized_date_known = True
-        doubling_time = None
+        covid_census_date = st.sidebar.date_input(
+            "Current date (default is today)",
+            value = d.covid_census_date,
+        )
+
+        st.sidebar.markdown(
+            "### Spread and Contact Parameters"
+        )
+    
+        first_hospitalized_date_known_default = False if uploaded_file is None else d.first_hospitalized_date_known
+        if st.sidebar.checkbox(
+            "I know the date of the first hospitalized case.", value=first_hospitalized_date_known_default
+        ):
+            st.sidebar.markdown("""First Hospitalized Date Must Be Before Current Date""")
+            date_first_hospitalized = st.sidebar.date_input(
+                "Date of first hospitalized case - Enter this date to have chime estimate the initial doubling time",
+                value=d.date_first_hospitalized,
+            )
+            first_hospitalized_date_known = True
+            doubling_time = None
+        else:
+            doubling_time = st.sidebar.number_input(
+                "Doubling time in days (before social distancing)",
+                min_value=0.5,
+                value=d.doubling_time,
+                step=0.25,
+                format="%f",
+            )
+            first_hospitalized_date_known = False
+            date_first_hospitalized = None
+
+
+        social_distancing_start_date = (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).date()
+
+        mitigation_date = None
+        relative_contact_rate = EPSILON
+        social_distancing_is_implemented = st.sidebar.checkbox("Social distancing measures have been implemented.", value=d.social_distancing_is_implemented)
+        if social_distancing_is_implemented:
+            mitigation_date = st.sidebar.date_input(
+                "Date of social distancing measures effect (may be delayed from implementation)",
+                value=d.mitigation_date
+            )
+            relative_contact_rate = st.sidebar.number_input(
+                "Social distancing (% reduction in social contact going forward)",
+                min_value=0.0,
+                max_value=100.0,
+                value=d.relative_contact_rate * 100.,
+                step=1.0,
+            ) / 100.
     else:
-        doubling_time = st.sidebar.number_input(
-            "Doubling time in days (before social distancing)",
-            min_value=0.5,
-            value=d.doubling_time,
-            step=0.25,
-            format="%f",
-        )
-        first_hospitalized_date_known = False
-        date_first_hospitalized = None
+        covid_census_value = d.covid_census_value
+        covid_census_date = d.covid_census_date
+        first_hospitalized_date_known = d.first_hospitalized_date_known
+        date_first_hospitalized
+        doubling_time
+        social_distancing_is_implemented
+        social_distancing_start_date
+        mitigation_date
+        relative_contact_rate
 
-
-    social_distancing_start_date = (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).date()
-
-    mitigation_date = None
-    relative_contact_rate = EPSILON
-    social_distancing_is_implemented = st.sidebar.checkbox("Social distancing measures have been implemented.", value=d.social_distancing_is_implemented)
-    if social_distancing_is_implemented:
-        mitigation_date = st.sidebar.date_input(
-            "Date of social distancing measures effect (may be delayed from implementation)",
-            value=d.mitigation_date
-        )
-        relative_contact_rate = st.sidebar.number_input(
-            "Social distancing (% reduction in social contact going forward)",
-            min_value=0.0,
-            max_value=100.0,
-            value=d.relative_contact_rate * 100.,
-            step=1.0,
-        ) / 100.
 
     st.sidebar.markdown(
         "### Severity Parameters"
@@ -917,7 +930,11 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     bed_table.rename(parameters.labels)
 
     # taken from raw sir table function:
-    projection_area = model.raw_df[['susceptible', 'infected', 'recovered']]
+    projection_area = pd.DataFrame({
+        'susceptible': model.raw['susceptible'],
+        'infected': model.raw['infected'],
+        'recovered': model.raw['recovered'],
+    })
     infect_table = (projection_area.iloc[::1, :]).apply(np.floor)
     infect_table.index = range(infect_table.shape[0])
     infect_table["day"] = infect_table.index

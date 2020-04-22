@@ -1,4 +1,12 @@
-"""App."""
+from sys import stdout
+from logging import INFO, basicConfig
+
+basicConfig(
+    level=INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    stream=stdout,
+)
+
 import datetime
 
 import altair as alt  # type: ignore
@@ -15,7 +23,8 @@ from penn_chime.presentation import (
     build_data_and_params,
 )
 from penn_chime.settings import get_defaults
-from penn_chime.models import SimSirModel
+from penn_chime.penn_model import PennModel
+from penn_chime.empirical_model import EmpiricalModel
 from penn_chime.charts import (
     build_admits_chart,
     build_census_chart,
@@ -31,6 +40,10 @@ from penn_chime.charts import (
 )
 from penn_chime.utils import dataframe_to_base64
 from penn_chime.hc_actuals import census_mismatch_message
+from penn_chime.r_stuff import do_r_stuff, get_county_data
+from penn_chime.parameters import Mode
+
+
 
 # This is somewhat dangerous:
 # Hide the main menu with "Rerun", "run on Save", "clear cache", and "record a screencast"
@@ -39,10 +52,25 @@ from penn_chime.hc_actuals import census_mismatch_message
 st.markdown(hide_menu_style, unsafe_allow_html=True)
 
 d = get_defaults()
-p, actuals = display_sidebar(st, d)
-m = SimSirModel(p)
+mode = st.sidebar.radio("App Mode", [Mode.PENN_MODEL, Mode.EMPIRICAL])
+
+p, actuals = display_sidebar(st, d, mode)
+m = PennModel(p)
 
 display_header(st, m, p)
+
+result = do_r_stuff()
+st.markdown(f"""R Stuff: {result}""")
+
+# nyt_data = get_county_data()
+# st.dataframe(nyt_data)
+
+# states = list(nyt_data.state.unique()).sort()
+# selected_states = st.multiselect("Please choose a state.", states)
+# if len(selected_states) > 0:
+#     counties = nyt_data.loc[nyt_data.state.isin(selected_states)].county.unique()
+#     counties = list(counties).sort()
+#     st.multiselect("Please choose a county.", counties)
 
 if st.checkbox("Show more info about this tool"):
     notes = "The total size of the susceptible population will be the entire catchment area for our hospitals."
@@ -208,3 +236,5 @@ if actuals is not None:
 
 write_definitions(st)
 write_footer(st)
+
+
