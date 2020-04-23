@@ -16,6 +16,11 @@ class EmpiricalModel(SimSirModelBase):
             return True
         return False
 
+    @classmethod
+    def get_actuals_invalid_message(cls):
+        return """<p>In order to use actual data to predict COVID-19 demand please include the following columns: 'date', and 'total_admissions_actual'. 
+        See the <a href="#working_with_actuals">Working with Actuals</a> section for details about supported columns and data types.</p>"""
+
     def __init__(self, p: Parameters, actuals: pd.DataFrame):
         super(EmpiricalModel, self).__init__(p)
 

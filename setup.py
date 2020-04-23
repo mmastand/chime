@@ -25,6 +25,7 @@ setup(
         "streamlit==0.56.0",
         "pandas",
         "numpy",
+        "scipy",
         "altair",
         "pytest",
         "dash",
