@@ -31,7 +31,9 @@ setup(
         "dash",
         "dash_bootstrap_components",
         "pyyaml",
-        "gunicorn"
+        "gunicorn",
+        "flask",
+        "flask-cors",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

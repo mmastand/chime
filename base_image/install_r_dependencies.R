@@ -1,11 +1,7 @@
-install.packages("remotes")
-require("remotes")
-
-remotes::install_github("kjhealy/covdata")
-
-# Other Dependencies
 deps <- c(
     "growthrate",
-    "forecast"
+    "forecast",
+    "EpiEstim",
+    "incidence"
 )
 install.packages(deps, repos='http://cran.us.r-project.org')

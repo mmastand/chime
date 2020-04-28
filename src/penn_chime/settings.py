@@ -2,7 +2,7 @@
 
 import datetime
 
-from .parameters import Parameters, Regions, Disposition
+from .parameters import ForecastMethod, ForecastedMetric, Parameters, Regions, Disposition
 
 
 def get_defaults():
@@ -22,6 +22,12 @@ def get_defaults():
         n_days=100,
         relative_contact_rate=0.3,
         ventilators=Disposition(0.005, 10),
+        
+        # Model Settings
+        forecasted_metric = ForecastedMetric.DOUBLING_TIME,
+        forecast_method = ForecastMethod.ETS,
+        
+        # PPE
         masks_n95=5,
         masks_surgical=7,
         face_shield=5,
@@ -34,6 +40,7 @@ def get_defaults():
         gloves_icu=10,
         gowns_icu=10,
         other_ppe_icu=2,
+        
         # Staffing Params
         # Non-ICU
         nurses = 6,

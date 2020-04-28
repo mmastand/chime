@@ -7,7 +7,7 @@ from .hc_param_import_export import (
     param_download_widget
 )
 from .hc_actuals import parse_actuals
-from .parameters import Mode, Parameters, Disposition
+from .parameters import ForecastMethod, ForecastedMetric, Mode, Parameters, Disposition
 from .constants import EPSILON
 
 
@@ -46,6 +46,26 @@ def display_sidebar(d: Parameters) -> Parameters:
         "Scenario Name", 
         value="Scenario Name" if uploaded_file is None else d.scenario
     )
+
+    if mode == Mode.EMPIRICAL:
+        st.sidebar.markdown(
+            "### Model Settings"
+        )
+        metric_options = [ForecastedMetric.DOUBLING_TIME, ForecastedMetric.RT]
+        forecasted_metric = st.sidebar.radio(
+            "Forecasted Metric",
+            metric_options,
+            index=metric_options.index(d.forecasted_metric),
+        )
+        method_options = [ForecastMethod.LOESS, ForecastMethod.ETS, ForecastMethod.SPLINE, ForecastMethod.LINEAR]
+        forecast_method = st.sidebar.radio(
+            "Forecast Method",
+            method_options,
+            index=method_options.index(d.forecast_method)
+        )
+    else:
+        forecasted_metric = d.forecasted_metric
+        forecast_method = d.forecast_method
 
     st.sidebar.markdown(
         "### Hospital Parameters"
@@ -227,6 +247,8 @@ def display_sidebar(d: Parameters) -> Parameters:
         first_hospitalized_date_known=first_hospitalized_date_known,
         current_date=covid_census_date,
         beds_borrow=beds_borrow_input,
+        forecast_method=forecast_method,
+        forecasted_metric=forecasted_metric,
     )
 
     parameters = display_ppe_section(d, parameters)

@@ -26,8 +26,9 @@ from penn_chime.body_charts import display_body_charts
 from penn_chime.settings import get_defaults
 from penn_chime.penn_model import PennModel
 from penn_chime.empirical_model import EmpiricalModel
-from penn_chime.r_stuff import do_r_stuff, get_county_data
 from penn_chime.parameters import Mode
+from penn_chime.national_data import get_national_data
+from penn_chime.dummy_data import prep_dummy_data
 
 
 # This is somewhat dangerous:
@@ -41,6 +42,7 @@ hide_menu_style = """
 """
 st.markdown(hide_menu_style, unsafe_allow_html=True)
 
+
 d = get_defaults()
 p, actuals, mode = display_sidebar(d)
 display_app_title()
@@ -48,30 +50,46 @@ display_app_description()
 display_disclaimer()
 
 if mode == Mode.EMPIRICAL:
-    if actuals == None:
-        # Display a placeholder instructing the user to upload actuals
-        # so we can run the model and display the projections
-        display_user_must_upload_actuals()
-    else:
-        if EmpiricalModel.can_use_actuals(actuals):
-            # Pick county to use for actuals
-            # nyt_data = get_county_data()
-            # st.dataframe(nyt_data)
+    ## Logic to control whether we use county data or actuals. For now we are only using county data.
+    # if actuals == None:
+    #     # Display a placeholder instructing the user to upload actuals
+    #     # so we can run the model and display the projections
+    #     display_user_must_upload_actuals()
+    # else:
+    #     if EmpiricalModel.can_use_actuals(actuals):
+    #         # Use Actuals
+    #     else:
+    #         # Display a warning message that the actuals do not contain the needed information to run the model
+    #         text = EmpiricalModel.get_actuals_invalid_message()
+    #         st.markdown(text, unsafe_allow_html=True)
 
-            # states = list(nyt_data.state.unique()).sort()
-            # selected_states = st.multiselect("Please choose a state.", states)
-            # if len(selected_states) > 0:
-            #     counties = nyt_data.loc[nyt_data.state.isin(selected_states)].county.unique()
-            #     counties = list(counties).sort()
-            #     st.multiselect("Please choose a county.", counties)
+    # Pick county to use for actuals
+    nat_data = get_national_data()
 
-            # m = EmpiricalModel(p, actuals)
-            # display_body_charts(m, p, d, actuals, mode)
-            pass
-        else:
-            # Display a warning message that the actuals do not contain the needed information to run the model
-            text = EmpiricalModel.get_actuals_invalid_message()
-            st.markdown(text, unsafe_allow_html=True)
+    states = sorted(list(nat_data.state.unique()))
+    selected_states = st.multiselect("Please choose one or more states.", states)
+    if len(selected_states) > 0:
+        counties = nat_data.loc[nat_data.state.isin(selected_states)].county.unique()
+        counties = sorted(list(counties))
+        selected_counties = st.multiselect("Please choose one or more counties.", counties)
+
+        st.markdown(f"""State: **{selected_states}**\n\nCounty: **{selected_counties}**""")
+
+        if len(selected_counties) > 0:
+            m = EmpiricalModel(p, nat_data, selected_states, selected_counties)
+
+    # # Temporary dropdown for dummy data selection
+    # files = {
+    #     "King": "./data/king_ets_ff4.csv",
+    #     "NYC": "./data/nyc_ets_ff23.csv",
+    # }
+    # selected_counties = st.multiselect("Please select your dummy data.", list(files.keys()))
+    # if len(selected_counties) > 0:
+    #     paths = [files[county] for county in selected_counties]
+    #     county_actuals = prep_dummy_data(paths)
+    #     m = EmpiricalModel(p, county_actuals)
+    #     display_body_charts(m, p, d, actuals, mode)
+        
 else:
     # Mode is classic Penn
     m = PennModel(p)

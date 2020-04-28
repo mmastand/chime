@@ -9,6 +9,8 @@ import io
 from typing import Tuple
 
 from .parameters import (
+    ForecastMethod,
+    ForecastedMetric,
     Parameters, 
     Regions, 
     Disposition,
@@ -56,6 +58,10 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         # selected_offset = imported_params.get("SelectedOffsetDays", -1), # Deprecated in v2.0.0
         author=imported_params.get("Author", "Jane Doe"), # Added in v2.0.0
         scenario=imported_params.get("Scenario", "COVID-19 Model"), # Added in v2.0.0
+
+        # Model Settings
+        forecast_method=imported_params.get("ForecastMethod", ForecastMethod.ETS),
+        forecasted_metric=imported_params.get("ForecastedMetric", ForecastedMetric.DOUBLING_TIME),
 
         # PPE Params
         masks_n95=imported_params.get("MasksN95", 5),
@@ -124,6 +130,10 @@ def param_download_widget(st, parameters):
         "CurrentlyHospitalizedCovidPatientsDate": parameters.covid_census_date.isoformat(),
         # "SelectedOffsetDays": parameters.selected_offset,  # Deprecated in v2.0.0
         
+        # Model Setting
+        "ForecastMethod": parameters.forecast_method,
+        "ForecastedMetric": parameters.forecasted_metric,
+
         # PPE Params
         "MasksN95": parameters.masks_n95,
         "MasksSurgical": parameters.masks_surgical,

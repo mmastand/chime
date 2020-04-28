@@ -36,6 +36,38 @@ class Mode:
     PENN_MODEL = "Penn Model"
     EMPIRICAL = "Empirical Model"
 
+class ForecastedMetric:
+    DOUBLING_TIME = "Doubling Time"
+    RT = "Reproduction Time (Rt)"
+
+    @classmethod
+    def to_r_metric(cls, metric):
+        if metric == cls.DOUBLING_TIME:
+            return "dbT"
+        elif metric == cls.RT:
+            return "Rt"
+        else:
+            raise ValueError(f"No metric called {metric}")
+
+class ForecastMethod:
+    LOESS = "Local Regression (LOESS)"
+    ETS = "Exponential Smoothing (ETS)"
+    SPLINE = "Spline"
+    LINEAR = "Linear"
+
+    @classmethod
+    def to_r_method(cls, method):
+        if method == cls.LOESS:
+            return "loess"
+        elif method == cls.ETS:
+            return "ets"
+        elif method == cls.SPLINE:
+            return "spln"
+        elif method == cls.LINEAR:
+            return "lin"
+        else:
+            raise ValueError(f"No method called {method}")
+
 class Regions:
     """Arbitrary regions to sum population."""
 
@@ -80,6 +112,9 @@ class Parameters:
         # Added by the Health Catalyst Team
         author: str = "Jane Doe",
         scenario: str = "Scenario Name",
+        # Model settings
+        forecasted_metric: str = ForecastedMetric.DOUBLING_TIME,
+        forecast_method: str = ForecastMethod.ETS,
         # PPE Params
         masks_n95: int = 5,
         masks_surgical: int = 7,
@@ -162,6 +197,10 @@ class Parameters:
         self.author = author
         self.scenario = scenario
         
+        # Model Settings
+        self.forecasted_metric = forecasted_metric
+        self.forecast_method = forecast_method
+
         # PPE Params
         self.masks_n95 = masks_n95
         self.masks_surgical = masks_surgical
