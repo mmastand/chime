@@ -372,9 +372,9 @@
    print("*******  after all functions, with changing characters  *******")
    # print(attributes(dat))
    # attributes(dat) <- NULL
-   dat$rgn <- NULL
+   # dat$rgn <- NULL
    dat$mthd <- NULL
-   dat$mSIR <- NULL
+   # dat$mSIR <- NULL
 
    print("*******  no attributes, just before return  *******")
    print(str(dat))

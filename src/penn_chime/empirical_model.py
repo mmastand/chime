@@ -40,21 +40,19 @@ class EmpiricalModel(SimSirModelBase):
             params={"method": method, "metric": metric}
         )
         response.raise_for_status()
-        out_py_df = self.py_df_from_json_response(response.json())
-        st.dataframe(out_py_df)
+        self.r_df = out_py_df = self.py_df_from_json_response(response.json())
+        print(out_py_df.dtypes)
 
-        # self.raw = raw = self.raw_from_r_output(out_py_df)
+        self.raw = raw = self.raw_from_r_output(out_py_df)
+
         # self.calculate_dispositions(raw, self.rates, self.p.market_share)
         # self.calculate_admits(raw, self.rates)
         # self.calculate_census(raw, self.days)
         # self.add_counts()
 
     def py_df_from_json_response(self, response_dict):
-        return (
-            pd
-            .read_json(response_dict)
-            # .assign(date = lambda d: d.date.apply(self.dates_from_r_dates))
-        )
+        df = pd.read_json(response_dict)
+        return (df)
         
     def dates_from_r_dates(self, elapsed_days):
         return EPOCH_START + datetime.timedelta(days=elapsed_days)
