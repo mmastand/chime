@@ -52,8 +52,8 @@ class EmpiricalModel(SimSirModelBase):
     def py_df_from_json_response(self, response_dict):
         return (
             pd
-            .from_json(response_dict)
-            .assign(date = lambda d: d.date.apply(self.dates_from_r_dates))
+            .read_json(response_dict)
+            # .assign(date = lambda d: d.date.apply(self.dates_from_r_dates))
         )
         
     def dates_from_r_dates(self, elapsed_days):

@@ -1,7 +1,7 @@
 import datetime
 from typing import List
 import json
-
+import streamlit as st
 import pandas as pd
 import numpy as np
 import scipy.stats as sps
@@ -27,6 +27,7 @@ def listener():
         return "Must supply 'method', 'metric', and 'df'.", 400
     model_input_df = pd.DataFrame(model_input_dict).assign(date=lambda d: pd.to_datetime(d.date))
     out_df = run_model(model_input_df, method, metric)
+    st.dataframe(out_df)
     return jsonify(out_df.to_json(orient="records", date_format='iso'))
 
 

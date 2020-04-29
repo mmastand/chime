@@ -350,87 +350,33 @@
    data$date <- as.Date(data[,d])
    hdt <- max(data[,d], na.rm=TRUE)+30
    dat <- data[,c(rgn,pop,d,cases,cumCases)]
+   print("*******  before  ********")
+   print(str(dat))
+   print(tail(dat))
    dat <- .fncDynRt(data=dat, d=d, y=cases)
+   print("*******  after Rt  *******")
+   print(str(dat))
+   print(tail(dat))
    dat <- .fncDynDblTim(data=dat, d=d, y=cumCases)
+   print("*******  after dbT  *******")
+   print(str(dat))
+   print(tail(dat))
    # dat <- .fncFcst(dat, d=d, y="Rt" , n=cumCases, mthds=fcst_mthds, h=hdt, trough=fcst_trough)
-   print(paste("hdt", hdt))
    dat <- .fncFcst(dat, d=d, y="dbT", n=cumCases, mthds=fcst_mthds, h=hdt, peak=fcst_peak)
    dat <- .fncSIR(data=dat, pop=dat[1,pop], infect_dys=infect_dys, grw=grw, fcst=fcst, useAct=useAct)
+   print("*******  after all functions, just before return  *******")
+   dat$date <- as.character(dat$date)
+   print(str(dat))
+   print(tail(dat))
 
+   print("*******  after all functions, with changing characters  *******")
+   # print(attributes(dat))
+   # attributes(dat) <- NULL
+   dat$rgn <- NULL
+   dat$mthd <- NULL
+   dat$mSIR <- NULL
+
+   print("*******  no attributes, just before return  *******")
+   print(str(dat))
    return(dat)
-}
-
-
-# Function for estimating dynamic doubling time per growthrates package.
-# https://doi.org/10.1093/molbev/mst187 Hall (2014)
-.fncDynDblTim_m <- function(data, d=names(data)[1], y=names(data)[2], mtry=1000) {
-   # require(growthrates)                                                          #Package for working with growth rates.
-   dfD <- data.frame(rnm=1:nrow(data), d=data[,d], y=data[,y]                    #Initialize output dataframe.
-                     ,seg=0, b0=NA, gRt=NA, dbT=NA, mthd=NA)
-   dfD <- dfD[order(dfD$d),]                                                     #Ensure dataframe is ordered as expected.
-   
-   if(any(dfD$y[2:nrow(dfD)] < dfD$y[1:(nrow(dfD)-1)]))                          #Ensure cumulative cases are provided.
-      stop("Dynamic doubling time calcluations require cumulative cases")
-   
-   a <- 1                                                                        #Initialize number of attempts.
-   
-   repeat {                                                                      #While there are rows to estimate...
-      if(sum(is.na(dfD$gRt)) < 2) break                                          #Stop if there aren't enough records without rates.
-      
-      tmp <- subset(dfD, is.na(gRt))                                             #Get subset of records where growth rate has not been estimated.
-      
-      # Find largest remaining candidate contiguous segment to feed into growth
-      # rate routine.
-      csg <- 0; tmp$csg <- 0                                                     #Initialize candidate contiguous time segments.
-      for(i in 2:nrow(tmp)) {                                                    #Find contiguous segments (series will have been split by already estimated growth rates).
-         if((tmp$rnm[i]-1) != tmp$rnm[i-1]) csg <- csg-1                         #If rows not contiguous, start new candidate segment.
-         tmp$csg[i] <- csg
-      }
-      rm(csg,i)                                                                  #Clean up.
-      
-      t2 <- table(tmp$csg)                                                       #Find candidate segment sizes.
-      
-      if(max(t2) < 2) break                                                      #Stop if there no contiguous segments with at least 2 points.
-      
-      tmp <- tmp[tmp$csg==as.numeric(names(which(t2==max(t2))))[1],]             #Limit dataframe to selected largest remaining segment.
-      
-      # Find growth rate in selected segment.  The auto-select routine will
-      # find the highest growth rate sub-segment within the overall segment it
-      # it receives.
-      fit <- NULL; m <- "auto"                                                   #Ensure fit starts as NULL object and default method of "auto."
-
-      try(fit <- with(tmp, fit_easylinear_m(d, y))@fit, TRUE)                      #Calculate growth rate for linear growth portion.
-      if(is.null(fit)) {                                                         #If auto-calc fails, try to calculate growth rate with simple linear model.
-         m <- "lm"                                                               #Specify type of model used.
-         try(fit <- with(tmp, lm(log(y) ~ d)), TRUE)                             #Fit linear model.
-         names(fit$model)[2] <- "x"                                              #Change name of variable to be consistent with auto model.
-      }
-      
-      if(!is.null(fit)) {                                                        #If fit works...
-         dfD$seg[dfD$d %in% fit$model$x]  <- max(dfD$seg)+1                      #Populate segment.
-         dfD$b0[dfD$d %in% fit$model$x]   <- fit$coef[1]                         #Populate intercept.
-         dfD$gRt[dfD$d %in% fit$model$x]  <- fit$coef[2]                         #Populate growth rate.
-         dfD$mthd[dfD$d %in% fit$model$x] <- m                                   #Specify method.
-      }
-      
-      a <- a+1                                                                   #Increment number of attempts and break out if exceeded limit.
-      if(a > mtry) { message(paste("STOPPED after",a,"attempts")); break }
-   }
-   dfD$b0 = ifelse(dfD$b0 < 1e-4, 1e-4, dfD$b0)
-   dfD$gRt = ifelse(dfD$gRt < 1e-4, 1e-4, dfD$gRt)
-   dfD$dbT <- log(2)/dfD$gRt                                                     #Calculate doubling time.
-   
-   for(i in which(is.na(dfD$dbT))) {
-      dfD$dbT[i] <- mean(c(tail(subset(dfD[1:(i-1),], !is.na(dbT)),1)$dbT
-                           ,head(subset(dfD[(i+1):nrow(dfD),], !is.na(dbT)),1)$dbT
-      ), na.rm=TRUE)
-      dfD$mthd[i] <- "impute"
-   }
-   
-   dfD <- dfD[,-c(1,3)]                                                          #Remove row number and cumulative cases columns.
-   names(dfD)[1] <- d                                                            #Rename columns back to originals.
-   nms <- unique(c(names(data),names(dfD)))
-   data <- merge(data, dfD, all.x=TRUE)[,nms]                                    #Add columns to original dataframe.
-   
-   return(data)                                                                  #Return dataframe.
 }
