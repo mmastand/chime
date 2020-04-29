@@ -41,17 +41,22 @@ class EmpiricalModel(SimSirModelBase):
         )
         response.raise_for_status()
         self.r_df = out_py_df = self.py_df_from_json_response(response.json())
-        print(out_py_df.dtypes)
+        st.dataframe(out_py_df)
 
-        self.raw = raw = self.raw_from_r_output(out_py_df)
+        self.raw = raw = self.raw_from_r_output(out_py_df, p)
 
-        # self.calculate_dispositions(raw, self.rates, self.p.market_share)
-        # self.calculate_admits(raw, self.rates)
-        # self.calculate_census(raw, self.days)
-        # self.add_counts()
+        self.calculate_dispositions(raw, self.rates, self.p.market_share)
+        self.calculate_admits(raw, self.rates)
+        self.calculate_census(raw, self.days)
+        self.add_counts()
 
-    def py_df_from_json_response(self, response_dict):
-        df = pd.read_json(response_dict)
+    def py_df_from_json_response(self, response_json):
+        df = pd.read_json(response_json)
+        df.rst.iloc[0] = 1
+        rst_is_zero = df.rst == 0
+        columns = ['cases', 'cumCases']
+        for column in columns:
+            df.loc[rst_is_zero, column] = np.nan
         return (df)
         
     def dates_from_r_dates(self, elapsed_days):
@@ -84,5 +89,14 @@ class EmpiricalModel(SimSirModelBase):
             )
         )
 
-    def raw_from_r_output(self, r_output_df):
-        raise NotImplementedError()
+    def raw_from_r_output(self, r_output_df, p):
+        # Construct day column
+        day_series = r_output_df.date.apply(lambda d: (d.to_pydatetime().date() - p.current_date).days)
+        return {
+            "day": day_series.values,
+            "date": day_series.values.astype("timedelta64[D]") + np.datetime64(p.current_date),
+            "susceptible": r_output_df.s.values,
+            "infected": r_output_df.i.values,
+            "recovered": r_output_df.r.values,
+            "ever_infected": r_output_df.i.values + r_output_df.r.values,
+        }

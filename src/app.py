@@ -77,18 +77,7 @@ if mode == Mode.EMPIRICAL:
 
         if len(selected_counties) > 0:
             m = EmpiricalModel(p, nat_data, selected_states, selected_counties)
-
-    # # Temporary dropdown for dummy data selection
-    # files = {
-    #     "King": "./data/king_ets_ff4.csv",
-    #     "NYC": "./data/nyc_ets_ff23.csv",
-    # }
-    # selected_counties = st.multiselect("Please select your dummy data.", list(files.keys()))
-    # if len(selected_counties) > 0:
-    #     paths = [files[county] for county in selected_counties]
-    #     county_actuals = prep_dummy_data(paths)
-    #     m = EmpiricalModel(p, county_actuals)
-    #     display_body_charts(m, p, d, actuals, mode)
+            display_body_charts(m, p, d, actuals, mode)
         
 else:
     # Mode is classic Penn
