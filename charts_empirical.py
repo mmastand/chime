@@ -72,12 +72,14 @@ def plot_dynamic_doubling_fit(d):
 
     # Forecast Chart
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
-    y = dict(shorthand="Fit:Q", title="Doubling Time", scale=y_scale)
+    y = dict(shorthand="Fit:Q", title="Doubling Time (days)", scale=y_scale)
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
+        DATE_FORMAT)), alt.Tooltip("Fit:Q", format=".0f", title="Doubling Time (days)"), "Forecast Method:N"]
     color = alt.Color("Forecast Method:N",
                     scale=alt.Scale(scheme="dark2"))
     fc = (alt.Chart(data=d, title=title)
         .transform_fold(fold=plot_columns, as_=["Forecast Method", "Fit"],)
-        .encode(x=alt.X(**x), y=alt.Y(**y), color=color,)
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color,tooltip=tooltip)
         .mark_line()
         )
 
@@ -136,13 +138,15 @@ def plot_Rt_fit(d):
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="Fit:Q", title="Reproduction Rate", scale=y_scale)
     plot_columns = ["Log-Spline", "Exponential Smoothing", "Loess"]
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
+        DATE_FORMAT)), alt.Tooltip("Fit:Q", format=".0f", title="Reproduction Rate"), "Forecast Method:N"]
     color = alt.Color("Forecast Method:N",
                       scale=alt.Scale(scheme="dark2"))
 
     fc = (
         alt.Chart(data=d, title=title)
         .transform_fold(fold=plot_columns, as_=["Forecast Method", "Fit"])
-        .encode(x=alt.X(**x), y=alt.Y(**y), color=color)
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line()
     )
     
@@ -208,12 +212,14 @@ def plot_daily_cases(d):
     x = dict(shorthand="date:T", title="Date",
              axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="Newly Infected:Q", title="Reproduction Rate", scale=y_scale)
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
+        DATE_FORMAT)), alt.Tooltip("Fit:Q", format=".0f", title="New Cases"), "Forecast Method:N"]
     color = alt.Color("Forecast Method:N",
                       scale=alt.Scale(scheme="dark2"))
     fc = (
         alt.Chart(data=d, title=title)
         .transform_fold(fold=["Newly Infected"], as_=["Forecast Method", "Fit"])
-        .encode(x=alt.X(**x), y=alt.Y(**y), color=color)
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line()
     )
 
