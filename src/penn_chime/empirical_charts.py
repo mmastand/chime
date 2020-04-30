@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import altair as alt
 from datetime import datetime, date, timedelta
+import streamlit as st
 
 def get_chart_segments(d):
     segs = d.loc[d.groupby('seg').date.idxmin()]
@@ -27,17 +28,24 @@ def get_names_for_display():
         "Rt_prd_spln": "Log-Spline",
         "Rt_prd_ets": "Exponential Smoothing",
         "Rt_prd_loess": "Loess",
+        "Rt_prd_lin": "Linear",
         "dbT_prd_spln": "Log-Spline",
         "dbT_prd_ets": "Exponential Smoothing",
         "dbT_prd_loess": "Loess",
+        "dbT_prd_lin": "Linear",
         "b": "Beta",
         "s": "Susceptible",
         "i": "Infected",
         "r": "Recovered",
-        "n": "Newly Infected",
+        "n": "n",
         "rst": "rst",
     }
     return(pcn)
+
+def display_forecast_charts(d):
+    dbT = plot_dynamic_doubling_fit(d)
+    Rt = plot_Rt_fit(d)
+    st.altair_chart(alt.hconcat(dbT, Rt), use_container_width=True)
 
 def plot_dynamic_doubling_fit(d):
     DATE_FORMAT = "%b %d"
@@ -47,7 +55,8 @@ def plot_dynamic_doubling_fit(d):
     )
     
     # Drop Rt columns
-    d = d.drop(columns=["Rt_prd_spln", "Rt_prd_ets", "Rt_prd_loess"])
+    d = d.drop(columns=["Rt_prd_lin", "Rt_prd_spln",
+                        "Rt_prd_ets", "Rt_prd_loess"])
 
     # Only show 60 days into future
     d = d.loc[d.date <= (datetime.today() + timedelta(days=60))]
@@ -57,24 +66,26 @@ def plot_dynamic_doubling_fit(d):
     
     # Zero cases where we have forecast
     d.dbT.loc[d.fcst == 1] = np.nan
-    # Zero infected where we have actuals
+    # Zero forecasts where we have actuals
     d.dbT_prd_ets.loc[d.fcst == 0] = np.nan
     d.dbT_prd_loess.loc[d.fcst == 0] = np.nan
     d.dbT_prd_spln.loc[d.fcst == 0] = np.nan
+    d.dbT_prd_lin.loc[d.fcst == 0] = np.nan
     
     # Names for display
     pcn = get_names_for_display()
     d = d.rename(columns=pcn)
-    plot_columns = ["Log-Spline", "Exponential Smoothing", "Loess"]
+    plot_columns = ["Log-Spline", "Exponential Smoothing", "Loess", "Linear"]
 
     # Chart title
-    title = str(d.rgn.iloc[0] + " Doubling Time")
+    #title = str(d.rgn.iloc[0] + " Doubling Time")
+    title = "Doubling Time"
 
     # Forecast Chart
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="Fit:Q", title="Doubling Time (days)", scale=y_scale)
     tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
-        DATE_FORMAT)), alt.Tooltip("Fit:Q", format=".0f", title="Doubling Time (days)"), "Forecast Method:N"]
+        DATE_FORMAT)), alt.Tooltip("Fit:Q", format=".2f", title="Doubling Time (days)"), "Forecast Method:N"]
     color = alt.Color("Forecast Method:N",
                     scale=alt.Scale(scheme="dark2"))
     fc = (alt.Chart(data=d, title=title)
@@ -84,9 +95,11 @@ def plot_dynamic_doubling_fit(d):
         )
 
     # Points
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
+        DATE_FORMAT)), alt.Tooltip("Doubling Time:Q", format=".2f", title="Doubling Time (days)")]
     db_points = (
         alt.Chart(data=d)
-        .encode(x="date:T", y="Doubling Time:Q")
+        .encode(x="date:T", y="Doubling Time:Q", tooltip=tooltip,)
         .mark_point(filled=True, color="black")
     )  
     # Points
@@ -110,36 +123,40 @@ def plot_Rt_fit(d):
     )
 
     # Drop dbT columns
-    d = d.drop(columns=["dbT_prd_spln", "dbT_prd_ets", "dbT_prd_loess"])
+    d = d.drop(columns=["dbT_prd_lin", "dbT_prd_spln", 
+                        "dbT_prd_ets", "dbT_prd_loess"])
 
     # Only show 60 days into future
-    d = d.loc[d.date <= (datetime.today() + timedelta(days=14))]
+    # d = d.loc[d.date <= (datetime.today() + timedelta(days=14))]
 
     # Add fcst column
     d["fcst"] = np.where(d.Rt.isnull(), 1, 0)
 
     # Zero cases where we have forecast
     d.Rt.loc[d.fcst == 1] = np.nan
-    # Zero infected where we have actuals
+    # Zero forecasts where we have actuals
     d.Rt_prd_ets.loc[d.fcst == 0] = np.nan
     d.Rt_prd_loess.loc[d.fcst == 0] = np.nan
     d.Rt_prd_spln.loc[d.fcst == 0] = np.nan
+    d.Rt_prd_lin.loc[d.fcst == 0] = np.nan
 
     # Names for display
     pcn = get_names_for_display()
     d = d.rename(columns=pcn)
 
+
     # Chart title
-    title = str(d.rgn.iloc[0] + " Reproduction Rate")
+    # title = str(d.rgn.iloc[0] + " Reproduction Rate")
+    title = "Reproduction Rate"
 
     d["one"] = 1
 
     # Lines
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="Fit:Q", title="Reproduction Rate", scale=y_scale)
-    plot_columns = ["Log-Spline", "Exponential Smoothing", "Loess"]
+    plot_columns = ["Log-Spline", "Exponential Smoothing", "Loess", "Linear"]
     tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
-        DATE_FORMAT)), alt.Tooltip("Fit:Q", format=".0f", title="Reproduction Rate"), "Forecast Method:N"]
+        DATE_FORMAT)), alt.Tooltip("Fit:Q", format=".2f", title="Reproduction Rate"), "Forecast Method:N"]
     color = alt.Color("Forecast Method:N",
                       scale=alt.Scale(scheme="dark2"))
 
@@ -151,6 +168,8 @@ def plot_Rt_fit(d):
     )
     
     # Points
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
+        DATE_FORMAT)), alt.Tooltip("Rt:Q", format=".2f", title="Reproduction Rate")]
     rt_points = (
         alt.Chart(data=d)
         .encode(x="date:T", y="Rt:Q")
@@ -182,14 +201,15 @@ def plot_Rt_fit(d):
     )
     return(p)
 
-def plot_daily_cases(d):
+
+def display_daily_cases_forecast_chart(d):
     DATE_FORMAT = "%b %d"
     y_scale = alt.Scale(
         #    domain = (0, 40),
         #    clamp = True,
     )
-    #  Drop dbT columns
-    d = d.drop(columns=["dbT_prd_spln", "dbT_prd_ets", "dbT_prd_loess"])
+    #  Drop dbT columns so that the plotting fucntion doesn't choke on them when renaming.s
+    d = d.drop(columns=["dbT_prd_spln", "dbT_prd_ets", "dbT_prd_loess", "dbT_prd_lin"])
     
     # Only show x days into future
     # d = d.loc[d.date <= (datetime.today() + timedelta(days=60))]
@@ -205,37 +225,48 @@ def plot_daily_cases(d):
     # Names for display
     pcn = get_names_for_display()
     d = d.rename(columns=pcn)
+    # Specific to this function
+    d["Actual"] = d["Daily Cases"]
+    d["Projected"] = d["n"]
     
     # Chart title
-    title = str(d.rgn.iloc[0] + " Daily Cases")
+    title = "Projected Daily Cases"  # Get method to fit actuals and forecast
+    act_fc = d.mSIR.iloc[0].split(",")
+    subtitle = str("Model Generated from\n" + act_fc[0] + " and " + act_fc[1])
 
+    plot_columns = ["Actual", "Projected"]
     x = dict(shorthand="date:T", title="Date",
              axis=alt.Axis(format=(DATE_FORMAT)))
-    y = dict(shorthand="Newly Infected:Q", title="Reproduction Rate", scale=y_scale)
+    y = dict(shorthand="fit:Q", title="Daily Cases", scale=y_scale)
     tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
-        DATE_FORMAT)), alt.Tooltip("Fit:Q", format=".0f", title="New Cases"), "Forecast Method:N"]
-    color = alt.Color("Forecast Method:N",
-                      scale=alt.Scale(scheme="dark2"))
+        DATE_FORMAT)), alt.Tooltip("fit:Q", format=".0f", title="New Cases")]
+    color = alt.Color("Data Source:N",
+                      sort=plot_columns,
+                      scale=alt.Scale(domain=plot_columns,
+                                      range=["black", "red"]))
     fc = (
         alt.Chart(data=d, title=title)
-        .transform_fold(fold=["Newly Infected"], as_=["Forecast Method", "Fit"])
+        .transform_fold(fold=plot_columns, as_=["Data Source", "fit"])
         .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line()
+        .properties(
+            title={
+                "text": title,
+                "subtitle": subtitle
+            }
+        )
     )
 
     # Points
+    tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
+        DATE_FORMAT)), alt.Tooltip("Daily Cases:Q", format=".0f", title="New Cases")]
     hist_points = (
         alt.Chart(data=d)
-        .encode(x="date:T", y="Daily Cases:Q")
+        .encode(x="date:T", y="Daily Cases:Q", tooltip=tooltip)
         .mark_point(color="black", fill="black")
     )
-    # Points
-    hist_line = (
-        alt.Chart(data=d)
-        .encode(x="date:T", y="Daily Cases:Q")
-        .mark_line(color="black")
-    )
+ 
     p = (
-        alt.layer(fc, hist_line, hist_points)
+        alt.layer(fc, hist_points)
     )
-    return(p)
+    st.altair_chart(p, use_container_width=True)

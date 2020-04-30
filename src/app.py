@@ -23,6 +23,7 @@ from penn_chime.body_text import (
     display_footer,
 )
 from penn_chime.body_charts import display_body_charts
+from penn_chime.empirical_charts import display_forecast_charts, display_daily_cases_forecast_chart
 from penn_chime.settings import get_defaults
 from penn_chime.penn_model import PennModel
 from penn_chime.empirical_model import EmpiricalModel
@@ -77,9 +78,12 @@ if mode == Mode.EMPIRICAL:
 
         if len(selected_counties) > 0:
             m = EmpiricalModel(p, nat_data, selected_states, selected_counties)
+            if st.checkbox("Show Forecast Methods", value=True):
+                display_forecast_charts(m.r_df)
+            st.markdown("Projected Regional Daily Cases")
+            display_daily_cases_forecast_chart(m.r_df)
             display_body_charts(m, p, d, actuals, mode)
             
-    st.dataframe(m)
 
         
 else:
