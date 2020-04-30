@@ -6,7 +6,7 @@ constants.py `change_date``.
 
 from collections import namedtuple
 import datetime
-from typing import Optional
+from typing import List, Optional
 
 from .validators import (
     Positive, OptionalStrictlyPositive, StrictlyPositive, Rate, Date, OptionalDate
@@ -96,12 +96,12 @@ class Parameters:
         relative_contact_rate: float,
         ventilators: Disposition, # used to be ventilated
         current_date: datetime.date = datetime.date.today() - datetime.timedelta(hours=6),
-        social_distancing_is_implemented: bool = False,
+        social_distancing_is_implemented: bool = True,
         mitigation_date: datetime.date = datetime.date.today()  - datetime.timedelta(hours=6),
         date_first_hospitalized: Optional[datetime.date] = None,
         first_hospitalized_date_known: bool = False,
         doubling_time: Optional[float] = None,
-        infectious_days: int = 14,
+        infectious_days: int = 10,
         market_share: float = 1.0,
         max_y_axis: Optional[int] = None,
         max_y_axis_set: bool = False,
@@ -112,9 +112,14 @@ class Parameters:
         # Added by the Health Catalyst Team
         author: str = "Jane Doe",
         scenario: str = "Scenario Name",
+        # App mode
+        app_mode: str = Mode.EMPIRICAL,
         # Model settings
         forecasted_metric: str = ForecastedMetric.DOUBLING_TIME,
         forecast_method: str = ForecastMethod.ETS,
+        # County selections
+        selected_states: List[str] = None,
+        selected_counties: List[str] = None,
         # PPE Params
         masks_n95: int = 5,
         masks_surgical: int = 7,
@@ -197,9 +202,16 @@ class Parameters:
         self.author = author
         self.scenario = scenario
         
+        # App Mode
+        self.app_mode = app_mode
+
         # Model Settings
         self.forecasted_metric = forecasted_metric
         self.forecast_method = forecast_method
+
+        # County Selections
+        self.selected_states = selected_states if selected_states is not None else []
+        self.selected_counties = selected_counties if selected_counties is not None else []
 
         # PPE Params
         self.masks_n95 = masks_n95
