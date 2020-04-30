@@ -30,6 +30,7 @@ from penn_chime.empirical_model import EmpiricalModel
 from penn_chime.parameters import Mode
 from penn_chime.national_data import get_national_data
 from penn_chime.dummy_data import prep_dummy_data
+from penn_chime.hc_param_import_export import param_download_widget
 
 
 # This is somewhat dangerous:
@@ -68,24 +69,35 @@ if mode == Mode.EMPIRICAL:
     nat_data = get_national_data()
 
     states = sorted(list(nat_data.state.unique()))
-    selected_states = st.multiselect("Please choose one or more states.", states, default="New York")
+    selected_states = st.multiselect("Please choose one or more states.", states, default=p.selected_states)
     if len(selected_states) > 0:
+        p.selected_states = selected_states
         counties = nat_data.loc[nat_data.state.isin(selected_states)].county.unique()
         counties = sorted(list(counties))
-        selected_counties = st.multiselect("Please choose one or more counties.", counties, default="New York City")
-
-        st.markdown(f"""State: **{selected_states}**\n\nCounty: **{selected_counties}**""")
+        selected_counties = st.multiselect("Please choose one or more counties.", counties, default=p.selected_counties)
 
         if len(selected_counties) > 0:
+            p.selected_counties = selected_counties
             m = EmpiricalModel(p, nat_data, selected_states, selected_counties)
+
+            # Display population
+            population = m.r_df['pop'].iloc[0]
+            st.subheader(f"""Regional Population: {population}""")
+            
+            # Forecast Methods Charts
             if st.checkbox("Show Forecast Methods", value=True):
+                st.markdown("Choose the best growth method and forecast, then set using the sidebar.")
                 display_forecast_charts(m.r_df)
+             
+            # Forecasted new Regional cases
             st.markdown("Projected Regional Daily Cases")
             display_daily_cases_forecast_chart(m.r_df)
             display_body_charts(m, p, d, actuals, mode)
-            
+    else:
+        st.markdown("""
+            <h4 style="color:#00aeff">Please selected your geographic region above to generate COVID-19 projections.</h4>
+        """, unsafe_allow_html=True)
 
-        
 else:
     # Mode is classic Penn
     m = PennModel(p)
@@ -97,3 +109,4 @@ else:
 
 display_actuals_definitions()
 display_footer()
+param_download_widget(p)

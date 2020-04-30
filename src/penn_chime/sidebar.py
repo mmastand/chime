@@ -3,8 +3,7 @@ import os
 import streamlit as st
 
 from .hc_param_import_export import (
-    constants_from_uploaded_file, 
-    param_download_widget
+    constants_from_uploaded_file
 )
 from .hc_actuals import parse_actuals
 from .parameters import ForecastMethod, ForecastedMetric, Mode, Parameters, Disposition
@@ -57,7 +56,7 @@ def display_sidebar(d: Parameters) -> Parameters:
             metric_options,
             index=metric_options.index(d.forecasted_metric),
         )
-        method_options = [ForecastMethod.LOESS, ForecastMethod.ETS, ForecastMethod.SPLINE, ForecastMethod.LINEAR]
+        method_options = [ForecastMethod.ETS, ForecastMethod.LOESS, ForecastMethod.SPLINE, ForecastMethod.LINEAR]
         forecast_method = st.sidebar.radio(
             "Forecast Method",
             method_options,
@@ -70,13 +69,16 @@ def display_sidebar(d: Parameters) -> Parameters:
     st.sidebar.markdown(
         "### Hospital Parameters"
     )
-    population = st.sidebar.number_input(
-        "Regional Population",
-        min_value=1,
-        value=(d.population),
-        step=1,
-        format="%i",
-    )
+    if mode == Mode.PENN_MODEL:
+        population = st.sidebar.number_input(
+            "Regional Population",
+            min_value=1,
+            value=(d.population),
+            step=1,
+            format="%i",
+        )
+    else:
+        population = d.population
     market_share = st.sidebar.number_input(
         "Hospital Market Share (%)",
         min_value=0.5,
@@ -247,19 +249,19 @@ def display_sidebar(d: Parameters) -> Parameters:
         first_hospitalized_date_known=first_hospitalized_date_known,
         current_date=covid_census_date,
         beds_borrow=beds_borrow_input,
+        app_mode=mode,
         forecast_method=forecast_method,
         forecasted_metric=forecasted_metric,
     )
+    if uploaded_file is not None:
+        parameters.selected_states = d.selected_states
+        parameters.selected_counties = d.selected_counties
 
     parameters = display_ppe_section(d, parameters)
     parameters = display_staffing_section(d, parameters)
     parameters = display_displayParameters_section(d, uploaded_file, parameters)
 
     actuals = display_actuals_section()
-    param_download_widget(
-        st,
-        parameters,
-    )
     return parameters, actuals, mode
 
 
