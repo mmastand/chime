@@ -1,4 +1,4 @@
-FROM maxtaggart/chime-base:0.0.3
+FROM mmastand/chime-base:0.0.2
 
 RUN mkdir /app
 WORKDIR /app
