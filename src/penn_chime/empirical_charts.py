@@ -110,7 +110,7 @@ def plot_dynamic_doubling_fit(d):
     )
 
     bar = (
-        alt.Chart()
+        alt.Chart(data=d)
         .encode(x=alt.X(**x))
         .transform_filter(alt.datum.day == 0)
         .mark_rule(color="black", opacity=0.35, size=2)
@@ -202,7 +202,7 @@ def plot_Rt_fit(d):
     )
 
     bar = (
-        alt.Chart()
+        alt.Chart(data=d)
         .encode(x=alt.X(**x))
         .transform_filter(alt.datum.day == 0)
         .mark_rule(color="black", opacity=0.35, size=2)
@@ -279,7 +279,7 @@ def display_daily_cases_forecast_chart(d):
     )
 
     bar = (
-        alt.Chart()
+        alt.Chart(data=d)
         .encode(x=alt.X(**x))
         .transform_filter(alt.datum.day == 0)
         .mark_rule(color="black", opacity=0.35, size=2)
