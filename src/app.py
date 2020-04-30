@@ -24,6 +24,7 @@ from penn_chime.body_text import (
 )
 from penn_chime.body_charts import display_body_charts
 from penn_chime.empirical_charts import display_forecast_charts, display_daily_cases_forecast_chart
+from penn_chime.population import display_population_widgets
 from penn_chime.settings import get_defaults
 from penn_chime.penn_model import PennModel
 from penn_chime.empirical_model import EmpiricalModel
@@ -77,15 +78,21 @@ if mode == Mode.EMPIRICAL:
         selected_counties = st.multiselect("Please choose one or more counties.", counties, default=p.selected_counties)
 
         if len(selected_counties) > 0:
-            p.selected_counties = selected_counties
-            m = EmpiricalModel(p, nat_data, selected_states, selected_counties)
 
             # Display population
-            population = m.r_df['pop'].iloc[0]
-            st.subheader(f"""Regional Population: {population}""")
+            population = display_population_widgets(p, selected_states, selected_counties, nat_data)
+
+            p.selected_counties = selected_counties
+            m = EmpiricalModel(p, nat_data, selected_states, selected_counties, population)
+
             
             # Forecast Methods Charts
-            if st.checkbox("Show Forecast Methods", value=True):
+            show_forecast_methods = st.checkbox(
+                "Show Forecast Methods", 
+                value=p.show_forecast_methods,
+            )
+            p.show_forecast_methods = show_forecast_methods
+            if show_forecast_methods:
                 st.markdown("Choose the best growth method and forecast, then set using the sidebar.")
                 display_forecast_charts(m.r_df)
              

@@ -19,7 +19,7 @@ def get_defaults():
         icu=Disposition(0.0075, 9),
         infectious_days=10,
         market_share=0.15,
-        n_days=100,
+        n_days=30,
         relative_contact_rate=0.45,
         ventilators=Disposition(0.005, 10),
         

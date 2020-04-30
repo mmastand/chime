@@ -27,12 +27,12 @@ class EmpiricalModel(SimSirModelBase):
         return """<p>In order to use actual data to predict COVID-19 demand please include the following columns: 'date', and 'total_admissions_actual'. 
         See the <a href="#working_with_actuals">Working with Actuals</a> section for details about supported columns and data types.</p>"""
 
-    def __init__(self, p: Parameters, actuals: pd.DataFrame, states: List[str], counties: List[str]):
+    def __init__(self, p: Parameters, actuals: pd.DataFrame, states: List[str], counties: List[str], population: int):
         super(EmpiricalModel, self).__init__(p)
         
         method = ForecastMethod.to_r_method(p.forecast_method)
         metric = ForecastedMetric.to_r_metric(p.forecasted_metric)
-        py_in_df = self.r_input_from_actuals(actuals, states, counties)
+        py_in_df = self.r_input_from_actuals(actuals, states, counties, population)
         payload = json.loads(py_in_df.to_json(orient="records", date_format='iso'))
         response = requests.post(
             "http://localhost:8765/", 
@@ -62,7 +62,7 @@ class EmpiricalModel(SimSirModelBase):
     def dates_from_r_dates(self, elapsed_days):
         return EPOCH_START + datetime.timedelta(days=elapsed_days)
 
-    def r_input_from_actuals(self, actuals, states, counties):
+    def r_input_from_actuals(self, actuals, states, counties, population):
         
         states_str = "-".join(states)
         counties_str = "-".join(counties)
@@ -85,7 +85,7 @@ class EmpiricalModel(SimSirModelBase):
                 # think the column is really used.
                 rgn = region_str, 
                 # Take max population since regions may have different start days
-                pop = lambda d: d['pop'].max() 
+                pop = population, 
             )
         )
 

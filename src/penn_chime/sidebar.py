@@ -24,8 +24,6 @@ def display_sidebar(d: Parameters) -> Parameters:
         <span style="font-size:medium;"><a href="#release_notes">Features and Enhancements History</a></span> 
     """, unsafe_allow_html=True)
 
-    mode = st.sidebar.radio("App Mode", [Mode.PENN_MODEL, Mode.EMPIRICAL], index=1)
-
     st.sidebar.markdown(
         "### Scenario"
     )
@@ -46,10 +44,17 @@ def display_sidebar(d: Parameters) -> Parameters:
         value="Scenario Name" if uploaded_file is None else d.scenario
     )
 
+    st.sidebar.markdown(
+        "### Model Settings"
+    )
+    mode_options = [Mode.PENN_MODEL, Mode.EMPIRICAL]
+    mode = st.sidebar.radio(
+        "Mode", 
+        mode_options,
+        index=mode_options.index(d.app_mode)
+    )
+
     if mode == Mode.EMPIRICAL:
-        st.sidebar.markdown(
-            "### Model Settings"
-        )
         metric_options = [ForecastedMetric.DOUBLING_TIME, ForecastedMetric.RT]
         forecasted_metric = st.sidebar.radio(
             "Forecasted Metric",
@@ -254,8 +259,13 @@ def display_sidebar(d: Parameters) -> Parameters:
         forecasted_metric=forecasted_metric,
     )
     if uploaded_file is not None:
+        # Make sure that we set values that came in through a scenario file that
+        # don't have widgets in the sidebar
         parameters.selected_states = d.selected_states
         parameters.selected_counties = d.selected_counties
+        parameters.override_population = d.override_population
+        parameters.population_manual_override = d.population_manual_override
+        parameters.show_forecast_methods = d.show_forecast_methods
 
     parameters = display_ppe_section(d, parameters)
     parameters = display_staffing_section(d, parameters)
