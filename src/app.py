@@ -67,17 +67,20 @@ if mode == Mode.EMPIRICAL:
     nat_data = get_national_data()
 
     states = sorted(list(nat_data.state.unique()))
-    selected_states = st.multiselect("Please choose one or more states.", states)
+    selected_states = st.multiselect("Please choose one or more states.", states, default="New York")
     if len(selected_states) > 0:
         counties = nat_data.loc[nat_data.state.isin(selected_states)].county.unique()
         counties = sorted(list(counties))
-        selected_counties = st.multiselect("Please choose one or more counties.", counties)
+        selected_counties = st.multiselect("Please choose one or more counties.", counties, default="New York City")
 
         st.markdown(f"""State: **{selected_states}**\n\nCounty: **{selected_counties}**""")
 
         if len(selected_counties) > 0:
             m = EmpiricalModel(p, nat_data, selected_states, selected_counties)
             display_body_charts(m, p, d, actuals, mode)
+            
+    st.dataframe(m)
+
         
 else:
     # Mode is classic Penn

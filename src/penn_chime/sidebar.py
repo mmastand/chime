@@ -25,7 +25,7 @@ def display_sidebar(d: Parameters) -> Parameters:
         <span style="font-size:medium;"><a href="#release_notes">Features and Enhancements History</a></span> 
     """, unsafe_allow_html=True)
 
-    mode = st.sidebar.radio("App Mode", [Mode.PENN_MODEL, Mode.EMPIRICAL])
+    mode = st.sidebar.radio("App Mode", [Mode.PENN_MODEL, Mode.EMPIRICAL], index=1)
 
     st.sidebar.markdown(
         "### Scenario"

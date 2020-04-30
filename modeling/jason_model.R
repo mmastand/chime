@@ -281,9 +281,9 @@
       tmp$i[i] <- ((tmp$b[i]*tmp$s[p]*tmp$i[p]) - (g*tmp$i[p])) + tmp$i[p]
       tmp$r[i] <- (g*tmp$i[p]) + tmp$r[p]
       if(useAct & !is.na(tmp$cases[i])) {                                        #If user requests to use actual and data available...
-         tmp$s[i] <- tmp$s[i-1] - (tmp$cumCases[i-1])                            #Reset Susceptible, Infected, and Recovered.
-         tmp$i[i] <- sum(tmp$cases[i:(i-min(c(i,infect_dys-1)))])
+         tmp$i[i] <- sum(tmp$cases[i:(i-min(c(i,infect_dys-1)))])                #Reset Susceptible, Infected, and Recovered.
          tmp$r[i] <- ifelse(i>infect_dys, tmp$cumCases[i-infect_dys], 0)
+         tmp$s[i] <- pop - (tmp$i[i] + tmp$r[i])
          tmp$rst[i] <- 1
       }
       tmp$t[i] <- tmp$i[i] + tmp$r[i]     #Why are "recovered" counted in here? (Per Penn Med admission formula)
@@ -350,33 +350,33 @@
    data$date <- as.Date(data[,d])
    hdt <- max(data[,d], na.rm=TRUE)+30
    dat <- data[,c(rgn,pop,d,cases,cumCases)]
-   print("*******  before  ********")
-   print(str(dat))
-   print(tail(dat))
+   # print("*******  before  ********")
+   # print(str(dat))
+   # print(tail(dat))
    dat <- .fncDynRt(data=dat, d=d, y=cases)
-   print("*******  after Rt  *******")
-   print(str(dat))
-   print(tail(dat))
+   # print("*******  after Rt  *******")
+   # print(str(dat))
+   # print(tail(dat))
    dat <- .fncDynDblTim(data=dat, d=d, y=cumCases)
-   print("*******  after dbT  *******")
-   print(str(dat))
-   print(tail(dat))
+   # print("*******  after dbT  *******")
+   # print(str(dat))
+   # print(tail(dat))
    # dat <- .fncFcst(dat, d=d, y="Rt" , n=cumCases, mthds=fcst_mthds, h=hdt, trough=fcst_trough)
    dat <- .fncFcst(dat, d=d, y="dbT", n=cumCases, mthds=fcst_mthds, h=hdt, peak=fcst_peak)
    dat <- .fncSIR(data=dat, pop=dat[1,pop], infect_dys=infect_dys, grw=grw, fcst=fcst, useAct=useAct)
-   print("*******  after all functions, just before return  *******")
+   # print("*******  after all functions, just before return  *******")
    dat$date <- as.character(dat$date)
-   print(str(dat))
-   print(tail(dat))
+   # print(str(dat))
+   # print(tail(dat))
 
-   print("*******  after all functions, with changing characters  *******")
+   # print("*******  after all functions, with changing characters  *******")
    # print(attributes(dat))
    # attributes(dat) <- NULL
    # dat$rgn <- NULL
    dat$mthd <- NULL
    # dat$mSIR <- NULL
 
-   print("*******  no attributes, just before return  *******")
+   # print("*******  no attributes, just before return  *******")
    print(str(dat))
    return(dat)
 }
