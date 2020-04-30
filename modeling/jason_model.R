@@ -105,7 +105,7 @@
 .fncFcst <- function(data, d=names(data)[1], y=names(data)[2], n=NA
                     ,mthds=c("lin","spln","ets","loess")
                     ,pfx=y
-                    ,h=30, minCases=20, peak=max(data[,y], na.rm=TRUE)*2, trough=NA) {
+                    ,h=30, minCases=20, peak=max(data[,y], na.rm=TRUE)*2, trough=0.5) {
    suppressMessages(require(splines))                                            #Load package for splines.
    suppressMessages(require(forecast))                                           #Forecast package.
 
@@ -345,7 +345,8 @@
 # - rst        = Reset SIR values based upon actuals (requires actual and useAct=TRUE)
 # - mSIR       = Text description of methods used.
 .fncCaseEst <- function(data, rgn="rgn", pop="pop", d="date", cases="cases", cumCases="cumCases"
-                       ,fcst_mthds=c("lin","spln","ets","loess"), fcst_trough=NA, fcst_peak=NA
+                       ,fcst_mthds=c("lin","spln","ets","loess") 
+                       ,fcst_trough=0.5, fcst_peak=NA
                        ,infect_dys=10, grw="dbT", fcst="ets", useAct=TRUE) {
    data$date <- as.Date(data[,d])
    hdt <- max(data[,d], na.rm=TRUE)+30
@@ -361,8 +362,13 @@
    # print("*******  after dbT  *******")
    # print(str(dat))
    # print(tail(dat))
-   # dat <- .fncFcst(dat, d=d, y="Rt" , n=cumCases, mthds=fcst_mthds, h=hdt, trough=fcst_trough)
-   dat <- .fncFcst(dat, d=d, y="dbT", n=cumCases, mthds=fcst_mthds, h=hdt, peak=fcst_peak)
+   if (is.na(fcst_peak)) { # If NA, use the default for the fcst function.
+      fcst_peak <- max(dat[,"dbT"], na.rm=TRUE)*2
+   }
+   dat_Rt <- .fncFcst(dat, d=d, y="Rt" , n=cumCases, mthds=fcst_mthds, h=hdt, trough=fcst_trough)
+   dat_dbT <- .fncFcst(dat, d=d, y="dbT", n=cumCases, mthds=fcst_mthds, h=hdt, peak=fcst_peak)
+   dat <- merge(dat_Rt, dat_dbT)
+   print(head(dat))
    dat <- .fncSIR(data=dat, pop=dat[1,pop], infect_dys=infect_dys, grw=grw, fcst=fcst, useAct=useAct)
    # print("*******  after all functions, just before return  *******")
    dat$date <- as.character(dat$date)

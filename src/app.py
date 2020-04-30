@@ -23,6 +23,7 @@ from penn_chime.body_text import (
     display_footer,
 )
 from penn_chime.body_charts import display_body_charts
+from penn_chime.empirical_charts import display_forecast_charts, display_daily_cases_forecast_chart
 from penn_chime.settings import get_defaults
 from penn_chime.penn_model import PennModel
 from penn_chime.empirical_model import EmpiricalModel
@@ -78,17 +79,25 @@ if mode == Mode.EMPIRICAL:
         if len(selected_counties) > 0:
             p.selected_counties = selected_counties
             m = EmpiricalModel(p, nat_data, selected_states, selected_counties)
+
             # Display population
             population = m.r_df['pop'].iloc[0]
             st.subheader(f"""Regional Population: {population}""")
+            
+            # Forecast Methods Charts
+            if st.checkbox("Show Forecast Methods", value=True):
+                st.markdown("Choose the best growth method and forecast, then set using the sidebar.")
+                display_forecast_charts(m.r_df)
+             
+            # Forecasted new Regional cases
+            st.markdown("Projected Regional Daily Cases")
+            display_daily_cases_forecast_chart(m.r_df)
             display_body_charts(m, p, d, actuals, mode)
     else:
         st.markdown("""
             <h4 style="color:#00aeff">Please selected your geographic region above to generate COVID-19 projections.</h4>
         """, unsafe_allow_html=True)
-    
 
-        
 else:
     # Mode is classic Penn
     m = PennModel(p)
