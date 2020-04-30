@@ -64,7 +64,7 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         scenario=imported_params.get("Scenario", "COVID-19 Model"), # Added in v2.0.0
 
         # App mode
-        app_mode=imported_params.get("AppMode", Mode.EMPIRICAL),
+        app_mode=imported_params.get("AppMode", Mode.PENN_MODEL),
 
         # Model Settings
         forecast_method=imported_params.get("ForecastMethod", ForecastMethod.ETS),
@@ -104,6 +104,12 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         # Shift Duration
         shift_duration=imported_params.get("ShiftDuration", 12),
 
+        # Population
+        override_population=imported_params.get("OverridePopulation", False),
+        population_manual_override=imported_params.get("PopulationManualOverride", 1000000),
+
+        # Section Display
+        show_forecast_methods=imported_params.get("ShowForecastMethods", False),
     )
     return parameters
 
@@ -182,6 +188,13 @@ def param_download_widget(parameters):
         "PatientsPerOtherStaffICU": parameters.other_staff_icu,
         # Shift Duration
         "ShiftDuration" : parameters.shift_duration,
+
+        # Population
+        "OverridePopulation": parameters.override_population,
+        "PopulationManualOverride": parameters.population_manual_override,
+
+        # Section Display
+        "ShowForecastMethods": parameters.show_forecast_methods,
     }
     out_json = json.dumps(out_obj)
     b64_json = base64.b64encode(out_json.encode()).decode()

@@ -105,7 +105,7 @@ class Parameters:
         market_share: float = 1.0,
         max_y_axis: Optional[int] = None,
         max_y_axis_set: bool = False,
-        n_days: int = 100,
+        n_days: int = 30,
         population: Optional[int] = None,
         recovered: int = 0,
         region: Optional[Regions] = None,
@@ -149,6 +149,13 @@ class Parameters:
         other_staff_icu=10,
         # Shift Duration
         shift_duration: int = 12,
+
+        # Population
+        override_population: bool = False,
+        population_manual_override: bool = 1000000,
+
+        # Section Displays
+        show_forecast_methods: bool = False,
     ):
         self.covid_census_value = covid_census_value
         self.covid_census_date = Date(value=covid_census_date)
@@ -242,7 +249,14 @@ class Parameters:
         self.other_staff_icu = other_staff_icu
         # Shift Duration
         self.shift_duration = shift_duration
+
+        # Population
+        self.override_population = override_population
+        self.population_manual_override = population_manual_override
         
+        # Section Displays
+        self.show_forecast_methods = show_forecast_methods
+
         self.labels = {
             "hospitalized": "Hospitalized",
             "icu": "ICU",
