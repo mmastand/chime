@@ -78,6 +78,11 @@ def build_admits_chart(
         .transform_fold(fold=plot_columns, as_=["Projected", "value"])
         .encode(x=alt.X(**x), y=alt.Y(**y), color=proj_color, tooltip=tooltip)
         .mark_line()
+        .properties(
+            title={
+                "text": "Projected Number of Daily COVID-19 Admissions"
+            }
+        )
     )
     bar = (
         alt.Chart()
@@ -129,6 +134,12 @@ def build_census_chart(
         .transform_fold(fold=plot_columns, as_=["Projected", "value"])
         .encode(x=alt.X(**x), y=alt.Y(**y), color=proj_color, tooltip=tooltip)
         .mark_line()
+        .properties(
+            title={
+                "text": "Projected Census of COVID-19 Patients",
+                "subtitle": "Accounts for Arrivals and Discharges."
+            }
+        )
     )
     bar = (
         alt.Chart()
@@ -174,6 +185,11 @@ def build_sim_sir_w_date_chart(
         .transform_fold(fold=plot_columns, as_=["Projected", "value"])
         .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
         .mark_line()
+        .properties(
+            title={
+                "text": "Number of Regional Susceptible, Infected, and Recovered Individuals"
+            }
+        )
     )
     bar = (
         alt.Chart()
@@ -221,6 +237,12 @@ def build_beds_chart(
         .transform_fold(fold=beds_columns, as_=["Projected", "value"])
         .encode(x=alt.X(**x), y=alt.Y(**y), color=proj_color, tooltip=tooltip)
         .mark_line()
+        .properties(
+            title={
+                "text": "Projected Number of Available COVID-19 Beds",
+                "subtitle": "Accounts for Arrivals and Discharges."
+            }
+        )
     )
     bar = (
         alt.Chart()
