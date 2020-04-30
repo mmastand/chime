@@ -25,7 +25,6 @@ from penn_chime.utils import dataframe_to_base64
 def display_body_charts(m, p: "Parameters", d: "Parameters", actuals: "pd.DataFrame", mode: "Mode"):
 
     st.subheader("New Hospital Admissions")
-    st.markdown("Projected number of **daily** COVID-19 admissions.")
     admits_chart = build_admits_chart(alt=alt, admits_floor_df=m.admits_floor_df, p=p, actuals=actuals)
     st.altair_chart(admits_chart, use_container_width=True)
     st.markdown(build_descriptions(chart=admits_chart,
@@ -47,7 +46,6 @@ def display_body_charts(m, p: "Parameters", d: "Parameters", actuals: "pd.DataFr
 
 
     st.subheader("Hospital Census")
-    st.markdown("Projected **census** of COVID-19 patients, accounting for arrivals and discharges.")
     census_chart = build_census_chart(alt=alt, census_floor_df=m.census_floor_df, p=p, actuals=actuals)
     st.altair_chart(census_chart, use_container_width=True)
     # Display census mismatch message if appropriate
@@ -69,10 +67,7 @@ def display_body_charts(m, p: "Parameters", d: "Parameters", actuals: "pd.DataFr
         st.table(table_df)
 
 
-    st.subheader("COVID-19 Capacity")
-    st.markdown(
-        "Projected **number** of available COVID-19 beds, accounting for admits and discharges"
-    )  
+    st.subheader("COVID-19 Capacity") 
     beds_chart = build_beds_chart(alt=alt, beds_floor_df=m.beds_df, parameters=p)
     st.altair_chart(beds_chart, use_container_width=True)
     st.markdown(build_bed_descriptions(chart=beds_chart, labels=p.beds_chart_desc))
@@ -92,7 +87,6 @@ def display_body_charts(m, p: "Parameters", d: "Parameters", actuals: "pd.DataFr
         st.table(table_df)
 
     st.subheader("Susceptible, Infected, and Recovered")
-    st.markdown("The number of susceptible, infected, and recovered individuals in the hospital catchment region at any given moment")
     sim_sir_w_date_chart = build_sim_sir_w_date_chart(alt=alt, sim_sir_w_date_floor_df=m.sim_sir_w_date_floor_df, actuals=actuals, p = p)
     st.altair_chart(sim_sir_w_date_chart, use_container_width=True)
     display_download_link(
@@ -108,7 +102,7 @@ def display_body_charts(m, p: "Parameters", d: "Parameters", actuals: "pd.DataFr
 
     ### PPE Section
     st.subheader("Personal Protection Equipment")
-    st.markdown("The quantity of PPE needed per day")
+    st.markdown("Quantity of PPE required per day")
     for pc in list(p.ppe_labels.keys())[3:]:
         ppe_chart = build_ppe_chart(
             alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns=pc)
@@ -131,7 +125,7 @@ def display_body_charts(m, p: "Parameters", d: "Parameters", actuals: "pd.DataFr
 
     ### Staffing Section
     st.subheader("Staffing")
-    st.markdown("The number of staff required per day")
+    st.markdown("Number of staff required per day")
     for pc in list(p.staffing_labels.keys())[3:]:
         staffing_chart = build_staffing_chart(
             alt=alt, staffing_floor_df=m.staffing_floor_df, p=p, plot_columns=pc)

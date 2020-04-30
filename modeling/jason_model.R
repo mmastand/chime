@@ -81,9 +81,17 @@
       a <- a+1                                                                   #Increment number of attempts and break out if exceeded limit.
       if(a > mtry) { message(paste("STOPPED after",a,"attempts")); break }
    }
-   dfD$b0 = ifelse(dfD$b0 < 1e-4, 1e-4, dfD$b0)
-   dfD$gRt = ifelse(dfD$gRt < 1e-4, 1e-4, dfD$gRt)
-   dfD$dbT <- log(2)/dfD$gRt                                                     #Calculate doubling time.
+   dfD$b0 <- ifelse(dfD$b0 < 1e-6, 1e-6, dfD$b0)
+   dfD$gRt <- ifelse(dfD$gRt < 1e-6, 1e-6, dfD$gRt)
+   dfD$dbT <- log(2)/dfD$gRt 
+   dfD$dbT <- ifelse(dfD$dbT > 1000, NA, dfD$dbT)
+                                                       #Calculate doubling time.
+   # problem_rows <- dfD$b0 < 1e-4
+   # dfD$b0[problem_rows] <- 1e-4
+   # dfD$gRt[problem_rows] <- 1e-4
+   # dfD$dbT <- log(2)/dfD$gRt   
+   # dfD$dbT[problem_rows] <- NA  
+
 
    for(i in which(is.na(dfD$dbT))) {
       dfD$dbT[i] <- mean(c(tail(subset(dfD[1:(i-1),], !is.na(dbT)),1)$dbT
@@ -347,9 +355,9 @@
 .fncCaseEst <- function(data, rgn="rgn", pop="pop", d="date", cases="cases", cumCases="cumCases"
                        ,fcst_mthds=c("lin","spln","ets","loess") 
                        ,fcst_trough=0.5, fcst_peak=NA
-                       ,infect_dys=10, grw="dbT", fcst="ets", useAct=TRUE) {
+                       ,infect_dys=10, grw="dbT", fcst="ets", useAct=TRUE, n_days=30) {
    data$date <- as.Date(data[,d])
-   hdt <- max(data[,d], na.rm=TRUE)+30
+   hdt <- max(data[,d], na.rm=TRUE) + n_days
    dat <- data[,c(rgn,pop,d,cases,cumCases)]
    # print("*******  before  ********")
    # print(str(dat))

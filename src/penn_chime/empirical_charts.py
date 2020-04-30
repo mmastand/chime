@@ -109,9 +109,14 @@ def plot_dynamic_doubling_fit(d):
         .mark_line(color="black")
     )
 
+    bar = (
+        alt.Chart()
+        .encode(x=alt.X(**x))
+        .transform_filter(alt.datum.day == 0)
+        .mark_rule(color="black", opacity=0.35, size=2)
+    )
 
-
-    chart = [db_points, db_line, fc]
+    chart = [db_points, db_line, fc, bar]
     chart = alt.layer(*chart, data=d)
     return(chart)
 
@@ -196,8 +201,15 @@ def plot_Rt_fit(d):
         .mark_line(color="black", opacity=0.35, size=2, strokeDash=[5, 3])
     )
 
+    bar = (
+        alt.Chart()
+        .encode(x=alt.X(**x))
+        .transform_filter(alt.datum.day == 0)
+        .mark_rule(color="black", opacity=0.35, size=2)
+    )
+
     p = (
-        alt.layer(fc, rt_line, rt_points, conf, dash)
+        alt.layer(fc, rt_line, rt_points, conf, dash, bar)
     )
     return(p)
 
@@ -230,9 +242,9 @@ def display_daily_cases_forecast_chart(d):
     d["Projected"] = d["n"]
     
     # Chart title
-    title = "Projected Daily Cases"  # Get method to fit actuals and forecast
+    title = "Projected Regional Daily Cases"  # Get method to fit actuals and forecast
     act_fc = d.mSIR.iloc[0].split(",")
-    subtitle = str("Model Generated from\n" + act_fc[0] + " and " + act_fc[1])
+    subtitle = str("Model Generated from\n" + act_fc[0] + " and" + act_fc[1])
 
     plot_columns = ["Actual", "Projected"]
     x = dict(shorthand="date:T", title="Date",
@@ -265,8 +277,15 @@ def display_daily_cases_forecast_chart(d):
         .encode(x="date:T", y="Daily Cases:Q", tooltip=tooltip)
         .mark_point(color="black", fill="black")
     )
+
+    bar = (
+        alt.Chart()
+        .encode(x=alt.X(**x))
+        .transform_filter(alt.datum.day == 0)
+        .mark_rule(color="black", opacity=0.35, size=2)
+    )
  
     p = (
-        alt.layer(fc, hist_points)
+        alt.layer(fc, hist_points, bar)
     )
     st.altair_chart(p, use_container_width=True)

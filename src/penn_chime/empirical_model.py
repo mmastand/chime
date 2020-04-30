@@ -32,12 +32,13 @@ class EmpiricalModel(SimSirModelBase):
         
         method = ForecastMethod.to_r_method(p.forecast_method)
         metric = ForecastedMetric.to_r_metric(p.forecasted_metric)
+        n_days = p.n_days
         py_in_df = self.r_input_from_actuals(actuals, states, counties, population)
         payload = json.loads(py_in_df.to_json(orient="records", date_format='iso'))
         response = requests.post(
             "http://localhost:8765/", 
             json=payload, 
-            params={"method": method, "metric": metric}
+            params={"method": method, "metric": metric, "n_days": n_days}
         )
         response.raise_for_status()
         self.r_df = out_py_df = self.py_df_from_json_response(response.json())
@@ -49,6 +50,8 @@ class EmpiricalModel(SimSirModelBase):
         self.calculate_admits(raw, self.rates)
         self.calculate_census(raw, self.days)
         self.add_counts()
+        # Add day number to R dataframe
+        self.r_df["day"] = self.admits_df.day
 
     def py_df_from_json_response(self, response_json):
         df = pd.read_json(response_json)
