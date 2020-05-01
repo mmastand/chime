@@ -4,6 +4,7 @@ import logging
 import datetime
 from typing import Dict, Sequence, Tuple
 
+import streamlit as st
 import numpy as np
 import pandas as pd 
 
@@ -13,7 +14,8 @@ from .parameters import Parameters
 class SimSirModelBase:
 
     def __init__(self, p: Parameters):
-
+        # self.in_icu_los_new = 2
+        # self.out_of_icu_los_new = 3
         self.rates = {
             key: d.rate
             for key, d in p.dispositions.items()
@@ -248,9 +250,27 @@ class SimSirModelBase:
             admit = np.empty_like(ever)
             admit[0] = np.nan
             admit[1:] = ever[1:] - ever[:-1]
-            raw["admits_"+key] = admit
-            raw[key] = admit
+            raw["admits_"+key] = np.nan_to_num(admit)
+            raw[key] = np.nan_to_num(admit)
+        # import pdb
+        # pdb.set_trace()
+        raw['icu_transfers_out'] = np.r_[
+            np.zeros(self.days['icu']),
+            raw['admits_icu'][:-self.days['icu']] if self.days['icu'] != 0 else raw['admits_icu'],
+        ]
+        raw['admits_non_icu_only'] = np.copy(raw['admits_non_icu'])
+        raw['admits_non_icu'] += raw['icu_transfers_out']
         raw['admits_total'] = np.floor(raw['admits_non_icu']) + np.floor(raw['admits_icu'])
+
+    def shifted_cumsum(self, array, shift):
+        cumsum = np.empty(len(array) + shift)
+        cumsum[:shift+1] = 0.0
+        cumsum[shift+1:] = array[1:].cumsum()
+        if shift == 0:
+            shifted_cumsum = np.zeros(len(array))
+        else:
+            shifted_cumsum = cumsum[shift:] - cumsum[:-shift]
+        return shifted_cumsum
 
 
     def calculate_census(
@@ -259,12 +279,14 @@ class SimSirModelBase:
         lengths_of_stay: Dict[str, int],
     ):
         """Average Length of Stay for each disposition of COVID-19 case (total guesses)"""
-        n_days = raw["day"].shape[0]
         for key, los in lengths_of_stay.items():
-            cumsum = np.empty(n_days + los)
-            cumsum[:los+1] = 0.0
-            cumsum[los+1:] = raw["admits_" + key][1:].cumsum()
-
-            census = cumsum[los:] - cumsum[:-los]
+            if key == 'non_icu':
+                continue
+            census = self.shifted_cumsum(raw["admits_" + key], los)
             raw["census_" + key] = census
+        # Handle non-icu census
+        non_icu_from_start = raw['admits_non_icu'] - raw['icu_transfers_out']
+        non_icu_from_start_census = self.shifted_cumsum(non_icu_from_start, self.days['non_icu'])
+        icu_transfers_census = self.shifted_cumsum(raw['icu_transfers_out'], self.p.out_of_icu_days)
+        raw['census_non_icu'] = non_icu_from_start_census + icu_transfers_census
         raw['census_total'] = np.floor(raw['census_non_icu']) + np.floor(raw['census_icu'])

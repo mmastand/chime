@@ -196,6 +196,13 @@ def display_sidebar(d: Parameters) -> Parameters:
         step=1,
         format="%i",
     )
+    out_of_icu_days = st.sidebar.number_input(
+        "Average Days after ICU",
+        min_value=0,
+        value=d.out_of_icu_days,
+        step=1,
+        format="%i",
+    )
     ventilators_days = st.sidebar.number_input(
         "Average Days on Ventilator",
         min_value=0,
@@ -240,6 +247,7 @@ def display_sidebar(d: Parameters) -> Parameters:
         icu_covid_beds=icu_covid_beds,
         covid_ventilators=covid_ventilators,
         icu=Disposition(icu_rate, icu_days),
+        out_of_icu_days=out_of_icu_days,
         relative_contact_rate=relative_contact_rate,
         mitigation_date=mitigation_date,
         social_distancing_is_implemented=social_distancing_is_implemented,

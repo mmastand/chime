@@ -101,6 +101,7 @@ class Parameters:
         date_first_hospitalized: Optional[datetime.date] = None,
         first_hospitalized_date_known: bool = False,
         doubling_time: Optional[float] = None,
+        out_of_icu_days: int = 0,
         infectious_days: int = 10,
         market_share: float = 1.0,
         max_y_axis: Optional[int] = None,
@@ -301,6 +302,7 @@ class Parameters:
             "icu": icu,
             "ventilators": ventilators,
         }
+        self.out_of_icu_days = out_of_icu_days
 
         self.actuals_labels = {
             "total_admissions_actual": "Total ",

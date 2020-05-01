@@ -10,6 +10,7 @@ basicConfig(
 import datetime
 
 import streamlit as st  # type: ignore
+import pandas as pd
 
 from penn_chime.sidebar import display_sidebar
 from penn_chime.body_text import (
@@ -24,7 +25,7 @@ from penn_chime.body_text import (
     display_empirical_short,
     display_empirical_long,
 )
-from penn_chime.body_charts import display_body_charts
+from penn_chime.body_charts import display_body_charts, display_download_link
 from penn_chime.empirical_charts import display_forecast_charts, display_daily_cases_forecast_chart
 from penn_chime.population import display_population_widgets
 from penn_chime.settings import get_defaults
@@ -110,6 +111,9 @@ if mode == Mode.EMPIRICAL:
 else:
     # Mode is classic Penn
     m = PennModel(p)
+    raw_df = pd.DataFrame(m.raw)
+    st.dataframe(pd.DataFrame(m.raw))
+    display_download_link("RawDf.csv", raw_df)
     display_parameter_text(m, p)
     if st.checkbox("Show more info about this tool"):
         notes = "The total size of the susceptible population will be the entire catchment area for our hospitals."
