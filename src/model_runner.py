@@ -3,7 +3,6 @@ import datetime
 from typing import List
 import json
 
-import streamlit as st
 import pandas as pd
 import numpy as np
 import scipy.stats as sps
@@ -32,21 +31,19 @@ def listener():
     model_input_df = pd.DataFrame(model_input_dict).assign(date=lambda d: pd.to_datetime(d.date))
     out_df = run_model(model_input_df, method, metric, n_days)
     if isinstance(out_df, str):
-        return "Failed due to a low number of cases. Aggregate more counties together.", 400
-    st.dataframe(out_df)
+        return out_df, 400
     return jsonify(out_df.to_json(orient="records", date_format='iso'))
 
 
 def run_model(model_input_df, method, metric, n_days):
     with localconverter(ro.default_converter + pandas2ri.converter):
         r_input_df = ro.conversion.py2rpy(model_input_df)
-    r.print(r.str(r_input_df))
     r_output_df = r(".fncCaseEst")(r_input_df, fcst=method, grw=metric, n_days=int(n_days))
-    if isinstance(r_output_df, str):
-        return "failed"
     with localconverter(ro.default_converter + pandas2ri.converter):
         out_py_df = ro.conversion.rpy2py(r_output_df)
+    if isinstance(out_py_df, np.ndarray):
+        return out_py_df[0].item()
     return out_py_df
     
 if __name__ == "__main__":
-    app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 8086)))
+    app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 8765)))

@@ -40,18 +40,28 @@ class EmpiricalModel(SimSirModelBase):
             json=payload, 
             params={"method": method, "metric": metric, "n_days": n_days}
         )
-        response.raise_for_status()
-        self.r_df = out_py_df = self.py_df_from_json_response(response.json())
-        st.dataframe(out_py_df)
+        if response.status_code == 400:
+            st.markdown(f"""
+            <span style="color:red;"><strong>
+            {response.text} <br>
+            This can usually be fixed by aggregating more counties together 
+            to increase the number of cases.
+            </strong></span>
+            """,unsafe_allow_html=True)
+            self.fail_flag = True
+        else:
+            self.fail_flag = False
+            response.raise_for_status()
+            self.r_df = out_py_df = self.py_df_from_json_response(response.json())
 
-        self.raw = raw = self.raw_from_r_output(out_py_df, p)
+            self.raw = raw = self.raw_from_r_output(out_py_df, p)
 
-        self.calculate_dispositions(raw, self.rates, self.p.market_share)
-        self.calculate_admits(raw, self.rates)
-        self.calculate_census(raw, self.days)
-        self.add_counts()
-        # Add day number to R dataframe
-        self.r_df["day"] = self.admits_df.day
+            self.calculate_dispositions(raw, self.rates, self.p.market_share)
+            self.calculate_admits(raw, self.rates)
+            self.calculate_census(raw, self.days)
+            self.add_counts()
+            # Add day number to R dataframe
+            self.r_df["day"] = self.admits_df.day
 
     def py_df_from_json_response(self, response_json):
         df = pd.read_json(response_json)

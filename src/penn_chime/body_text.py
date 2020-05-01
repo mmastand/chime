@@ -1,4 +1,5 @@
 import streamlit as st
+import datetime
 
 from .parameters import Parameters, Mode
 from .model_base import SimSirModelBase as Model
@@ -15,17 +16,15 @@ def display_app_description():
         Forecast local COVID-19 demand in the context of local system capacity to set 
         expectations and inform mitigation strategy:
         * Built on the outstanding [Penn Med](http://predictivehealthcare.pennmedicine.org/) [epidemic model] (https://penn-chime.phl.io/)
-        * Easily manage multiple scenarios 
-        * Overlay demand forecasts on your capacity (beds and ventilators) 
-        * Compare model estimates to actuals 
-        * Estimate demand for personal protective equipment (PPE) and staff 
-        * Export assumptions and results for further use 
+        * <span style="color:red;"><strong>Forecast based upon county level infection and population data</strong></span>
+        * Manage, use, and save scenarios, bed and ventilator capacity, and actual data
+        * Estimate demand for personal protective equipment (PPE) and staff
 
         Important note on definitions (<span style="color:red;"><i>different from Penn Med model</i></span>):
-        * Non-ICU: Inpatient hospital beds  outside of critical care 
-        * ICU:  Beds used for critical care patients 
-        * Total:  Sum of beds/patients in non-ICU plus ICU 
-        * Ventilators:  Devices used to assist with patient breathing, counted independently of beds (not a subset of ICU or Total patients/beds) 
+        * Non-ICU: Inpatient hospital beds outside of critical care
+        * ICU: Beds used for critical care patients 
+        * Total: Sum of beds/patients in non-ICU plus ICU 
+        * Ventilators: Devices used to assist with patient breathing, counted independently of beds (not a subset of ICU or Total patients/beds)
 
         Questions, comments, support, or requests: [covidcapacity@healthcatalyst.com](mailto:covidcapacity@healthcatalyst.com)  
         <p>See <strong><a href="#application_guidance">Application Guidance</a></strong> section below for more information.</p>
@@ -191,7 +190,7 @@ $$\\beta = (g + \\gamma)$$.
 def display_actuals_definitions():
     st.markdown("""<a name="application_guidance"></a>""", unsafe_allow_html=True)
     st.header("Application Guidance")
-    st.subheader("Working with Projected Data")
+    st.subheader("Working with Scenarios")
     st.markdown("""
     This tool has the ability to load and save parameters, as well as save parameters and calculations. Enable
     these features by changing the *Author Name* and *Scenario Name* to values of your choosing. Rather than create the parameter file
@@ -261,6 +260,9 @@ def display_footer():
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
+            **V: 2.0.1 (Friday, 1, 2020)**
+            * Added "emprical forecasts".  Leverages county infection and population data to forecast future infections.
+            
             **V: 1.7.1 (Tuesday, April 14, 2020)**
             * Added Non-ICU to all charts. This corresponds to Hospitalized in Penn Med.
             * Changed Total color to black, other colors match Penn Med.
@@ -300,3 +302,57 @@ def display_footer():
     
         """)
     st.markdown("© 2020, Health Catalyst Inc.")
+
+
+def display_empirical_long():
+    st.markdown(
+        """
+        Rather than using a fixed infection spread rate modified by a single
+        social distancing effective impact adjustment, "Empirical Model Mode"
+        estimates future COVID-19 cases based upon case history to date.
+
+        There is not a single best approach to estimating infection spread and
+        forecasting methods across all regions.  Typically, it is possible to
+        arrive at a reasonable approach through visual inspection and selecting
+        the combination of "Infection Spread Measure" and "Forecast Method"
+        accordingly.
+        * Infection spread: Use either "Doubling Time" using the approach of [Hall, 2014] (https://doi.org/10.1093/molbev/mst187) or "Reproduction Rate" using the approach of [Cori, 2013] (https://doi.org/10.1093/aje/kwt133).
+        * Forecast: Select from exponential smoothing or local (LOESS), spline, or linear regression.
+        These calcualtions are done using [R] (https://www.r-project.org/)
+
+        New hospital admissions, census, and other demand estimates are still
+        derived from the SIR model.  What is different is how SIR (specifically
+        the "I" (Infected) calculation is done:
+        * Where actual new cases are available, this determines "I" directly.
+        * For future days, the $\\beta$ term is derived dynamically based upon your selection of the Infection Spread and Forecast Method.
+        By allowing dynamic infection spread, it is possible to capture the
+        dynamic nature of epidemic spread and counter measures.
+
+        Note that the forecast model will adjust for changes in contributors
+        such as social distancing effectiveness and testing rates.  However, it
+        will take some time for the model to adjust and extra caution should be
+        applied in interpretation during times of rapid change.
+
+        In addition, please note that the hospital admission and ventilator use
+        percentage defaults should be inspected carefully when using actual
+        infection data.  In many regions, testing was done disproportionately in
+        patients presenting to the hospital--not the general population.  You may
+        need to increase your hospital admission and ventilator use rates to gets
+        appropriate volume in your region of interest.
+        """
+    )
+
+    # Takes r_df
+def display_empirical_short(d):
+    a_start = d.date.min().strftime("%b %d")
+    a_end = d.date.loc[d.rst==1].max().strftime("%b %d")
+    f_end = d.date.max().strftime("%b %d")
+    mm = d.mSIR.iloc[0].split(",")
+    st.markdown(
+        f"""
+        Empirical Model Mode uses county data reported by the [New York Times](https://github.com/nytimes/covid-19-data)
+        and 2019 census data from the [U.S. Census] (https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/)
+        * Actuals presented from {a_start} to {a_end}
+        * Daily cases through {f_end} estimated by applying {mm[1].strip()} forecasting to the {mm[0].strip()} growth metric.
+        """
+    )

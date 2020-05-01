@@ -13,6 +13,7 @@
    names(tmp) <- c("d","n")                                                      #Rename columns for easy reference.
    inc <- with(tmp, incidence(rep(d,n)))                                         #Get incidence object.
    set.seed(sdn)                                                                 #Reset random number seed.
+
    res <- estimate_R(inc                                                         #Build R(t) estimate.
                     ,method="parametric_si"
                     ,config=make_config(list(mean_si=mean_si, std_si=std_si)))
@@ -81,17 +82,7 @@
       a <- a+1                                                                   #Increment number of attempts and break out if exceeded limit.
       if(a > mtry) { message(paste("STOPPED after",a,"attempts")); break }
    }
-   dfD$b0 <- ifelse(dfD$b0 < 1e-6, 1e-6, dfD$b0)
-   dfD$gRt <- ifelse(dfD$gRt < 1e-6, 1e-6, dfD$gRt)
-   dfD$dbT <- log(2)/dfD$gRt 
-   dfD$dbT <- ifelse(dfD$dbT > 1000, NA, dfD$dbT)
-                                                       #Calculate doubling time.
-   # problem_rows <- dfD$b0 < 1e-4
-   # dfD$b0[problem_rows] <- 1e-4
-   # dfD$gRt[problem_rows] <- 1e-4
-   # dfD$dbT <- log(2)/dfD$gRt   
-   # dfD$dbT[problem_rows] <- NA  
-
+   dfD$dbT <- log(2)/dfD$gRt                                                     #Calculate doubling time.
 
    for(i in which(is.na(dfD$dbT))) {
       dfD$dbT[i] <- mean(c(tail(subset(dfD[1:(i-1),], !is.na(dbT)),1)$dbT
@@ -131,8 +122,6 @@
       h <- as.integer((max(subset(tmp, !is.na(y))$d)+h) - max(tmp$d))            #Recalculate horizon.
       if(h>0) message("Warning: Forecast already present and non-date based horizon provided.")
    }
-
-   print(paste0("h: ", h, " Class h: ", class(h)))
 
    if(h>0) {                                                                     #If horizon is not already covered.
       tmp <- rbind(tmp                                                           #Add h(orizon) days to dataframe.
@@ -358,39 +347,72 @@
                        ,infect_dys=10, grw="dbT", fcst="ets", useAct=TRUE, n_days=30) {
    data$date <- as.Date(data[,d])
    hdt <- max(data[,d], na.rm=TRUE) + n_days
-   dat <- data[,c(rgn,pop,d,cases,cumCases)]
-   # print("*******  before  ********")
-   # print(str(dat))
-   # print(tail(dat))
-   dat <- .fncDynRt(data=dat, d=d, y=cases)
-   # print("*******  after Rt  *******")
-   # print(str(dat))
-   # print(tail(dat))
-   dat <- .fncDynDblTim(data=dat, d=d, y=cumCases)
-   # print("*******  after dbT  *******")
-   # print(str(dat))
-   # print(tail(dat))
-   if (is.na(fcst_peak)) { # If NA, use the default for the fcst function.
-      fcst_peak <- max(dat[,"dbT"], na.rm=TRUE)*2
-   }
-   dat_Rt <- .fncFcst(dat, d=d, y="Rt" , n=cumCases, mthds=fcst_mthds, h=hdt, trough=fcst_trough)
-   dat_dbT <- .fncFcst(dat, d=d, y="dbT", n=cumCases, mthds=fcst_mthds, h=hdt, peak=fcst_peak)
-   dat <- merge(dat_Rt, dat_dbT)
+   
+   dat <- .fncPreProcess(data[,c(rgn,pop,d,cases,cumCases)])
+
+   # Get growth rates
+   try(dat <- .fncDynRt(data=dat, d=d, y=cases), TRUE)
+   try(dat <- .fncDynDblTim(data=dat, d=d, y=cumCases), TRUE)
+   
+   # Forecast
+   try(dat <- .fncFcst(dat, d=d, y="Rt" , n=cumCases, mthds=fcst_mthds, h=hdt, trough=fcst_trough), TRUE)
+   try(dat <- .fncFcst(dat, d=d, y="dbT", n=cumCases, mthds=fcst_mthds, h=hdt, peak=fcst_peak), TRUE)
+   # dat <- merge(dat_Rt, dat_dbT)
    print(head(dat))
-   dat <- .fncSIR(data=dat, pop=dat[1,pop], infect_dys=infect_dys, grw=grw, fcst=fcst, useAct=useAct)
-   # print("*******  after all functions, just before return  *******")
-   dat$date <- as.character(dat$date)
-   # print(str(dat))
-   # print(tail(dat))
+   
+   # Run SIR
+   try(dat <- .fncSIR(data=dat, pop=dat[1,pop], infect_dys=infect_dys, grw=grw, fcst=fcst, useAct=useAct), TRUE)
 
-   # print("*******  after all functions, with changing characters  *******")
-   # print(attributes(dat))
-   # attributes(dat) <- NULL
-   # dat$rgn <- NULL
+   # Check output
+   dat <- .fncChk(dat)
+
+   # If dat is a string, it failed.
+   if (is.character(dat)) {
+      return(dat)
+   }
+
+   # Convert for Python
    dat$mthd <- NULL
-   # dat$mSIR <- NULL
-
-   # print("*******  no attributes, just before return  *******")
-   print(str(dat))
+   dat$date <- as.character(dat$date)
    return(dat)
+}
+
+
+# Function for checking calculations that didn't work.
+.fncChk <- function(data) {
+   err <- NA                                                                     #Initialize error list.
+
+   if(!("Rt" %in% names(data))) err <- c(err, "Rt not calculated")               #Build error lists.
+   if(!("dbT" %in% names(data))) err <- c(err, "dbT not calculated")
+   if(length(grep("Rt_prd", names(data)))==0) err <- c(err, "Rt not forecasted")
+   if(length(grep("dbT_prd", names(data)))==0) err <- c(err, "dbT not forecasted")
+   if(!("n" %in% names(data))) err <- c(err, "SIR not calculated")
+
+   if(length(na.omit(err))==0) { return(data)                                    #Return dataframe or error message.
+   } else {
+      err <- paste("ERROR:", paste(na.omit(err), collapse=", "))
+      message(err)
+      return(err)
+   }
+}
+
+.fncPreProcess <- function(data, d="date", cases="cases", cumCases="cumCases") {
+   tmp <- data                                                                   #Easier reference for data.
+
+   sng <- names(data)[which(sapply(data, function(x) length(unique(x)))==1)]     #Single value columns.
+
+   tmp[,cases] <- c(tmp[,cumCases][1], tmp[,cumCases][2:nrow(tmp)] - tmp[,cumCases][1:(nrow(tmp)-1)])
+
+   tmp <- tmp[tmp[,cases] >= 0,]                                                 #Remove days with negative cases.
+
+   t2 <- data.frame(date=seq(from=min(tmp[,d]), to=max(tmp[,d]), by=1))          #Ensure all dates between min & max are present.
+   names(t2)[1] <- d
+   tmp <- merge(t2, tmp, all.x=TRUE)[,names(tmp)]
+
+   tmp[,cases] <- ifelse(is.na(tmp[,cases]), 0, tmp[,cases])                     #Replace null case days with 0.
+   tmp[,cumCases] <- cumsum(tmp[,cases])                                         #Recalculate cumulative cases.
+
+   for(n in sng) tmp[,n] <- tmp[1,n]                                             #Replicate constants across entire dataframe.
+
+   return(tmp)
 }
