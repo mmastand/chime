@@ -250,16 +250,14 @@ class SimSirModelBase:
             admit = np.empty_like(ever)
             admit[0] = np.nan
             admit[1:] = ever[1:] - ever[:-1]
-            raw["admits_"+key] = np.nan_to_num(admit)
-            raw[key] = np.nan_to_num(admit)
-        # import pdb
-        # pdb.set_trace()
-        raw['icu_transfers_out'] = np.r_[
+            raw["admits_"+key] = np.floor(np.nan_to_num(admit))
+            raw[key] = np.floor(np.nan_to_num(admit))
+        # Shift icu admits by the icu patients' in-ICU time.
+        raw['icu_transfers_out'] = np.concatenate([
             np.zeros(self.days['icu']),
-            raw['admits_icu'][:-self.days['icu']] if self.days['icu'] != 0 else raw['admits_icu'],
-        ]
+            raw['admits_icu'][:-self.days['icu']] if self.days['icu'] != 0 else raw['admits_icu'], # If in-ICU days is zero then all ICU admits are also transfers
+        ])
         raw['admits_non_icu_only'] = np.copy(raw['admits_non_icu'])
-        raw['admits_non_icu'] += raw['icu_transfers_out']
         raw['admits_total'] = np.floor(raw['admits_non_icu']) + np.floor(raw['admits_icu'])
 
     def shifted_cumsum(self, array, shift):
@@ -285,8 +283,7 @@ class SimSirModelBase:
             census = self.shifted_cumsum(raw["admits_" + key], los)
             raw["census_" + key] = census
         # Handle non-icu census
-        non_icu_from_start = raw['admits_non_icu'] - raw['icu_transfers_out']
-        non_icu_from_start_census = self.shifted_cumsum(non_icu_from_start, self.days['non_icu'])
+        non_icu_from_start_census = self.shifted_cumsum(raw['admits_non_icu'], self.days['non_icu'])
         icu_transfers_census = self.shifted_cumsum(raw['icu_transfers_out'], self.p.out_of_icu_days)
         raw['census_non_icu'] = non_icu_from_start_census + icu_transfers_census
         raw['census_total'] = np.floor(raw['census_non_icu']) + np.floor(raw['census_icu'])
