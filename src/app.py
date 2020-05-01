@@ -21,6 +21,8 @@ from penn_chime.body_text import (
     display_more_info,
     display_actuals_definitions,
     display_footer,
+    display_empirical_short,
+    display_empirical_long,
 )
 from penn_chime.body_charts import display_body_charts
 from penn_chime.empirical_charts import display_forecast_charts, display_daily_cases_forecast_chart
@@ -93,11 +95,11 @@ if mode == Mode.EMPIRICAL:
             )
             p.show_forecast_methods = show_forecast_methods
             if show_forecast_methods:
-                st.markdown("Choose the best growth method and forecast, then set using the sidebar.")
+                display_empirical_long()
                 display_forecast_charts(m.r_df)
              
             # Forecasted new Regional cases
-            st.markdown("Projected Regional Daily Cases")
+            display_empirical_short()
             display_daily_cases_forecast_chart(m.r_df)
             display_body_charts(m, p, d, actuals, mode)
     else:
