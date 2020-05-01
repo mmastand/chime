@@ -6,7 +6,7 @@ constants.py `change_date``.
 
 from collections import namedtuple
 import datetime
-from typing import Optional
+from typing import List, Optional, Union
 
 from .validators import (
     Positive, OptionalStrictlyPositive, StrictlyPositive, Rate, Date, OptionalDate
@@ -32,7 +32,41 @@ from .validators import (
 
 
 Disposition = namedtuple("Disposition", ("rate", "days"))
+class Mode:
+    PENN_MODEL = "Penn Model"
+    EMPIRICAL = "Empirical Model"
 
+class ForecastedMetric:
+    DOUBLING_TIME = "Doubling Time"
+    RT = "Reproduction Time (Rt)"
+
+    @classmethod
+    def to_r_metric(cls, metric):
+        if metric == cls.DOUBLING_TIME:
+            return "dbT"
+        elif metric == cls.RT:
+            return "Rt"
+        else:
+            raise ValueError(f"No metric called {metric}")
+
+class ForecastMethod:
+    LOESS = "Local Regression (LOESS)"
+    ETS = "Exponential Smoothing (ETS)"
+    SPLINE = "Spline"
+    LINEAR = "Linear"
+
+    @classmethod
+    def to_r_method(cls, method):
+        if method == cls.LOESS:
+            return "loess"
+        elif method == cls.ETS:
+            return "ets"
+        elif method == cls.SPLINE:
+            return "spln"
+        elif method == cls.LINEAR:
+            return "lin"
+        else:
+            raise ValueError(f"No method called {method}")
 
 class Regions:
     """Arbitrary regions to sum population."""
@@ -62,22 +96,30 @@ class Parameters:
         relative_contact_rate: float,
         ventilators: Disposition, # used to be ventilated
         current_date: datetime.date = datetime.date.today() - datetime.timedelta(hours=6),
-        social_distancing_is_implemented: bool = False,
+        social_distancing_is_implemented: bool = True,
         mitigation_date: datetime.date = datetime.date.today()  - datetime.timedelta(hours=6),
         date_first_hospitalized: Optional[datetime.date] = None,
         first_hospitalized_date_known: bool = False,
         doubling_time: Optional[float] = None,
-        infectious_days: int = 14,
+        infectious_days: int = 10,
         market_share: float = 1.0,
         max_y_axis: Optional[int] = None,
         max_y_axis_set: bool = False,
-        n_days: int = 100,
+        n_days: int = 30,
         population: Optional[int] = None,
         recovered: int = 0,
         region: Optional[Regions] = None,
         # Added by the Health Catalyst Team
         author: str = "Jane Doe",
         scenario: str = "Scenario Name",
+        # App mode
+        app_mode: str = Mode.EMPIRICAL,
+        # Model settings
+        forecasted_metric: str = ForecastedMetric.DOUBLING_TIME,
+        forecast_method: str = ForecastMethod.ETS,
+        # County selections
+        selected_states: List[str] = None,
+        selected_counties: List[str] = None,
         # PPE Params
         masks_n95: int = 5,
         masks_surgical: int = 7,
@@ -107,6 +149,15 @@ class Parameters:
         other_staff_icu=10,
         # Shift Duration
         shift_duration: int = 12,
+
+        # Population
+        override_population: bool = False,
+        population_manual_override: Union[int, None] = None,
+
+        # Section Displays
+        show_forecast_methods: bool = False,
+        show_ppe_section: bool = False,
+        show_staffing_section: bool = False,
     ):
         self.covid_census_value = covid_census_value
         self.covid_census_date = Date(value=covid_census_date)
@@ -160,6 +211,17 @@ class Parameters:
         self.author = author
         self.scenario = scenario
         
+        # App Mode
+        self.app_mode = app_mode
+
+        # Model Settings
+        self.forecasted_metric = forecasted_metric
+        self.forecast_method = forecast_method
+
+        # County Selections
+        self.selected_states = selected_states if selected_states is not None else []
+        self.selected_counties = selected_counties if selected_counties is not None else []
+
         # PPE Params
         self.masks_n95 = masks_n95
         self.masks_surgical = masks_surgical
@@ -189,7 +251,16 @@ class Parameters:
         self.other_staff_icu = other_staff_icu
         # Shift Duration
         self.shift_duration = shift_duration
+
+        # Population
+        self.override_population = override_population
+        self.population_manual_override = population_manual_override
         
+        # Section Displays
+        self.show_forecast_methods = show_forecast_methods
+        self.show_ppe_section = show_ppe_section
+        self.show_staffing_section = show_staffing_section
+
         self.labels = {
             "hospitalized": "Hospitalized",
             "icu": "ICU",

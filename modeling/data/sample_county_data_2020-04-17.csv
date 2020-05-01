@@ -1,0 +1,685 @@
+date,county,state,fips,cases,deaths,cs
+2020-01-26,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-01-27,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-01-28,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-01-29,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-01-30,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-01-31,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-01,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-02,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-02,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-03,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-03,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-04,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-04,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-05,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-05,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-06,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-06,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-07,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-07,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-08,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-08,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-09,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-09,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-10,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-10,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-11,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-11,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-12,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-12,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-13,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-13,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-14,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-14,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-15,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-15,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-16,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-16,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-17,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-17,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-18,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-18,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-19,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-19,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-20,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-20,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-21,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-21,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-22,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-22,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-23,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-23,San Francisco,California,06075,2,0,San Francisco_California
+2020-02-24,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-24,San Francisco,California,06075,3,0,San Francisco_California
+2020-02-25,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-25,San Francisco,California,06075,3,0,San Francisco_California
+2020-02-25,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-02-26,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-26,San Francisco,California,06075,3,0,San Francisco_California
+2020-02-26,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-02-27,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-27,San Francisco,California,06075,3,0,San Francisco_California
+2020-02-27,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-02-28,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-28,San Francisco,California,06075,3,0,San Francisco_California
+2020-02-28,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-02-28,King,Washington,53033,1,0,King_Washington
+2020-02-29,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-02-29,San Francisco,California,06075,3,0,San Francisco_California
+2020-02-29,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-02-29,King,Washington,53033,4,1,King_Washington
+2020-03-01,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-03-01,San Francisco,California,06075,3,0,San Francisco_California
+2020-03-01,New York City,New York,NA,1,0,New York City_New York
+2020-03-01,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-03-01,King,Washington,53033,11,3,King_Washington
+2020-03-02,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-03-02,San Francisco,California,06075,3,0,San Francisco_California
+2020-03-02,Grafton,New Hampshire,33009,1,0,Grafton_New Hampshire
+2020-03-02,New York City,New York,NA,1,0,New York City_New York
+2020-03-02,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-03-02,King,Washington,53033,15,6,King_Washington
+2020-03-03,Los Angeles,California,06037,1,0,Los Angeles_California
+2020-03-03,San Francisco,California,06075,3,0,San Francisco_California
+2020-03-03,Grafton,New Hampshire,33009,2,0,Grafton_New Hampshire
+2020-03-03,New York City,New York,NA,2,0,New York City_New York
+2020-03-03,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-03-03,King,Washington,53033,22,10,King_Washington
+2020-03-04,Los Angeles,California,06037,7,0,Los Angeles_California
+2020-03-04,San Francisco,California,06075,3,0,San Francisco_California
+2020-03-04,Grafton,New Hampshire,33009,2,0,Grafton_New Hampshire
+2020-03-04,New York City,New York,NA,2,0,New York City_New York
+2020-03-04,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-03-04,King,Washington,53033,33,11,King_Washington
+2020-03-05,Los Angeles,California,06037,11,0,Los Angeles_California
+2020-03-05,San Francisco,California,06075,5,0,San Francisco_California
+2020-03-05,Washoe,Nevada,32031,1,0,Washoe_Nevada
+2020-03-05,Grafton,New Hampshire,33009,2,0,Grafton_New Hampshire
+2020-03-05,New York City,New York,NA,4,0,New York City_New York
+2020-03-05,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-03-05,King,Washington,53033,52,11,King_Washington
+2020-03-06,Los Angeles,California,06037,13,0,Los Angeles_California
+2020-03-06,San Francisco,California,06075,5,0,San Francisco_California
+2020-03-06,Washoe,Nevada,32031,1,0,Washoe_Nevada
+2020-03-06,Grafton,New Hampshire,33009,2,0,Grafton_New Hampshire
+2020-03-06,New York City,New York,NA,5,0,New York City_New York
+2020-03-06,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-03-06,King,Washington,53033,59,12,King_Washington
+2020-03-07,Los Angeles,California,06037,14,0,Los Angeles_California
+2020-03-07,San Francisco,California,06075,11,0,San Francisco_California
+2020-03-07,Washoe,Nevada,32031,1,0,Washoe_Nevada
+2020-03-07,Grafton,New Hampshire,33009,3,0,Grafton_New Hampshire
+2020-03-07,New York City,New York,NA,12,0,New York City_New York
+2020-03-07,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-03-07,King,Washington,53033,72,16,King_Washington
+2020-03-08,Los Angeles,California,06037,14,0,Los Angeles_California
+2020-03-08,San Francisco,California,06075,11,0,San Francisco_California
+2020-03-08,Washoe,Nevada,32031,2,0,Washoe_Nevada
+2020-03-08,Grafton,New Hampshire,33009,3,0,Grafton_New Hampshire
+2020-03-08,New York City,New York,NA,14,0,New York City_New York
+2020-03-08,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-03-08,King,Washington,53033,91,18,King_Washington
+2020-03-09,Los Angeles,California,06037,19,0,Los Angeles_California
+2020-03-09,San Francisco,California,06075,16,0,San Francisco_California
+2020-03-09,Washoe,Nevada,32031,2,0,Washoe_Nevada
+2020-03-09,Grafton,New Hampshire,33009,3,0,Grafton_New Hampshire
+2020-03-09,New York City,New York,NA,20,0,New York City_New York
+2020-03-09,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-03-09,King,Washington,53033,117,21,King_Washington
+2020-03-10,Los Angeles,California,06037,20,0,Los Angeles_California
+2020-03-10,San Francisco,California,06075,17,0,San Francisco_California
+2020-03-10,Washoe,Nevada,32031,2,0,Washoe_Nevada
+2020-03-10,Grafton,New Hampshire,33009,3,0,Grafton_New Hampshire
+2020-03-10,New York City,New York,NA,37,0,New York City_New York
+2020-03-10,Salt Lake,Utah,49035,1,0,Salt Lake_Utah
+2020-03-10,King,Washington,53033,191,23,King_Washington
+2020-03-11,Los Angeles,California,06037,28,1,Los Angeles_California
+2020-03-11,San Francisco,California,06075,17,0,San Francisco_California
+2020-03-11,Lake,Illinois,17097,1,0,Lake_Illinois
+2020-03-11,Washoe,Nevada,32031,2,0,Washoe_Nevada
+2020-03-11,Grafton,New Hampshire,33009,3,0,Grafton_New Hampshire
+2020-03-11,Santa Fe,New Mexico,35049,1,0,Santa Fe_New Mexico
+2020-03-11,New York City,New York,NA,52,0,New York City_New York
+2020-03-11,Salt Lake,Utah,49035,2,0,Salt Lake_Utah
+2020-03-11,King,Washington,53033,235,27,King_Washington
+2020-03-12,Los Angeles,California,06037,32,1,Los Angeles_California
+2020-03-12,San Francisco,California,06075,21,0,San Francisco_California
+2020-03-12,Litchfield,Connecticut,09005,1,0,Litchfield_Connecticut
+2020-03-12,Sarasota,Florida,12115,2,0,Sarasota_Florida
+2020-03-12,Lake,Illinois,17097,1,0,Lake_Illinois
+2020-03-12,Washoe,Nevada,32031,2,0,Washoe_Nevada
+2020-03-12,Grafton,New Hampshire,33009,3,0,Grafton_New Hampshire
+2020-03-12,Santa Fe,New Mexico,35049,2,0,Santa Fe_New Mexico
+2020-03-12,Albany,New York,36001,2,0,Albany_New York
+2020-03-12,New York City,New York,NA,96,0,New York City_New York
+2020-03-12,Salt Lake,Utah,49035,4,0,Salt Lake_Utah
+2020-03-12,King,Washington,53033,271,28,King_Washington
+2020-03-13,Los Angeles,California,06037,40,1,Los Angeles_California
+2020-03-13,San Francisco,California,06075,26,0,San Francisco_California
+2020-03-13,Litchfield,Connecticut,09005,3,0,Litchfield_Connecticut
+2020-03-13,Sarasota,Florida,12115,2,0,Sarasota_Florida
+2020-03-13,Ada,Idaho,16001,1,0,Ada_Idaho
+2020-03-13,Lake,Illinois,17097,2,0,Lake_Illinois
+2020-03-13,Washoe,Nevada,32031,2,0,Washoe_Nevada
+2020-03-13,Grafton,New Hampshire,33009,3,0,Grafton_New Hampshire
+2020-03-13,Santa Fe,New Mexico,35049,3,0,Santa Fe_New Mexico
+2020-03-13,Albany,New York,36001,2,0,Albany_New York
+2020-03-13,New York City,New York,NA,155,0,New York City_New York
+2020-03-13,Salt Lake,Utah,49035,4,0,Salt Lake_Utah
+2020-03-13,King,Washington,53033,329,33,King_Washington
+2020-03-14,Los Angeles,California,06037,53,1,Los Angeles_California
+2020-03-14,San Francisco,California,06075,31,0,San Francisco_California
+2020-03-14,Litchfield,Connecticut,09005,3,0,Litchfield_Connecticut
+2020-03-14,Sarasota,Florida,12115,2,0,Sarasota_Florida
+2020-03-14,Ada,Idaho,16001,2,0,Ada_Idaho
+2020-03-14,Lake,Illinois,17097,3,0,Lake_Illinois
+2020-03-14,Washoe,Nevada,32031,4,0,Washoe_Nevada
+2020-03-14,Grafton,New Hampshire,33009,3,0,Grafton_New Hampshire
+2020-03-14,Santa Fe,New Mexico,35049,3,0,Santa Fe_New Mexico
+2020-03-14,Albany,New York,36001,5,0,Albany_New York
+2020-03-14,New York City,New York,NA,269,1,New York City_New York
+2020-03-14,Salt Lake,Utah,49035,15,0,Salt Lake_Utah
+2020-03-14,King,Washington,53033,389,36,King_Washington
+2020-03-15,Los Angeles,California,06037,69,1,Los Angeles_California
+2020-03-15,San Francisco,California,06075,37,0,San Francisco_California
+2020-03-15,Litchfield,Connecticut,09005,4,0,Litchfield_Connecticut
+2020-03-15,Sarasota,Florida,12115,2,0,Sarasota_Florida
+2020-03-15,Ada,Idaho,16001,2,0,Ada_Idaho
+2020-03-15,Lake,Illinois,17097,3,0,Lake_Illinois
+2020-03-15,Washoe,Nevada,32031,9,0,Washoe_Nevada
+2020-03-15,Grafton,New Hampshire,33009,3,0,Grafton_New Hampshire
+2020-03-15,Santa Fe,New Mexico,35049,3,0,Santa Fe_New Mexico
+2020-03-15,Albany,New York,36001,11,0,Albany_New York
+2020-03-15,New York City,New York,NA,330,5,New York City_New York
+2020-03-15,Salt Lake,Utah,49035,15,0,Salt Lake_Utah
+2020-03-15,King,Washington,53033,421,38,King_Washington
+2020-03-16,Los Angeles,California,06037,94,1,Los Angeles_California
+2020-03-16,San Francisco,California,06075,43,0,San Francisco_California
+2020-03-16,Litchfield,Connecticut,09005,4,0,Litchfield_Connecticut
+2020-03-16,Sarasota,Florida,12115,3,0,Sarasota_Florida
+2020-03-16,Ada,Idaho,16001,2,0,Ada_Idaho
+2020-03-16,Lake,Illinois,17097,6,0,Lake_Illinois
+2020-03-16,Washoe,Nevada,32031,9,0,Washoe_Nevada
+2020-03-16,Grafton,New Hampshire,33009,5,0,Grafton_New Hampshire
+2020-03-16,Santa Fe,New Mexico,35049,3,0,Santa Fe_New Mexico
+2020-03-16,Albany,New York,36001,12,0,Albany_New York
+2020-03-16,New York City,New York,NA,464,7,New York City_New York
+2020-03-16,Salt Lake,Utah,49035,20,0,Salt Lake_Utah
+2020-03-16,King,Washington,53033,489,44,King_Washington
+2020-03-17,Los Angeles,California,06037,144,1,Los Angeles_California
+2020-03-17,San Francisco,California,06075,46,0,San Francisco_California
+2020-03-17,Litchfield,Connecticut,09005,5,0,Litchfield_Connecticut
+2020-03-17,Sarasota,Florida,12115,4,0,Sarasota_Florida
+2020-03-17,Ada,Idaho,16001,3,0,Ada_Idaho
+2020-03-17,Lake,Illinois,17097,7,0,Lake_Illinois
+2020-03-17,Washoe,Nevada,32031,12,0,Washoe_Nevada
+2020-03-17,Grafton,New Hampshire,33009,7,0,Grafton_New Hampshire
+2020-03-17,Santa Fe,New Mexico,35049,4,0,Santa Fe_New Mexico
+2020-03-17,Albany,New York,36001,23,0,Albany_New York
+2020-03-17,New York City,New York,NA,645,10,New York City_New York
+2020-03-17,Lubbock,Texas,48303,2,0,Lubbock_Texas
+2020-03-17,Salt Lake,Utah,49035,23,0,Salt Lake_Utah
+2020-03-17,King,Washington,53033,518,47,King_Washington
+2020-03-18,Los Angeles,California,06037,190,1,Los Angeles_California
+2020-03-18,San Francisco,California,06075,51,0,San Francisco_California
+2020-03-18,Litchfield,Connecticut,09005,5,0,Litchfield_Connecticut
+2020-03-18,Sarasota,Florida,12115,4,0,Sarasota_Florida
+2020-03-18,Ada,Idaho,16001,3,0,Ada_Idaho
+2020-03-18,Lake,Illinois,17097,18,0,Lake_Illinois
+2020-03-18,Washoe,Nevada,32031,12,0,Washoe_Nevada
+2020-03-18,Grafton,New Hampshire,33009,7,0,Grafton_New Hampshire
+2020-03-18,Santa Fe,New Mexico,35049,6,0,Santa Fe_New Mexico
+2020-03-18,Albany,New York,36001,36,0,Albany_New York
+2020-03-18,New York City,New York,NA,1339,20,New York City_New York
+2020-03-18,Lubbock,Texas,48303,3,0,Lubbock_Texas
+2020-03-18,Salt Lake,Utah,49035,24,0,Salt Lake_Utah
+2020-03-18,King,Washington,53033,563,57,King_Washington
+2020-03-19,Los Angeles,California,06037,231,2,Los Angeles_California
+2020-03-19,San Francisco,California,06075,73,0,San Francisco_California
+2020-03-19,Litchfield,Connecticut,09005,7,0,Litchfield_Connecticut
+2020-03-19,Sarasota,Florida,12115,6,0,Sarasota_Florida
+2020-03-19,Ada,Idaho,16001,3,0,Ada_Idaho
+2020-03-19,Lake,Illinois,17097,37,0,Lake_Illinois
+2020-03-19,Washoe,Nevada,32031,18,0,Washoe_Nevada
+2020-03-19,Grafton,New Hampshire,33009,9,0,Grafton_New Hampshire
+2020-03-19,Santa Fe,New Mexico,35049,7,0,Santa Fe_New Mexico
+2020-03-19,Albany,New York,36001,43,0,Albany_New York
+2020-03-19,New York City,New York,NA,2468,22,New York City_New York
+2020-03-19,Lubbock,Texas,48303,3,0,Lubbock_Texas
+2020-03-19,Salt Lake,Utah,49035,31,0,Salt Lake_Utah
+2020-03-19,King,Washington,53033,693,61,King_Washington
+2020-03-20,Los Angeles,California,06037,292,2,Los Angeles_California
+2020-03-20,San Francisco,California,06075,79,0,San Francisco_California
+2020-03-20,Broomfield,Colorado,08014,1,0,Broomfield_Colorado
+2020-03-20,Litchfield,Connecticut,09005,8,0,Litchfield_Connecticut
+2020-03-20,Sarasota,Florida,12115,8,0,Sarasota_Florida
+2020-03-20,Ada,Idaho,16001,4,0,Ada_Idaho
+2020-03-20,Lake,Illinois,17097,52,0,Lake_Illinois
+2020-03-20,Washoe,Nevada,32031,22,0,Washoe_Nevada
+2020-03-20,Grafton,New Hampshire,33009,13,0,Grafton_New Hampshire
+2020-03-20,Santa Fe,New Mexico,35049,7,0,Santa Fe_New Mexico
+2020-03-20,Albany,New York,36001,61,0,Albany_New York
+2020-03-20,New York City,New York,NA,4408,43,New York City_New York
+2020-03-20,Lubbock,Texas,48303,5,0,Lubbock_Texas
+2020-03-20,Salt Lake,Utah,49035,46,0,Salt Lake_Utah
+2020-03-20,King,Washington,53033,794,68,King_Washington
+2020-03-21,Los Angeles,California,06037,351,4,Los Angeles_California
+2020-03-21,San Francisco,California,06075,84,0,San Francisco_California
+2020-03-21,Broomfield,Colorado,08014,1,0,Broomfield_Colorado
+2020-03-21,Litchfield,Connecticut,09005,11,0,Litchfield_Connecticut
+2020-03-21,Sarasota,Florida,12115,14,0,Sarasota_Florida
+2020-03-21,Ada,Idaho,16001,11,0,Ada_Idaho
+2020-03-21,Lake,Illinois,17097,63,0,Lake_Illinois
+2020-03-21,Somerset,Maryland,24039,1,0,Somerset_Maryland
+2020-03-21,Washoe,Nevada,32031,22,0,Washoe_Nevada
+2020-03-21,Grafton,New Hampshire,33009,14,0,Grafton_New Hampshire
+2020-03-21,Santa Fe,New Mexico,35049,8,0,Santa Fe_New Mexico
+2020-03-21,Albany,New York,36001,88,0,Albany_New York
+2020-03-21,New York City,New York,NA,6211,60,New York City_New York
+2020-03-21,Lubbock,Texas,48303,9,0,Lubbock_Texas
+2020-03-21,Salt Lake,Utah,49035,60,0,Salt Lake_Utah
+2020-03-21,King,Washington,53033,935,76,King_Washington
+2020-03-22,Los Angeles,California,06037,421,5,Los Angeles_California
+2020-03-22,San Francisco,California,06075,111,0,San Francisco_California
+2020-03-22,Broomfield,Colorado,08014,1,0,Broomfield_Colorado
+2020-03-22,Litchfield,Connecticut,09005,12,0,Litchfield_Connecticut
+2020-03-22,Sarasota,Florida,12115,17,0,Sarasota_Florida
+2020-03-22,Ada,Idaho,16001,13,0,Ada_Idaho
+2020-03-22,Lake,Illinois,17097,69,0,Lake_Illinois
+2020-03-22,Somerset,Maryland,24039,1,0,Somerset_Maryland
+2020-03-22,Washoe,Nevada,32031,25,0,Washoe_Nevada
+2020-03-22,Grafton,New Hampshire,33009,15,0,Grafton_New Hampshire
+2020-03-22,Santa Fe,New Mexico,35049,10,0,Santa Fe_New Mexico
+2020-03-22,Albany,New York,36001,123,0,Albany_New York
+2020-03-22,New York City,New York,NA,9045,99,New York City_New York
+2020-03-22,Lubbock,Texas,48303,9,0,Lubbock_Texas
+2020-03-22,Salt Lake,Utah,49035,84,0,Salt Lake_Utah
+2020-03-22,King,Washington,53033,1036,77,King_Washington
+2020-03-23,Los Angeles,California,06037,536,7,Los Angeles_California
+2020-03-23,San Francisco,California,06075,134,0,San Francisco_California
+2020-03-23,Broomfield,Colorado,08014,2,0,Broomfield_Colorado
+2020-03-23,Litchfield,Connecticut,09005,13,0,Litchfield_Connecticut
+2020-03-23,Sarasota,Florida,12115,21,0,Sarasota_Florida
+2020-03-23,Ada,Idaho,16001,15,0,Ada_Idaho
+2020-03-23,Lake,Illinois,17097,96,0,Lake_Illinois
+2020-03-23,Somerset,Maryland,24039,1,0,Somerset_Maryland
+2020-03-23,Washoe,Nevada,32031,25,0,Washoe_Nevada
+2020-03-23,Grafton,New Hampshire,33009,20,0,Grafton_New Hampshire
+2020-03-23,Santa Fe,New Mexico,35049,12,0,Santa Fe_New Mexico
+2020-03-23,Albany,New York,36001,127,0,Albany_New York
+2020-03-23,New York City,New York,NA,12305,131,New York City_New York
+2020-03-23,Lubbock,Texas,48303,9,0,Lubbock_Texas
+2020-03-23,Salt Lake,Utah,49035,112,0,Salt Lake_Utah
+2020-03-23,King,Washington,53033,1166,88,King_Washington
+2020-03-24,Los Angeles,California,06037,662,11,Los Angeles_California
+2020-03-24,San Francisco,California,06075,152,0,San Francisco_California
+2020-03-24,Broomfield,Colorado,08014,5,0,Broomfield_Colorado
+2020-03-24,Litchfield,Connecticut,09005,22,0,Litchfield_Connecticut
+2020-03-24,Sarasota,Florida,12115,26,0,Sarasota_Florida
+2020-03-24,Ada,Idaho,16001,22,0,Ada_Idaho
+2020-03-24,Lake,Illinois,17097,111,0,Lake_Illinois
+2020-03-24,Somerset,Maryland,24039,1,0,Somerset_Maryland
+2020-03-24,Washoe,Nevada,32031,44,0,Washoe_Nevada
+2020-03-24,Grafton,New Hampshire,33009,21,0,Grafton_New Hampshire
+2020-03-24,Santa Fe,New Mexico,35049,14,0,Santa Fe_New Mexico
+2020-03-24,Albany,New York,36001,146,0,Albany_New York
+2020-03-24,New York City,New York,NA,14905,192,New York City_New York
+2020-03-24,Lubbock,Texas,48303,9,0,Lubbock_Texas
+2020-03-24,Salt Lake,Utah,49035,127,0,Salt Lake_Utah
+2020-03-24,King,Washington,53033,1278,95,King_Washington
+2020-03-25,Los Angeles,California,06037,799,13,Los Angeles_California
+2020-03-25,San Francisco,California,06075,181,1,San Francisco_California
+2020-03-25,Broomfield,Colorado,08014,8,0,Broomfield_Colorado
+2020-03-25,Litchfield,Connecticut,09005,33,0,Litchfield_Connecticut
+2020-03-25,Sarasota,Florida,12115,32,1,Sarasota_Florida
+2020-03-25,Ada,Idaho,16001,37,0,Ada_Idaho
+2020-03-25,Lake,Illinois,17097,139,0,Lake_Illinois
+2020-03-25,Somerset,Maryland,24039,1,0,Somerset_Maryland
+2020-03-25,Washoe,Nevada,32031,57,0,Washoe_Nevada
+2020-03-25,Grafton,New Hampshire,33009,22,0,Grafton_New Hampshire
+2020-03-25,Santa Fe,New Mexico,35049,17,0,Santa Fe_New Mexico
+2020-03-25,Albany,New York,36001,152,0,Albany_New York
+2020-03-25,New York City,New York,NA,20011,280,New York City_New York
+2020-03-25,Lubbock,Texas,48303,12,0,Lubbock_Texas
+2020-03-25,Salt Lake,Utah,49035,151,0,Salt Lake_Utah
+2020-03-25,King,Washington,53033,1360,101,King_Washington
+2020-03-26,Los Angeles,California,06037,1216,21,Los Angeles_California
+2020-03-26,San Francisco,California,06075,226,2,San Francisco_California
+2020-03-26,Broomfield,Colorado,08014,10,0,Broomfield_Colorado
+2020-03-26,Litchfield,Connecticut,09005,44,0,Litchfield_Connecticut
+2020-03-26,Sarasota,Florida,12115,34,2,Sarasota_Florida
+2020-03-26,Ada,Idaho,16001,54,0,Ada_Idaho
+2020-03-26,Lake,Illinois,17097,185,0,Lake_Illinois
+2020-03-26,Somerset,Maryland,24039,1,0,Somerset_Maryland
+2020-03-26,Washoe,Nevada,32031,67,0,Washoe_Nevada
+2020-03-26,Grafton,New Hampshire,33009,23,0,Grafton_New Hampshire
+2020-03-26,Santa Fe,New Mexico,35049,22,0,Santa Fe_New Mexico
+2020-03-26,Albany,New York,36001,171,0,Albany_New York
+2020-03-26,New York City,New York,NA,23112,365,New York City_New York
+2020-03-26,Lubbock,Texas,48303,19,0,Lubbock_Texas
+2020-03-26,Salt Lake,Utah,49035,181,0,Salt Lake_Utah
+2020-03-26,King,Washington,53033,1579,111,King_Washington
+2020-03-27,Los Angeles,California,06037,1465,27,Los Angeles_California
+2020-03-27,San Francisco,California,06075,282,3,San Francisco_California
+2020-03-27,Broomfield,Colorado,08014,13,0,Broomfield_Colorado
+2020-03-27,Litchfield,Connecticut,09005,52,0,Litchfield_Connecticut
+2020-03-27,Sarasota,Florida,12115,43,2,Sarasota_Florida
+2020-03-27,Ada,Idaho,16001,76,0,Ada_Idaho
+2020-03-27,Lake,Illinois,17097,230,2,Lake_Illinois
+2020-03-27,Somerset,Maryland,24039,1,0,Somerset_Maryland
+2020-03-27,Washoe,Nevada,32031,75,0,Washoe_Nevada
+2020-03-27,Grafton,New Hampshire,33009,26,0,Grafton_New Hampshire
+2020-03-27,Santa Fe,New Mexico,35049,29,0,Santa Fe_New Mexico
+2020-03-27,Albany,New York,36001,187,0,Albany_New York
+2020-03-27,New York City,New York,NA,25399,450,New York City_New York
+2020-03-27,Columbia,Oregon,41009,1,0,Columbia_Oregon
+2020-03-27,Lubbock,Texas,48303,31,0,Lubbock_Texas
+2020-03-27,Salt Lake,Utah,49035,212,0,Salt Lake_Utah
+2020-03-27,King,Washington,53033,1830,127,King_Washington
+2020-03-28,Los Angeles,California,06037,1804,33,Los Angeles_California
+2020-03-28,San Francisco,California,06075,308,4,San Francisco_California
+2020-03-28,Broomfield,Colorado,08014,16,0,Broomfield_Colorado
+2020-03-28,Litchfield,Connecticut,09005,65,0,Litchfield_Connecticut
+2020-03-28,Sarasota,Florida,12115,50,2,Sarasota_Florida
+2020-03-28,Ada,Idaho,16001,88,1,Ada_Idaho
+2020-03-28,Lake,Illinois,17097,264,2,Lake_Illinois
+2020-03-28,Somerset,Maryland,24039,1,0,Somerset_Maryland
+2020-03-28,Washoe,Nevada,32031,93,0,Washoe_Nevada
+2020-03-28,Grafton,New Hampshire,33009,28,0,Grafton_New Hampshire
+2020-03-28,Santa Fe,New Mexico,35049,30,0,Santa Fe_New Mexico
+2020-03-28,Albany,New York,36001,195,1,Albany_New York
+2020-03-28,New York City,New York,NA,30766,672,New York City_New York
+2020-03-28,Columbia,Oregon,41009,1,0,Columbia_Oregon
+2020-03-28,Lubbock,Texas,48303,31,0,Lubbock_Texas
+2020-03-28,Salt Lake,Utah,49035,276,0,Salt Lake_Utah
+2020-03-28,King,Washington,53033,2079,138,King_Washington
+2020-03-29,Los Angeles,California,06037,2136,37,Los Angeles_California
+2020-03-29,San Francisco,California,06075,343,5,San Francisco_California
+2020-03-29,Broomfield,Colorado,08014,17,0,Broomfield_Colorado
+2020-03-29,Litchfield,Connecticut,09005,87,0,Litchfield_Connecticut
+2020-03-29,Sarasota,Florida,12115,61,2,Sarasota_Florida
+2020-03-29,Ada,Idaho,16001,113,2,Ada_Idaho
+2020-03-29,Lake,Illinois,17097,300,3,Lake_Illinois
+2020-03-29,Somerset,Maryland,24039,1,0,Somerset_Maryland
+2020-03-29,Washoe,Nevada,32031,107,1,Washoe_Nevada
+2020-03-29,Grafton,New Hampshire,33009,30,0,Grafton_New Hampshire
+2020-03-29,Santa Fe,New Mexico,35049,34,0,Santa Fe_New Mexico
+2020-03-29,Albany,New York,36001,205,1,Albany_New York
+2020-03-29,New York City,New York,NA,33768,776,New York City_New York
+2020-03-29,Columbia,Oregon,41009,1,0,Columbia_Oregon
+2020-03-29,Lubbock,Texas,48303,41,0,Lubbock_Texas
+2020-03-29,Salt Lake,Utah,49035,324,0,Salt Lake_Utah
+2020-03-29,King,Washington,53033,2163,146,King_Washington
+2020-03-30,Los Angeles,California,06037,2474,44,Los Angeles_California
+2020-03-30,San Francisco,California,06075,374,6,San Francisco_California
+2020-03-30,Broomfield,Colorado,08014,18,0,Broomfield_Colorado
+2020-03-30,Litchfield,Connecticut,09005,113,1,Litchfield_Connecticut
+2020-03-30,Sarasota,Florida,12115,67,2,Sarasota_Florida
+2020-03-30,Ada,Idaho,16001,151,3,Ada_Idaho
+2020-03-30,Lake,Illinois,17097,343,5,Lake_Illinois
+2020-03-30,Somerset,Maryland,24039,1,0,Somerset_Maryland
+2020-03-30,Washoe,Nevada,32031,121,3,Washoe_Nevada
+2020-03-30,Grafton,New Hampshire,33009,35,0,Grafton_New Hampshire
+2020-03-30,Santa Fe,New Mexico,35049,38,0,Santa Fe_New Mexico
+2020-03-30,Albany,New York,36001,217,1,Albany_New York
+2020-03-30,New York City,New York,NA,38087,914,New York City_New York
+2020-03-30,Columbia,Oregon,41009,1,0,Columbia_Oregon
+2020-03-30,Lubbock,Texas,48303,51,1,Lubbock_Texas
+2020-03-30,Salt Lake,Utah,49035,363,0,Salt Lake_Utah
+2020-03-30,King,Washington,53033,2332,152,King_Washington
+2020-03-31,Los Angeles,California,06037,3011,54,Los Angeles_California
+2020-03-31,San Francisco,California,06075,400,6,San Francisco_California
+2020-03-31,Broomfield,Colorado,08014,20,1,Broomfield_Colorado
+2020-03-31,Litchfield,Connecticut,09005,121,1,Litchfield_Connecticut
+2020-03-31,Sarasota,Florida,12115,76,3,Sarasota_Florida
+2020-03-31,Ada,Idaho,16001,195,3,Ada_Idaho
+2020-03-31,Lake,Illinois,17097,389,7,Lake_Illinois
+2020-03-31,Somerset,Maryland,24039,1,0,Somerset_Maryland
+2020-03-31,Washoe,Nevada,32031,121,3,Washoe_Nevada
+2020-03-31,Grafton,New Hampshire,33009,35,0,Grafton_New Hampshire
+2020-03-31,Santa Fe,New Mexico,35049,42,0,Santa Fe_New Mexico
+2020-03-31,Albany,New York,36001,226,1,Albany_New York
+2020-03-31,New York City,New York,NA,43139,1096,New York City_New York
+2020-03-31,Columbia,Oregon,41009,1,0,Columbia_Oregon
+2020-03-31,Lubbock,Texas,48303,77,1,Lubbock_Texas
+2020-03-31,Salt Lake,Utah,49035,396,0,Salt Lake_Utah
+2020-03-31,King,Washington,53033,2332,152,King_Washington
+2020-04-01,Los Angeles,California,06037,3518,65,Los Angeles_California
+2020-04-01,San Francisco,California,06075,437,7,San Francisco_California
+2020-04-01,Broomfield,Colorado,08014,21,2,Broomfield_Colorado
+2020-04-01,Litchfield,Connecticut,09005,131,1,Litchfield_Connecticut
+2020-04-01,Sarasota,Florida,12115,99,3,Sarasota_Florida
+2020-04-01,Ada,Idaho,16001,226,3,Ada_Idaho
+2020-04-01,Lake,Illinois,17097,477,7,Lake_Illinois
+2020-04-01,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-01,Washoe,Nevada,32031,163,4,Washoe_Nevada
+2020-04-01,Grafton,New Hampshire,33009,36,0,Grafton_New Hampshire
+2020-04-01,Santa Fe,New Mexico,35049,48,0,Santa Fe_New Mexico
+2020-04-01,Albany,New York,36001,240,2,Albany_New York
+2020-04-01,New York City,New York,NA,47440,1374,New York City_New York
+2020-04-01,Columbia,Oregon,41009,1,0,Columbia_Oregon
+2020-04-01,Lubbock,Texas,48303,100,2,Lubbock_Texas
+2020-04-01,Salt Lake,Utah,49035,444,1,Salt Lake_Utah
+2020-04-01,King,Washington,53033,2498,166,King_Washington
+2020-04-02,Los Angeles,California,06037,4045,78,Los Angeles_California
+2020-04-02,San Francisco,California,06075,450,7,San Francisco_California
+2020-04-02,Broomfield,Colorado,08014,30,2,Broomfield_Colorado
+2020-04-02,Litchfield,Connecticut,09005,141,2,Litchfield_Connecticut
+2020-04-02,Sarasota,Florida,12115,110,7,Sarasota_Florida
+2020-04-02,Ada,Idaho,16001,307,3,Ada_Idaho
+2020-04-02,Lake,Illinois,17097,540,7,Lake_Illinois
+2020-04-02,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-02,Washoe,Nevada,32031,163,4,Washoe_Nevada
+2020-04-02,Grafton,New Hampshire,33009,38,0,Grafton_New Hampshire
+2020-04-02,Santa Fe,New Mexico,35049,48,0,Santa Fe_New Mexico
+2020-04-02,Albany,New York,36001,253,2,Albany_New York
+2020-04-02,New York City,New York,NA,51810,1562,New York City_New York
+2020-04-02,Columbia,Oregon,41009,1,0,Columbia_Oregon
+2020-04-02,Lubbock,Texas,48303,108,3,Lubbock_Texas
+2020-04-02,Salt Lake,Utah,49035,476,1,Salt Lake_Utah
+2020-04-02,King,Washington,53033,2658,177,King_Washington
+2020-04-03,Los Angeles,California,06037,4566,89,Los Angeles_California
+2020-04-03,San Francisco,California,06075,500,7,San Francisco_California
+2020-04-03,Broomfield,Colorado,08014,36,2,Broomfield_Colorado
+2020-04-03,Litchfield,Connecticut,09005,173,4,Litchfield_Connecticut
+2020-04-03,Sarasota,Florida,12115,124,7,Sarasota_Florida
+2020-04-03,Ada,Idaho,16001,351,3,Ada_Idaho
+2020-04-03,Lake,Illinois,17097,608,14,Lake_Illinois
+2020-04-03,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-03,Washoe,Nevada,32031,229,4,Washoe_Nevada
+2020-04-03,Grafton,New Hampshire,33009,38,0,Grafton_New Hampshire
+2020-04-03,Santa Fe,New Mexico,35049,52,0,Santa Fe_New Mexico
+2020-04-03,Albany,New York,36001,267,4,Albany_New York
+2020-04-03,New York City,New York,NA,57160,1867,New York City_New York
+2020-04-03,Columbia,Oregon,41009,1,0,Columbia_Oregon
+2020-04-03,Lubbock,Texas,48303,117,3,Lubbock_Texas
+2020-04-03,Salt Lake,Utah,49035,541,1,Salt Lake_Utah
+2020-04-03,King,Washington,53033,2789,188,King_Washington
+2020-04-04,Los Angeles,California,06037,5277,117,Los Angeles_California
+2020-04-04,San Francisco,California,06075,529,8,San Francisco_California
+2020-04-04,Broomfield,Colorado,08014,44,2,Broomfield_Colorado
+2020-04-04,Litchfield,Connecticut,09005,182,5,Litchfield_Connecticut
+2020-04-04,Sarasota,Florida,12115,129,7,Sarasota_Florida
+2020-04-04,Ada,Idaho,16001,385,3,Ada_Idaho
+2020-04-04,Lake,Illinois,17097,689,14,Lake_Illinois
+2020-04-04,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-04,Washoe,Nevada,32031,245,4,Washoe_Nevada
+2020-04-04,Grafton,New Hampshire,33009,41,0,Grafton_New Hampshire
+2020-04-04,Santa Fe,New Mexico,35049,58,0,Santa Fe_New Mexico
+2020-04-04,Albany,New York,36001,293,6,Albany_New York
+2020-04-04,New York City,New York,NA,63307,2254,New York City_New York
+2020-04-04,Columbia,Oregon,41009,3,0,Columbia_Oregon
+2020-04-04,Lubbock,Texas,48303,138,4,Lubbock_Texas
+2020-04-04,Salt Lake,Utah,49035,650,1,Salt Lake_Utah
+2020-04-04,King,Washington,53033,2900,204,King_Washington
+2020-04-05,Los Angeles,California,06037,5940,132,Los Angeles_California
+2020-04-05,San Francisco,California,06075,571,8,San Francisco_California
+2020-04-05,Broomfield,Colorado,08014,50,2,Broomfield_Colorado
+2020-04-05,Litchfield,Connecticut,09005,197,6,Litchfield_Connecticut
+2020-04-05,Sarasota,Florida,12115,140,7,Sarasota_Florida
+2020-04-05,Ada,Idaho,16001,402,3,Ada_Idaho
+2020-04-05,Lake,Illinois,17097,742,15,Lake_Illinois
+2020-04-05,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-05,Washoe,Nevada,32031,264,4,Washoe_Nevada
+2020-04-05,Grafton,New Hampshire,33009,41,0,Grafton_New Hampshire
+2020-04-05,Santa Fe,New Mexico,35049,62,0,Santa Fe_New Mexico
+2020-04-05,Albany,New York,36001,305,8,Albany_New York
+2020-04-05,New York City,New York,NA,67552,2472,New York City_New York
+2020-04-05,Columbia,Oregon,41009,6,0,Columbia_Oregon
+2020-04-05,Lubbock,Texas,48303,151,4,Lubbock_Texas
+2020-04-05,Salt Lake,Utah,49035,741,1,Salt Lake_Utah
+2020-04-05,King,Washington,53033,3169,210,King_Washington
+2020-04-06,Los Angeles,California,06037,6360,147,Los Angeles_California
+2020-04-06,San Francisco,California,06075,586,9,San Francisco_California
+2020-04-06,Broomfield,Colorado,08014,50,2,Broomfield_Colorado
+2020-04-06,Litchfield,Connecticut,09005,230,8,Litchfield_Connecticut
+2020-04-06,Sarasota,Florida,12115,159,7,Sarasota_Florida
+2020-04-06,Ada,Idaho,16001,419,3,Ada_Idaho
+2020-04-06,Lake,Illinois,17097,815,15,Lake_Illinois
+2020-04-06,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-06,Washoe,Nevada,32031,281,4,Washoe_Nevada
+2020-04-06,Grafton,New Hampshire,33009,41,0,Grafton_New Hampshire
+2020-04-06,Santa Fe,New Mexico,35049,64,0,Santa Fe_New Mexico
+2020-04-06,Albany,New York,36001,319,9,Albany_New York
+2020-04-06,New York City,New York,NA,68776,3485,New York City_New York
+2020-04-06,Columbia,Oregon,41009,8,0,Columbia_Oregon
+2020-04-06,Lubbock,Texas,48303,180,6,Lubbock_Texas
+2020-04-06,Salt Lake,Utah,49035,741,1,Salt Lake_Utah
+2020-04-06,King,Washington,53033,3333,224,King_Washington
+2020-04-07,Los Angeles,California,06037,6910,169,Los Angeles_California
+2020-04-07,San Francisco,California,06075,622,9,San Francisco_California
+2020-04-07,Broomfield,Colorado,08014,50,2,Broomfield_Colorado
+2020-04-07,Litchfield,Connecticut,09005,255,9,Litchfield_Connecticut
+2020-04-07,Sarasota,Florida,12115,173,7,Sarasota_Florida
+2020-04-07,Ada,Idaho,16001,438,3,Ada_Idaho
+2020-04-07,Lake,Illinois,17097,925,22,Lake_Illinois
+2020-04-07,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-07,Washoe,Nevada,32031,309,5,Washoe_Nevada
+2020-04-07,Grafton,New Hampshire,33009,41,0,Grafton_New Hampshire
+2020-04-07,Santa Fe,New Mexico,35049,66,0,Santa Fe_New Mexico
+2020-04-07,Albany,New York,36001,333,9,Albany_New York
+2020-04-07,New York City,New York,NA,76876,4009,New York City_New York
+2020-04-07,Columbia,Oregon,41009,8,0,Columbia_Oregon
+2020-04-07,Lubbock,Texas,48303,180,6,Lubbock_Texas
+2020-04-07,Salt Lake,Utah,49035,807,1,Salt Lake_Utah
+2020-04-07,King,Washington,53033,3488,232,King_Washington
+2020-04-08,Los Angeles,California,06037,7530,198,Los Angeles_California
+2020-04-08,San Francisco,California,06075,679,10,San Francisco_California
+2020-04-08,Broomfield,Colorado,08014,52,2,Broomfield_Colorado
+2020-04-08,Litchfield,Connecticut,09005,292,12,Litchfield_Connecticut
+2020-04-08,Sarasota,Florida,12115,184,8,Sarasota_Florida
+2020-04-08,Ada,Idaho,16001,447,5,Ada_Idaho
+2020-04-08,Lake,Illinois,17097,1041,23,Lake_Illinois
+2020-04-08,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-08,Washoe,Nevada,32031,326,8,Washoe_Nevada
+2020-04-08,Grafton,New Hampshire,33009,43,0,Grafton_New Hampshire
+2020-04-08,Santa Fe,New Mexico,35049,68,0,Santa Fe_New Mexico
+2020-04-08,Albany,New York,36001,342,10,Albany_New York
+2020-04-08,New York City,New York,NA,81803,4571,New York City_New York
+2020-04-08,Columbia,Oregon,41009,9,0,Columbia_Oregon
+2020-04-08,Lubbock,Texas,48303,191,6,Lubbock_Texas
+2020-04-08,Salt Lake,Utah,49035,868,7,Salt Lake_Utah
+2020-04-08,King,Washington,53033,3690,246,King_Washington
+2020-04-09,Los Angeles,California,06037,7955,223,Los Angeles_California
+2020-04-09,San Francisco,California,06075,727,10,San Francisco_California
+2020-04-09,Broomfield,Colorado,08014,61,2,Broomfield_Colorado
+2020-04-09,Litchfield,Connecticut,09005,315,13,Litchfield_Connecticut
+2020-04-09,Sarasota,Florida,12115,201,10,Sarasota_Florida
+2020-04-09,Ada,Idaho,16001,494,6,Ada_Idaho
+2020-04-09,Lake,Illinois,17097,1124,29,Lake_Illinois
+2020-04-09,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-09,Washoe,Nevada,32031,363,10,Washoe_Nevada
+2020-04-09,Grafton,New Hampshire,33009,43,0,Grafton_New Hampshire
+2020-04-09,Santa Fe,New Mexico,35049,70,0,Santa Fe_New Mexico
+2020-04-09,Albany,New York,36001,379,12,Albany_New York
+2020-04-09,New York City,New York,NA,87028,5150,New York City_New York
+2020-04-09,Columbia,Oregon,41009,10,0,Columbia_Oregon
+2020-04-09,Lubbock,Texas,48303,214,7,Lubbock_Texas
+2020-04-09,Salt Lake,Utah,49035,935,7,Salt Lake_Utah
+2020-04-09,King,Washington,53033,3888,260,King_Washington
+2020-04-10,Los Angeles,California,06037,8430,241,Los Angeles_California
+2020-04-10,San Francisco,California,06075,800,13,San Francisco_California
+2020-04-10,Broomfield,Colorado,08014,68,2,Broomfield_Colorado
+2020-04-10,Litchfield,Connecticut,09005,346,16,Litchfield_Connecticut
+2020-04-10,Sarasota,Florida,12115,211,10,Sarasota_Florida
+2020-04-10,Ada,Idaho,16001,513,6,Ada_Idaho
+2020-04-10,Lake,Illinois,17097,1230,34,Lake_Illinois
+2020-04-10,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-10,Washoe,Nevada,32031,389,10,Washoe_Nevada
+2020-04-10,Grafton,New Hampshire,33009,43,0,Grafton_New Hampshire
+2020-04-10,Santa Fe,New Mexico,35049,72,0,Santa Fe_New Mexico
+2020-04-10,Albany,New York,36001,426,14,Albany_New York
+2020-04-10,New York City,New York,NA,92384,5663,New York City_New York
+2020-04-10,Columbia,Oregon,41009,10,0,Columbia_Oregon
+2020-04-10,Lubbock,Texas,48303,234,9,Lubbock_Texas
+2020-04-10,Salt Lake,Utah,49035,1011,7,Salt Lake_Utah
+2020-04-10,King,Washington,53033,4119,279,King_Washington
+2020-04-11,Los Angeles,California,06037,8873,265,Los Angeles_California
+2020-04-11,San Francisco,California,06075,860,13,San Francisco_California
+2020-04-11,Broomfield,Colorado,08014,74,2,Broomfield_Colorado
+2020-04-11,Litchfield,Connecticut,09005,388,20,Litchfield_Connecticut
+2020-04-11,Sarasota,Florida,12115,223,12,Sarasota_Florida
+2020-04-11,Ada,Idaho,16001,517,6,Ada_Idaho
+2020-04-11,Lake,Illinois,17097,1331,39,Lake_Illinois
+2020-04-11,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-11,Washoe,Nevada,32031,389,11,Washoe_Nevada
+2020-04-11,Grafton,New Hampshire,33009,43,0,Grafton_New Hampshire
+2020-04-11,Santa Fe,New Mexico,35049,74,0,Santa Fe_New Mexico
+2020-04-11,Albany,New York,36001,446,16,Albany_New York
+2020-04-11,New York City,New York,NA,98308,6202,New York City_New York
+2020-04-11,Columbia,Oregon,41009,10,0,Columbia_Oregon
+2020-04-11,Lubbock,Texas,48303,270,13,Lubbock_Texas
+2020-04-11,Salt Lake,Utah,49035,1071,7,Salt Lake_Utah
+2020-04-11,King,Washington,53033,4264,286,King_Washington
+2020-04-12,Los Angeles,California,06037,9192,296,Los Angeles_California
+2020-04-12,San Francisco,California,06075,875,14,San Francisco_California
+2020-04-12,Broomfield,Colorado,08014,81,2,Broomfield_Colorado
+2020-04-12,Litchfield,Connecticut,09005,403,24,Litchfield_Connecticut
+2020-04-12,Sarasota,Florida,12115,226,12,Sarasota_Florida
+2020-04-12,Ada,Idaho,16001,517,6,Ada_Idaho
+2020-04-12,Lake,Illinois,17097,1445,42,Lake_Illinois
+2020-04-12,Somerset,Maryland,24039,4,0,Somerset_Maryland
+2020-04-12,Washoe,Nevada,32031,461,12,Washoe_Nevada
+2020-04-12,Grafton,New Hampshire,33009,45,0,Grafton_New Hampshire
+2020-04-12,Santa Fe,New Mexico,35049,75,0,Santa Fe_New Mexico
+2020-04-12,Albany,New York,36001,478,16,Albany_New York
+2020-04-12,New York City,New York,NA,103208,6717,New York City_New York
+2020-04-12,Columbia,Oregon,41009,10,0,Columbia_Oregon
+2020-04-12,Lubbock,Texas,48303,270,14,Lubbock_Texas
+2020-04-12,Salt Lake,Utah,49035,1126,7,Salt Lake_Utah
+2020-04-12,King,Washington,53033,4428,294,King_Washington
+2020-04-13,Los Angeles,California,06037,9420,320,Los Angeles_California
+2020-04-13,San Francisco,California,06075,960,15,San Francisco_California
+2020-04-13,Broomfield,Colorado,08014,81,2,Broomfield_Colorado
+2020-04-13,Litchfield,Connecticut,09005,446,24,Litchfield_Connecticut
+2020-04-13,Sarasota,Florida,12115,230,14,Sarasota_Florida
+2020-04-13,Ada,Idaho,16001,529,9,Ada_Idaho
+2020-04-13,Lake,Illinois,17097,1516,45,Lake_Illinois
+2020-04-13,Somerset,Maryland,24039,6,0,Somerset_Maryland
+2020-04-13,Washoe,Nevada,32031,500,12,Washoe_Nevada
+2020-04-13,Grafton,New Hampshire,33009,45,0,Grafton_New Hampshire
+2020-04-13,Santa Fe,New Mexico,35049,76,0,Santa Fe_New Mexico
+2020-04-13,Albany,New York,36001,499,17,Albany_New York
+2020-04-13,New York City,New York,NA,106764,7154,New York City_New York
+2020-04-13,Columbia,Oregon,41009,12,0,Columbia_Oregon
+2020-04-13,Lubbock,Texas,48303,317,21,Lubbock_Texas
+2020-04-13,Salt Lake,Utah,49035,1157,7,Salt Lake_Utah
+2020-04-13,King,Washington,53033,4551,298,King_Washington
+2020-04-14,Los Angeles,California,06037,10047,360,Los Angeles_California
+2020-04-14,San Francisco,California,06075,990,15,San Francisco_California
+2020-04-14,Broomfield,Colorado,08014,88,2,Broomfield_Colorado
+2020-04-14,Litchfield,Connecticut,09005,460,29,Litchfield_Connecticut
+2020-04-14,Sarasota,Florida,12115,241,16,Sarasota_Florida
+2020-04-14,Ada,Idaho,16001,530,9,Ada_Idaho
+2020-04-14,Lake,Illinois,17097,1621,58,Lake_Illinois
+2020-04-14,Somerset,Maryland,24039,5,0,Somerset_Maryland
+2020-04-14,Washoe,Nevada,32031,532,13,Washoe_Nevada
+2020-04-14,Grafton,New Hampshire,33009,45,0,Grafton_New Hampshire
+2020-04-14,Santa Fe,New Mexico,35049,76,0,Santa Fe_New Mexico
+2020-04-14,Albany,New York,36001,535,21,Albany_New York
+2020-04-14,New York City,New York,NA,110465,7690,New York City_New York
+2020-04-14,Columbia,Oregon,41009,11,0,Columbia_Oregon
+2020-04-14,Lubbock,Texas,48303,330,25,Lubbock_Texas
+2020-04-14,Salt Lake,Utah,49035,1187,7,Salt Lake_Utah
+2020-04-14,King,Washington,53033,4622,305,King_Washington

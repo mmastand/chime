@@ -25,12 +25,15 @@ setup(
         "streamlit==0.56.0",
         "pandas",
         "numpy",
+        "scipy",
         "altair",
         "pytest",
         "dash",
         "dash_bootstrap_components",
         "pyyaml",
-        "gunicorn"
+        "gunicorn",
+        "flask",
+        "flask-cors",
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

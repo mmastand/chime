@@ -2,6 +2,7 @@ import base64
 import io
 from typing import Tuple, Union
 
+import streamlit as st
 import numpy as np
 import pandas as pd
 
@@ -57,7 +58,7 @@ def parse_actuals(uploaded_actuals) -> Tuple[Union[pd.DataFrame, None], Union[st
     return actuals, None
     
 
-def actuals_download_widget(st):
+def actuals_download_widget():
     column_order = [
         "date", 
         "total_admissions_actual", "non_icu_admissions_actual", "icu_admissions_actual", "intubated_actual",

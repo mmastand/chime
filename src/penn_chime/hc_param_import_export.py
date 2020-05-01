@@ -8,10 +8,15 @@ import json
 import io
 from typing import Tuple
 
+import streamlit as st
+
 from .parameters import (
+    Disposition,
+    ForecastMethod,
+    ForecastedMetric,
+    Mode,
     Parameters, 
     Regions, 
-    Disposition,
 )
 
 def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
@@ -27,7 +32,8 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
       
     parameters = Parameters(
         population=imported_params["RegionalPopulation"],
-        doubling_time=float(imported_params["DoublingTimeBeforeSocialDistancing"]) if "DoublingTimeBeforeSocialDistancing" in imported_params else 4.0,
+        doubling_time=float(imported_params["DoublingTimeBeforeSocialDistancing"]) if "DoublingTimeBeforeSocialDistancing" in imported_params else 5.0,
+        infectious_days=imported_params.get("InfectiousDays", 10),
         date_first_hospitalized=date.fromisoformat(imported_params["FirstHospitalizedCaseDate"]) if "FirstHospitalizedCaseDate" in imported_params else None,
         first_hospitalized_date_known=imported_params.get("FirstHospitalizedDateKnown", False), # Added in v2.0.0
         # known_infected=imported_params.get("CurrentlyKnownRegionalInfections", 510), # Deprecated in v1.1.1
@@ -35,7 +41,7 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         market_share=float(imported_params["HospitalMarketShare"]),
         relative_contact_rate=float(imported_params["SocialDistancingPercentReduction"]),
         mitigation_date=mitigation_date,
-        social_distancing_is_implemented=imported_params["SocialDistancingIsImplemented"] if "SocialDistancingIsImplemented" in imported_params else False,
+        social_distancing_is_implemented=imported_params["SocialDistancingIsImplemented"] if "SocialDistancingIsImplemented" in imported_params else True,
         non_icu=Disposition(float(imported_params["HospitalizationPercentage"]), imported_params["HospitalLengthOfStay"]),
         icu=Disposition(float(imported_params["ICUPercentage"]), imported_params["ICULengthOfStay"]),
         ventilators=Disposition(float(imported_params["VentilatorsPercentage"]),imported_params["VentLengthOfStay"]),
@@ -56,6 +62,17 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         # selected_offset = imported_params.get("SelectedOffsetDays", -1), # Deprecated in v2.0.0
         author=imported_params.get("Author", "Jane Doe"), # Added in v2.0.0
         scenario=imported_params.get("Scenario", "COVID-19 Model"), # Added in v2.0.0
+
+        # App mode
+        app_mode=imported_params.get("AppMode", Mode.PENN_MODEL),
+
+        # Model Settings
+        forecast_method=imported_params.get("ForecastMethod", ForecastMethod.ETS),
+        forecasted_metric=imported_params.get("ForecastedMetric", ForecastedMetric.DOUBLING_TIME),
+
+        # County Selections
+        selected_states = imported_params.get("SelectedStates", []),
+        selected_counties = imported_params.get("SelectedCounties", []),
 
         # PPE Params
         masks_n95=imported_params.get("MasksN95", 5),
@@ -87,11 +104,19 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         # Shift Duration
         shift_duration=imported_params.get("ShiftDuration", 12),
 
+        # Population
+        override_population=imported_params.get("OverridePopulation", False),
+        population_manual_override=imported_params.get("PopulationManualOverride", None),
+
+        # Section Display
+        show_forecast_methods=imported_params.get("ShowForecastMethods", False),
+        show_ppe_section=imported_params.get("ShowPPESection", False),
+        show_staffing_section=imported_params.get("ShowStaffingSection", False),
     )
     return parameters
 
 
-def param_download_widget(st, parameters):
+def param_download_widget(parameters):
     filename = "ModelParameters" + "_" + parameters.author + "_" + parameters.scenario + "_" + datetime.now().isoformat() + ".json"
     out_obj = {
         
@@ -103,6 +128,7 @@ def param_download_widget(st, parameters):
         "Scenario": parameters.scenario,
         "NumberOfDaysToProject": parameters.n_days,
         "DoublingTimeBeforeSocialDistancing": 4.0 if parameters.doubling_time == None else parameters.doubling_time,
+        "InfectiousDays": parameters.infectious_days,
         "SocialDistancingPercentReduction": parameters.relative_contact_rate,
         "HospitalizationPercentage": parameters.non_icu.rate,
         "ICUPercentage": parameters.icu.rate,
@@ -124,6 +150,17 @@ def param_download_widget(st, parameters):
         "CurrentlyHospitalizedCovidPatientsDate": parameters.covid_census_date.isoformat(),
         # "SelectedOffsetDays": parameters.selected_offset,  # Deprecated in v2.0.0
         
+        # App Mode
+        "AppMode": parameters.app_mode,
+
+        # Model Setting
+        "ForecastMethod": parameters.forecast_method,
+        "ForecastedMetric": parameters.forecasted_metric,
+
+        # County Selections
+        "SelectedStates": parameters.selected_states,
+        "SelectedCounties": parameters.selected_counties,
+
         # PPE Params
         "MasksN95": parameters.masks_n95,
         "MasksSurgical": parameters.masks_surgical,
@@ -153,6 +190,15 @@ def param_download_widget(st, parameters):
         "PatientsPerOtherStaffICU": parameters.other_staff_icu,
         # Shift Duration
         "ShiftDuration" : parameters.shift_duration,
+
+        # Population
+        "OverridePopulation": parameters.override_population,
+        "PopulationManualOverride": parameters.population_manual_override,
+
+        # Section Display
+        "ShowForecastMethods": parameters.show_forecast_methods,
+        "ShowPPESection": parameters.show_ppe_section,
+        "ShowStaffingSection": parameters.show_staffing_section,
     }
     out_json = json.dumps(out_obj)
     b64_json = base64.b64encode(out_json.encode()).decode()

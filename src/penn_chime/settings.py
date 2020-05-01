@@ -2,26 +2,32 @@
 
 import datetime
 
-from .parameters import Parameters, Regions, Disposition
+from .parameters import ForecastMethod, ForecastedMetric, Parameters, Regions, Disposition
 
 
 def get_defaults():
     return Parameters(
         population=3600000,
-        covid_census_value=10,
+        covid_census_value=69,
         covid_census_date=(datetime.datetime.utcnow() - datetime.timedelta(hours=6)).date(),
         total_covid_beds=300,
         icu_covid_beds=30,
         covid_ventilators=10,
-        date_first_hospitalized=datetime.date(2020,3,1),
-        doubling_time=4.0,
+        date_first_hospitalized=datetime.date(2020,3,7),
+        doubling_time=5.0,
         non_icu=Disposition(0.025, 7),
         icu=Disposition(0.0075, 9),
-        infectious_days=14,
+        infectious_days=10,
         market_share=0.15,
-        n_days=100,
-        relative_contact_rate=0.3,
+        n_days=30,
+        relative_contact_rate=0.45,
         ventilators=Disposition(0.005, 10),
+        
+        # Model Settings
+        forecasted_metric = ForecastedMetric.DOUBLING_TIME,
+        forecast_method = ForecastMethod.ETS,
+        
+        # PPE
         masks_n95=5,
         masks_surgical=7,
         face_shield=5,
@@ -34,6 +40,7 @@ def get_defaults():
         gloves_icu=10,
         gowns_icu=10,
         other_ppe_icu=2,
+        
         # Staffing Params
         # Non-ICU
         nurses = 6,

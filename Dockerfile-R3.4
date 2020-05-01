@@ -1,4 +1,4 @@
-FROM dsintegration.azurecr.io/aks/chime-base:0.0.3
+FROM maxtaggart/chime-base:0.0.1
 
 RUN mkdir /app
 WORKDIR /app
@@ -29,7 +29,5 @@ ENV BUILD_TIME=$BUILD_TIME
 ENV VERSION_NUMBER=$VERSION_NUMBER
 RUN echo $BUILD_TIME $VERSION_NUMBER
 
-CMD  python3.8 ./national_data_downloader.py & \
-     gunicorn --bind localhost:8765 --workers 1 --threads 1 src.model_runner:app & \
-     streamlit run src/app.py
+CMD  python3.8 ./national_data_downloader.py & streamlit run src/app.py
 
