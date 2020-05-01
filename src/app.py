@@ -97,7 +97,7 @@ if mode == Mode.EMPIRICAL:
                 if show_forecast_methods:
                     display_empirical_long()
                     display_forecast_charts(m.r_df)
-                    st.markdown("Choose your forecast method and growth rate metric on the sidebar to update Projected Regional Daily Cases.")
+                    st.markdown("Choose your Infection Spread Measure and Forecast Method on the sidebar to update Projected Regional Daily Cases.")
                 
                 # Forecasted new Regional cases
                 display_daily_cases_forecast_chart(m.r_df)

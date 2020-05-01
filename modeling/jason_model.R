@@ -83,7 +83,13 @@
       if(a > mtry) { message(paste("STOPPED after",a,"attempts")); break }
    }
    dfD$dbT <- log(2)/dfD$gRt                                                     #Calculate doubling time.
+   
+   dfD$mthd[dfD$dbT < 1 & !is.na(dfD$dbT)] <- "fixed"                            #Prevent doubling time from going crazy low.
+   dfD$dbT[dfD$dbT < 1 & !is.na(dfD$dbT)] <- 1
 
+   dfD$mthd[dfD$dbT==Inf & !is.na(dfD$dbT)] <- "fixed"                           #Prevent doubling time from going crazy high.
+   dfD$dbT[dfD$dbT==Inf & !is.na(dfD$dbT)] <- max(subset(dfD, dbT < Inf)$dbT, na.rm=TRUE)
+      
    for(i in which(is.na(dfD$dbT))) {
       dfD$dbT[i] <- mean(c(tail(subset(dfD[1:(i-1),], !is.na(dbT)),1)$dbT
                           ,head(subset(dfD[(i+1):nrow(dfD),], !is.na(dbT)),1)$dbT
@@ -347,17 +353,20 @@
                        ,infect_dys=10, grw="dbT", fcst="ets", useAct=TRUE, n_days=30) {
    data$date <- as.Date(data[,d])
    hdt <- max(data[,d], na.rm=TRUE) + n_days
-   
+   print("***** just entered *******")
+   print(head(data))
    dat <- .fncPreProcess(data[,c(rgn,pop,d,cases,cumCases)])
-
+   print("***** after preproc *******")
+   print(head(dat))
    # Get growth rates
    try(dat <- .fncDynRt(data=dat, d=d, y=cases), TRUE)
    try(dat <- .fncDynDblTim(data=dat, d=d, y=cumCases), TRUE)
-   
+   print("***** after growht rates *******")
+   print(head(dat))
    # Forecast
    try(dat <- .fncFcst(dat, d=d, y="Rt" , n=cumCases, mthds=fcst_mthds, h=hdt, trough=fcst_trough), TRUE)
-   try(dat <- .fncFcst(dat, d=d, y="dbT", n=cumCases, mthds=fcst_mthds, h=hdt, peak=fcst_peak), TRUE)
-   # dat <- merge(dat_Rt, dat_dbT)
+   try(dat <- .fncFcst(dat, d=d, y="dbT", n=cumCases, mthds=fcst_mthds, h=hdt), TRUE)
+   print("***** after fcst *******")
    print(head(dat))
    
    # Run SIR
@@ -382,11 +391,11 @@
 .fncChk <- function(data) {
    err <- NA                                                                     #Initialize error list.
 
-   if(!("Rt" %in% names(data))) err <- c(err, "Rt not calculated")               #Build error lists.
-   if(!("dbT" %in% names(data))) err <- c(err, "dbT not calculated")
-   if(length(grep("Rt_prd", names(data)))==0) err <- c(err, "Rt not forecasted")
-   if(length(grep("dbT_prd", names(data)))==0) err <- c(err, "dbT not forecasted")
-   if(!("n" %in% names(data))) err <- c(err, "SIR not calculated")
+   if(!("Rt" %in% names(data))) err <- c(err, "R(t) couldn't be calculated")               #Build error lists.
+   if(!("dbT" %in% names(data))) err <- c(err, "Doubling Time couldn't be calculated")
+   if(length(grep("Rt_prd", names(data)))==0) err <- c(err, "R(t) couldn't be forecasted")
+   if(length(grep("dbT_prd", names(data)))==0) err <- c(err, "Doubling Time couldn't be forecasted")
+   if(!("n" %in% names(data))) err <- c(err, "SIR couldn't be calculated")
 
    if(length(na.omit(err))==0) { return(data)                                    #Return dataframe or error message.
    } else {
