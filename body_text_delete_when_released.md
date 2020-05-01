@@ -73,7 +73,7 @@ def display_app_description():
         Forecast local COVID-19 demand in the context of local system capacity to set 
         expectations and inform mitigation strategy:
         * Built on the outstanding [Penn Med](http://predictivehealthcare.pennmedicine.org/) [epidemic model] (https://penn-chime.phl.io/)
-        * <span style="color:red;"><strong>Forecast based upon county level infection and population data</strong></span> 
+        * <p> style="color:red;"><strong>Forecast based upon county level infection and population data</strong></p> 
         * Manage, use, and save scenarios, bed and ventilator capacity, and actual data
         * Estimate demand for personal protective equipment (PPE) and staff 
 ​
