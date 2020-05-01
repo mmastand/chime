@@ -89,6 +89,7 @@ if mode == Mode.EMPIRICAL:
 
             
             # Forecast Methods Charts
+            display_empirical_short(m.r_df)
             show_forecast_methods = st.checkbox(
                 "Show Forecast Methods", 
                 value=p.show_forecast_methods,
@@ -97,9 +98,9 @@ if mode == Mode.EMPIRICAL:
             if show_forecast_methods:
                 display_empirical_long()
                 display_forecast_charts(m.r_df)
+                st.markdown("Choose your forecast method and growth rate metric on the sidebar to update Projected Regional Daily Cases.")
              
             # Forecasted new Regional cases
-            display_empirical_short()
             display_daily_cases_forecast_chart(m.r_df)
             display_body_charts(m, p, d, actuals, mode)
     else:

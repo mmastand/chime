@@ -45,7 +45,7 @@ def get_names_for_display():
 def display_forecast_charts(d):
     dbT = plot_dynamic_doubling_fit(d)
     Rt = plot_Rt_fit(d)
-    st.altair_chart(alt.hconcat(dbT, Rt), use_container_width=True)
+    st.altair_chart(alt.vconcat(dbT, Rt), use_container_width=True)
 
 def plot_dynamic_doubling_fit(d):
     DATE_FORMAT = "%b %d"

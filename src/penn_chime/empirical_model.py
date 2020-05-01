@@ -42,7 +42,6 @@ class EmpiricalModel(SimSirModelBase):
         )
         response.raise_for_status()
         self.r_df = out_py_df = self.py_df_from_json_response(response.json())
-        st.dataframe(out_py_df)
 
         self.raw = raw = self.raw_from_r_output(out_py_df, p)
 

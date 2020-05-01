@@ -391,6 +391,5 @@
    # dat$mSIR <- NULL
 
    # print("*******  no attributes, just before return  *******")
-   print(str(dat))
    return(dat)
 }

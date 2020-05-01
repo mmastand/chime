@@ -1,4 +1,5 @@
 import streamlit as st
+import datetime
 
 from .parameters import Parameters, Mode
 from .model_base import SimSirModelBase as Model
@@ -15,17 +16,15 @@ def display_app_description():
         Forecast local COVID-19 demand in the context of local system capacity to set 
         expectations and inform mitigation strategy:
         * Built on the outstanding [Penn Med](http://predictivehealthcare.pennmedicine.org/) [epidemic model] (https://penn-chime.phl.io/)
-        * Easily manage multiple scenarios 
-        * Overlay demand forecasts on your capacity (beds and ventilators) 
-        * Compare model estimates to actuals 
-        * Estimate demand for personal protective equipment (PPE) and staff 
-        * Export assumptions and results for further use 
+        * <span style="color:red;"><strong>Forecast based upon county level infection and population data</strong></span>
+        * Manage, use, and save scenarios, bed and ventilator capacity, and actual data
+        * Estimate demand for personal protective equipment (PPE) and staff
 
         Important note on definitions (<span style="color:red;"><i>different from Penn Med model</i></span>):
-        * Non-ICU: Inpatient hospital beds  outside of critical care 
-        * ICU:  Beds used for critical care patients 
-        * Total:  Sum of beds/patients in non-ICU plus ICU 
-        * Ventilators:  Devices used to assist with patient breathing, counted independently of beds (not a subset of ICU or Total patients/beds) 
+        * Non-ICU: Inpatient hospital beds outside of critical care
+        * ICU: Beds used for critical care patients 
+        * Total: Sum of beds/patients in non-ICU plus ICU 
+        * Ventilators: Devices used to assist with patient breathing, counted independently of beds (not a subset of ICU or Total patients/beds)
 
         Questions, comments, support, or requests: [covidcapacity@healthcatalyst.com](mailto:covidcapacity@healthcatalyst.com)  
         <p>See <strong><a href="#application_guidance">Application Guidance</a></strong> section below for more information.</p>
@@ -191,7 +190,7 @@ $$\\beta = (g + \\gamma)$$.
 def display_actuals_definitions():
     st.markdown("""<a name="application_guidance"></a>""", unsafe_allow_html=True)
     st.header("Application Guidance")
-    st.subheader("Working with Projected Data")
+    st.subheader("Working with Scenarios")
     st.markdown("""
     This tool has the ability to load and save parameters, as well as save parameters and calculations. Enable
     these features by changing the *Author Name* and *Scenario Name* to values of your choosing. Rather than create the parameter file
@@ -261,6 +260,9 @@ def display_footer():
     st.subheader("Features and Enhancements History")
     if st.checkbox("Show Features and Enhancements History"):
         st.markdown("""  
+            **V: 2.0.1 (Friday, 1, 2020)**
+            * Added "emprical forecasts".  Leverages county infection and population data to forecast future infections.
+            
             **V: 1.7.1 (Tuesday, April 14, 2020)**
             * Added Non-ICU to all charts. This corresponds to Hospitalized in Penn Med.
             * Changed Total color to black, other colors match Penn Med.
@@ -340,13 +342,17 @@ def display_empirical_long():
         """
     )
 
-
-def display_empirical_short():
+    # Takes r_df
+def display_empirical_short(d):
+    a_start = d.date.min().strftime("%b %d")
+    a_end = d.date.loc[d.rst==1].max().strftime("%b %d")
+    f_end = d.date.max().strftime("%b %d")
+    mm = d.mSIR.iloc[0].split(",")
     st.markdown(
-        """
+        f"""
         Empirical Model Mode uses county data reported by the [New York Times](https://github.com/nytimes/covid-19-data)
         and 2019 census data from the [U.S. Census] (https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/)
-        * Actuals presented from {start actuals date} to {end actual date}
-        * Daily cases through {max date} estimated by applying the {Forecast Method} to the {Forecasted Metric}
+        * Actuals presented from {a_start} to {a_end}
+        * Daily cases through {f_end} estimated by applying {mm[1].strip()} forecasting to the {mm[0].strip()} growth metric.
         """
     )
