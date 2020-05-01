@@ -57,7 +57,7 @@ def display_sidebar(d: Parameters) -> Parameters:
     if mode == Mode.EMPIRICAL:
         metric_options = [ForecastedMetric.DOUBLING_TIME, ForecastedMetric.RT]
         forecasted_metric = st.sidebar.radio(
-            "Forecasted Metric",
+            "Infection Spread Measure",
             metric_options,
             index=metric_options.index(d.forecasted_metric),
         )
@@ -266,6 +266,8 @@ def display_sidebar(d: Parameters) -> Parameters:
         parameters.override_population = d.override_population
         parameters.population_manual_override = d.population_manual_override
         parameters.show_forecast_methods = d.show_forecast_methods
+        parameters.show_ppe_section = d.show_ppe_section
+        parameters.show_staffing_section = d.show_staffing_section
 
     parameters = display_ppe_section(d, parameters)
     parameters = display_staffing_section(d, parameters)

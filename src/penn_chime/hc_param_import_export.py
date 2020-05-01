@@ -106,10 +106,12 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
 
         # Population
         override_population=imported_params.get("OverridePopulation", False),
-        population_manual_override=imported_params.get("PopulationManualOverride", 1000000),
+        population_manual_override=imported_params.get("PopulationManualOverride", None),
 
         # Section Display
         show_forecast_methods=imported_params.get("ShowForecastMethods", False),
+        show_ppe_section=imported_params.get("ShowPPESection", False),
+        show_staffing_section=imported_params.get("ShowStaffingSection", False),
     )
     return parameters
 
@@ -195,6 +197,8 @@ def param_download_widget(parameters):
 
         # Section Display
         "ShowForecastMethods": parameters.show_forecast_methods,
+        "ShowPPESection": parameters.show_ppe_section,
+        "ShowStaffingSection": parameters.show_staffing_section,
     }
     out_json = json.dumps(out_obj)
     b64_json = base64.b64encode(out_json.encode()).decode()

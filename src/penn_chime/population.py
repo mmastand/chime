@@ -1,8 +1,9 @@
 import streamlit as st
+import numpy as np
 
 def display_population_widgets(p, selected_states, selected_counties, nat_data) -> int:
     sub_nat = nat_data.loc[nat_data.state.isin(selected_states) & nat_data.county.isin(selected_counties)]
-    population = int(sub_nat.pop_est2019.iloc[0])
+    population = int(np.sum(sub_nat.pop_est2019.unique()).item())
     st.subheader(f"""Calculated Regional Population: {population:,}""")
     p.population
     override_population = st.checkbox(
@@ -16,7 +17,7 @@ def display_population_widgets(p, selected_states, selected_counties, nat_data) 
             min_value=0,
             max_value=8000000000,
             step=100000,
-            value=p.population_manual_override,
+            value=population if p.population_manual_override is None else p.population_manual_override,
         )
         p.population_manual_override = population_manual_override
         population = population_manual_override

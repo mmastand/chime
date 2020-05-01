@@ -102,50 +102,62 @@ def display_body_charts(m, p: "Parameters", d: "Parameters", actuals: "pd.DataFr
 
     ### PPE Section
     st.subheader("Personal Protection Equipment")
-    st.markdown("Quantity of PPE required per day")
-    for pc in list(p.ppe_labels.keys())[3:]:
-        ppe_chart = build_ppe_chart(
-            alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns=pc)
-        st.altair_chart(ppe_chart, use_container_width=True)
-        st.markdown(build_ppe_descriptions(chart=ppe_chart, label = p.ppe_labels[pc]["label"]))
-        st.markdown("  \n  \n")
-    display_download_link(
-        filename=f"{p.current_date}_projected_ppe_required.csv",
-        df=m.ppe_df,
+    show_ppe_section = st.checkbox(
+        "Show PPE Charts",
+        value=p.show_ppe_section
     )
-    if st.checkbox("Show Projected PPE Required in tabular form"):
-        ppe_modulo = 1
-        if not st.checkbox("Show Daily PPE Required"):
-            ppe_modulo = 7
-        table_df = build_table(
-            df=m.ppe_floor_df,
-            labels=p.labels,
-            modulo=ppe_modulo)
-        st.dataframe(table_df)
+    p.show_ppe_section = show_ppe_section
+    if show_ppe_section:
+        st.markdown("Quantity of PPE required per day")
+        for pc in list(p.ppe_labels.keys())[3:]:
+            ppe_chart = build_ppe_chart(
+                alt=alt, ppe_floor_df=m.ppe_floor_df, p=p, plot_columns=pc)
+            st.altair_chart(ppe_chart, use_container_width=True)
+            st.markdown(build_ppe_descriptions(chart=ppe_chart, label = p.ppe_labels[pc]["label"]))
+            st.markdown("  \n  \n")
+        display_download_link(
+            filename=f"{p.current_date}_projected_ppe_required.csv",
+            df=m.ppe_df,
+        )
+        if st.checkbox("Show Projected PPE Required in tabular form"):
+            ppe_modulo = 1
+            if not st.checkbox("Show Daily PPE Required"):
+                ppe_modulo = 7
+            table_df = build_table(
+                df=m.ppe_floor_df,
+                labels=p.labels,
+                modulo=ppe_modulo)
+            st.dataframe(table_df)
 
     ### Staffing Section
     st.subheader("Staffing")
-    st.markdown("Number of staff required per day")
-    for pc in list(p.staffing_labels.keys())[3:]:
-        staffing_chart = build_staffing_chart(
-            alt=alt, staffing_floor_df=m.staffing_floor_df, p=p, plot_columns=pc)
-        st.altair_chart(staffing_chart, use_container_width=True)
-        st.markdown(build_staffing_descriptions(
-            chart=staffing_chart, label=p.staffing_labels[pc]["label"], shift_duration=p.shift_duration))
-        st.markdown("  \n  \n")
-    display_download_link(
-        filename=f"{p.current_date}_projected_staffing_required.csv",
-        df=m.staffing_df,
+    show_staffing_section = st.checkbox(
+        "Show Staffing Charts",
+        value=p.show_staffing_section
     )
-    if st.checkbox("Show Projected Staffing Required in tabular form"):
-        staffing_modulo = 1
-        if not st.checkbox("Show Daily Staffing Required"):
-            staffing_modulo = 7
-        table_df = build_table(
-            df=m.staffing_floor_df,
-            labels=p.labels,
-            modulo=staffing_modulo)
-        st.dataframe(table_df)
+    p.show_staffing_section = show_staffing_section
+    if show_staffing_section:
+        st.markdown("Number of staff required per day")
+        for pc in list(p.staffing_labels.keys())[3:]:
+            staffing_chart = build_staffing_chart(
+                alt=alt, staffing_floor_df=m.staffing_floor_df, p=p, plot_columns=pc)
+            st.altair_chart(staffing_chart, use_container_width=True)
+            st.markdown(build_staffing_descriptions(
+                chart=staffing_chart, label=p.staffing_labels[pc]["label"], shift_duration=p.shift_duration))
+            st.markdown("  \n  \n")
+        display_download_link(
+            filename=f"{p.current_date}_projected_staffing_required.csv",
+            df=m.staffing_df,
+        )
+        if st.checkbox("Show Projected Staffing Required in tabular form"):
+            staffing_modulo = 1
+            if not st.checkbox("Show Daily Staffing Required"):
+                staffing_modulo = 7
+            table_df = build_table(
+                df=m.staffing_floor_df,
+                labels=p.labels,
+                modulo=staffing_modulo)
+            st.dataframe(table_df)
 
     ### Export Full Data and Parameters
     st.header("Export Full Data and Parameters")

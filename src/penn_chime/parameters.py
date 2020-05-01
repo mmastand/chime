@@ -6,7 +6,7 @@ constants.py `change_date``.
 
 from collections import namedtuple
 import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from .validators import (
     Positive, OptionalStrictlyPositive, StrictlyPositive, Rate, Date, OptionalDate
@@ -152,10 +152,12 @@ class Parameters:
 
         # Population
         override_population: bool = False,
-        population_manual_override: bool = 1000000,
+        population_manual_override: Union[int, None] = None,
 
         # Section Displays
         show_forecast_methods: bool = False,
+        show_ppe_section: bool = False,
+        show_staffing_section: bool = False,
     ):
         self.covid_census_value = covid_census_value
         self.covid_census_date = Date(value=covid_census_date)
@@ -256,6 +258,8 @@ class Parameters:
         
         # Section Displays
         self.show_forecast_methods = show_forecast_methods
+        self.show_ppe_section = show_ppe_section
+        self.show_staffing_section = show_staffing_section
 
         self.labels = {
             "hospitalized": "Hospitalized",

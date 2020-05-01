@@ -97,7 +97,7 @@ if mode == Mode.EMPIRICAL:
                 display_forecast_charts(m.r_df)
              
             # Forecasted new Regional cases
-            st.markdown("Projected Regional Daily Cases")
+            st.subheader("Projected Regional Daily Cases")
             display_daily_cases_forecast_chart(m.r_df)
             display_body_charts(m, p, d, actuals, mode)
     else:
