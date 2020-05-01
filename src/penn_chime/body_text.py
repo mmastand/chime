@@ -300,3 +300,53 @@ def display_footer():
     
         """)
     st.markdown("© 2020, Health Catalyst Inc.")
+
+
+def display_empirical_long():
+    st.markdown(
+        """
+        Rather than using a fixed infection spread rate modified by a single
+        social distancing effective impact adjustment, "Empirical Model Mode"
+        estimates future COVID-19 cases based upon case history to date.
+
+        There is not a single best approach to estimating infection spread and
+        forecasting methods across all regions.  Typically, it is possible to
+        arrive at a reasonable approach through visual inspection and selecting
+        the combination of "Infection Spread Measure" and "Forecast Method"
+        accordingly.
+        * Infection spread: Use either "Doubling Time" using the approach of [Hall, 2014] (https://doi.org/10.1093/molbev/mst187) or "Reproduction Rate" using the approach of [Cori, 2013] (https://doi.org/10.1093/aje/kwt133).
+        * Forecast: Select from exponential smoothing or local (LOESS), spline, or linear regression.
+        These calcualtions are done using [R] (https://www.r-project.org/)
+
+        New hospital admissions, census, and other demand estimates are still
+        derived from the SIR model.  What is different is how SIR (specifically
+        the "I" (Infected) calculation is done:
+        * Where actual new cases are available, this determines "I" directly.
+        * For future days, the $\\beta$ term is derived dynamically based upon your selection of the Infection Spread and Forecast Method.
+        By allowing dynamic infection spread, it is possible to capture the
+        dynamic nature of epidemic spread and counter measures.
+
+        Note that the forecast model will adjust for changes in contributors
+        such as social distancing effectiveness and testing rates.  However, it
+        will take some time for the model to adjust and extra caution should be
+        applied in interpretation during times of rapid change.
+
+        In addition, please note that the hospital admission and ventilator use
+        percentage defaults should be inspected carefully when using actual
+        infection data.  In many regions, testing was done disproportionately in
+        patients presenting to the hospital--not the general population.  You may
+        need to increase your hospital admission and ventilator use rates to gets
+        appropriate volume in your region of interest.
+        """
+    )
+
+
+def display_empirical_short():
+    st.markdown(
+        """
+        Empirical Model Mode uses county data reported by the [New York Times](https://github.com/nytimes/covid-19-data)
+        and 2019 census data from the [U.S. Census] (https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/)
+        * Actuals presented from {start actuals date} to {end actual date}
+        * Daily cases through {max date} estimated by applying the {Forecast Method} to the {Forecasted Metric}
+        """
+    )
