@@ -72,6 +72,7 @@ if mode == Mode.EMPIRICAL:
     nat_data = get_national_data()
 
     states = sorted(list(nat_data.state.unique()))
+    st.subheader("Choose Region to Build Empirical Model")
     selected_states = st.multiselect("Please choose one or more states.", states, default=p.selected_states)
     if len(selected_states) > 0:
         p.selected_states = selected_states

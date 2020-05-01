@@ -25,20 +25,21 @@ def listener():
     method = request.args.get("method", None)
     metric = request.args.get("metric", None)
     n_days = request.args.get("n_days", None)
+    inf_days = request.args.get("inf_days", None)
     model_input_dict = request.get_json()
-    if method is None or metric is None or model_input_dict is None or n_days is None:
-        return "Must supply 'method', 'metric', n_days, and 'df'.", 400
+    if method is None or metric is None or model_input_dict is None or n_days is None or inf_days is None:
+        return "Must supply 'method', 'metric', n_days, inf_days, and 'df'.", 400
     model_input_df = pd.DataFrame(model_input_dict).assign(date=lambda d: pd.to_datetime(d.date))
-    out_df = run_model(model_input_df, method, metric, n_days)
+    out_df = run_model(model_input_df, method, metric, n_days, inf_days)
     if isinstance(out_df, str):
         return out_df, 400
     return jsonify(out_df.to_json(orient="records", date_format='iso'))
 
 
-def run_model(model_input_df, method, metric, n_days):
+def run_model(model_input_df, method, metric, n_days, inf_days):
     with localconverter(ro.default_converter + pandas2ri.converter):
         r_input_df = ro.conversion.py2rpy(model_input_df)
-    r_output_df = r(".fncCaseEst")(r_input_df, fcst=method, grw=metric, n_days=int(n_days))
+    r_output_df = r(".fncCaseEst")(r_input_df, fcst=method, grw=metric, n_days=int(n_days), infect_dys=int(inf_days))
     with localconverter(ro.default_converter + pandas2ri.converter):
         out_py_df = ro.conversion.rpy2py(r_output_df)
     if isinstance(out_py_df, np.ndarray):

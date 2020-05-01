@@ -15,8 +15,8 @@ def display_app_description():
         f"""
         Forecast local COVID-19 demand in the context of local system capacity to set 
         expectations and inform mitigation strategy:
-        * Built on the outstanding [Penn Med](http://predictivehealthcare.pennmedicine.org/) [epidemic model] (https://penn-chime.phl.io/)
-        * <span style="color:red;"><strong>Forecast based upon county level infection and population data</strong></span>
+        * Built on the outstanding [Penn Med](http://predictivehealthcare.pennmedicine.org/) [epidemic model] (https://penn-chime.phl.io/) - with additional features
+        * **New: Forecast infections based upon actual county level data and dynamic infection spread rates (Empirical Model)**
         * Manage, use, and save scenarios, bed and ventilator capacity, and actual data
         * Estimate demand for personal protective equipment (PPE) and staff
 
@@ -258,49 +258,48 @@ def display_footer():
     
     st.markdown("""<a name="release_notes"></a>""", unsafe_allow_html=True)
     st.subheader("Features and Enhancements History")
-    if st.checkbox("Show Features and Enhancements History"):
-        st.markdown("""  
-            **V: 2.0.1 (Friday, 1, 2020)**
-            * Added "emprical forecasts".  Leverages county infection and population data to forecast future infections.
-            
-            **V: 1.7.1 (Tuesday, April 14, 2020)**
-            * Added Non-ICU to all charts. This corresponds to Hospitalized in Penn Med.
-            * Changed Total color to black, other colors match Penn Med.
+    st.markdown("""  
+        **V: 2.0.1 (Friday, 1, 2020)**
+        * Added "emprical forecasts".  Leverages county infection and population data to forecast future infections.
+        
+        **V: 1.7.1 (Tuesday, April 14, 2020)**
+        * Added Non-ICU to all charts. This corresponds to Hospitalized in Penn Med.
+        * Changed Total color to black, other colors match Penn Med.
 
-            **V: 1.6.0 (Monday, April 13, 2020)**
-            * Added ability to select a social distancing start date that is independent of the current date. This is to maintain **consistency with Penn Med's functionality**.
+        **V: 1.6.0 (Monday, April 13, 2020)**
+        * Added ability to select a social distancing start date that is independent of the current date. This is to maintain **consistency with Penn Med's functionality**.
 
-            **V: 1.5.3 (Thursday, April 09, 2020)** 
-            * Added **staffing functionality**
-            * Changed exported column name to "VentilatorsAdmissions"
-            * Moved capacity parameters to lower on sidebar
-            * Fixed a bug where first row contained NaNs in full downloaded data
-            
-            **V: 1.4.0 (Wednesday, April 08, 2020)** 
-            * Added **PPE/patient/day functionality**
-            * Changed minimum days to project to 7
+        **V: 1.5.3 (Thursday, April 09, 2020)** 
+        * Added **staffing functionality**
+        * Changed exported column name to "VentilatorsAdmissions"
+        * Moved capacity parameters to lower on sidebar
+        * Fixed a bug where first row contained NaNs in full downloaded data
+        
+        **V: 1.4.0 (Wednesday, April 08, 2020)** 
+        * Added **PPE/patient/day functionality**
+        * Changed minimum days to project to 7
 
-            **V: 1.3.7 (Tuesday, April 07, 2020)** 
-            * Fixed estimated start day bug when "Number of Days to Project" was low
-            * Fixed total census to be a sum of ICU and non-ICU
+        **V: 1.3.7 (Tuesday, April 07, 2020)** 
+        * Fixed estimated start day bug when "Number of Days to Project" was low
+        * Fixed total census to be a sum of ICU and non-ICU
 
-            **V: 1.3.5 (Monday, April 06, 2020)** 
+        **V: 1.3.5 (Monday, April 06, 2020)** 
 
-            * Added **support for providing historical data** and incorporating it in the hospital admission/census/COVID-19 capacity charts/projections
-    
-            **V: 1.2.11 (Thursday, April 02, 2020):** 
-            
-            * Incorporated changes made by **Penn Med to ensure replicability**
-            * Created parameter categories in the left menu for better organization
-            * Added support for specifying the date of the first hospitalized case            
+        * Added **support for providing historical data** and incorporating it in the hospital admission/census/COVID-19 capacity charts/projections
 
-            **V: 1.1.1 (Friday, March 27, 2020):** 
-            
-            * Added support for **loading and saving capacity planning scenarios** 
-            * Added support for **understanding capacity** as well as demand by specifying Numbers of Total Beds, ICU Beds, and Ventilators for COVID-19 Patients
-            * Added support for exporting full dataset and capacity scenario as a csv file
-    
-        """)
+        **V: 1.2.11 (Thursday, April 02, 2020):** 
+        
+        * Incorporated changes made by **Penn Med to ensure replicability**
+        * Created parameter categories in the left menu for better organization
+        * Added support for specifying the date of the first hospitalized case            
+
+        **V: 1.1.1 (Friday, March 27, 2020):** 
+        
+        * Added support for **loading and saving capacity planning scenarios** 
+        * Added support for **understanding capacity** as well as demand by specifying Numbers of Total Beds, ICU Beds, and Ventilators for COVID-19 Patients
+        * Added support for exporting full dataset and capacity scenario as a csv file
+
+    """)
     st.markdown("© 2020, Health Catalyst Inc.")
 
 

@@ -33,12 +33,13 @@ class EmpiricalModel(SimSirModelBase):
         method = ForecastMethod.to_r_method(p.forecast_method)
         metric = ForecastedMetric.to_r_metric(p.forecasted_metric)
         n_days = p.n_days
+        inf_days = p.infectious_days
         py_in_df = self.r_input_from_actuals(actuals, states, counties, population)
         payload = json.loads(py_in_df.to_json(orient="records", date_format='iso'))
         response = requests.post(
             "http://localhost:8765/", 
             json=payload, 
-            params={"method": method, "metric": metric, "n_days": n_days}
+            params={"method": method, "metric": metric, "n_days": n_days, "inf_days":inf_days}
         )
         if response.status_code == 400:
             st.markdown(f"""

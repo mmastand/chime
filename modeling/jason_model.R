@@ -89,7 +89,12 @@
 
    dfD$mthd[dfD$dbT==Inf & !is.na(dfD$dbT)] <- "fixed"                           #Prevent doubling time from going crazy high.
    dfD$dbT[dfD$dbT==Inf & !is.na(dfD$dbT)] <- max(subset(dfD, dbT < Inf)$dbT, na.rm=TRUE)
-      
+
+   iqr <- as.numeric(quantile(dfD$dbT, probs=c(0.25,0.75), na.rm=TRUE))          #Limit doubling time outliers.
+   otl <- iqr + (c(-1,1) * (iqr[2] - iqr[1]) * 1.5)
+   dfD$mthd[dfD$dbT > otl[2] & !is.na(dfD$dbT)] <- "fixOutlier"
+   dfD$dbT[dfD$dbT > otl[2] & !is.na(dfD$dbT)] <- otl[2]
+
    for(i in which(is.na(dfD$dbT))) {
       dfD$dbT[i] <- mean(c(tail(subset(dfD[1:(i-1),], !is.na(dbT)),1)$dbT
                           ,head(subset(dfD[(i+1):nrow(dfD),], !is.na(dbT)),1)$dbT
