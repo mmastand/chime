@@ -404,7 +404,7 @@ def build_descriptions(
                    Make sure to include a space or underscore as appropriate
     :return: Returns a multi-line string description of the results
     """
-    messages = []
+    messages = ["Based upon **projections**:\n"]
 
     cols = ["Total", "Non-ICU", "ICU", "Ventilators"]
     asterisk = False

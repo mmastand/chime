@@ -18,6 +18,8 @@ from penn_chime.charts import (
     build_sim_sir_w_date_chart,
     build_table,
 )
+
+from penn_chime.body_text import zero_admits_warning
 from penn_chime.hc_actuals import census_mismatch_message
 from penn_chime.utils import dataframe_to_base64
 
@@ -27,6 +29,7 @@ def display_body_charts(m, p: "Parameters", d: "Parameters", actuals: "pd.DataFr
     st.subheader("New Hospital Admissions")
     admits_chart = build_admits_chart(alt=alt, admits_floor_df=m.admits_floor_df, p=p, actuals=actuals)
     st.altair_chart(admits_chart, use_container_width=True)
+    zero_admits_warning(p)
     st.markdown(build_descriptions(chart=admits_chart,
                                 labels=p.admits_patient_chart_desc,))
     display_download_link(

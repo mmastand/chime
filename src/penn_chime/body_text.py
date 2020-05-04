@@ -216,9 +216,9 @@ def display_actuals_definitions():
     st.subheader("Working with Actuals")
     st.markdown(
     """
-    Using the parameters in the sidebar it is possible to configure theoretical projections that are driven by the 
-    SIR model. However you may also upload actual data which will be displayed along with the projections in the 
-    appropriate chart above. To upload actual data please use the file upload widget at the bottom of the sidebar.
+    Actuals are for comparison purposes only and may help you adjust parameters in the projection model such as 
+    hospital market share and illness severity (e.g., hospitalization rates and length of stay).
+    To upload actual data please use the file upload widget at the bottom of the sidebar.
     Uploaded files must be in the comma-separated-value (CSV) format. Below is a list of columns that you may include 
     in the uploaded CSV file along with a description of each column. Please note that column names are **case sensitive**.
 
@@ -259,7 +259,7 @@ def display_footer():
     st.markdown("""<a name="release_notes"></a>""", unsafe_allow_html=True)
     st.subheader("Features and Enhancements History")
     st.markdown("""  
-        **V: 2.0.1 (Friday, 1, 2020)**
+        **V: 2.0.0 (Monday, May 4, 2020)**
         * Added "emprical forecasts".  Leverages county infection and population data to forecast future infections.
         
         **V: 1.7.1 (Tuesday, April 14, 2020)**
@@ -320,8 +320,8 @@ def display_empirical_long():
         These calcualtions are done using [R] (https://www.r-project.org/)
 
         New hospital admissions, census, and other demand estimates are still
-        derived from the SIR model.  What is different is how SIR (specifically
-        the "I" (Infected) calculation is done:
+        derived from the SIR model.  What is different is how the SIR (specifically
+        the "I" (Infected)) calculation is done:
         * Where actual new cases are available, this determines "I" directly.
         * For future days, the $\\beta$ term is derived dynamically based upon your selection of the Infection Spread and Forecast Method.
         By allowing dynamic infection spread, it is possible to capture the
@@ -355,3 +355,20 @@ def display_empirical_short(d):
         * Daily cases through {f_end} estimated by applying {mm[1].strip()} forecasting to the {mm[0].strip()} growth metric.
         """
     )
+
+def zero_admits_warning(p):
+    params = []
+    if p.non_icu.rate <= 0.1:
+        params.append("Non-ICU")
+    if p.icu.rate <= 0.05:
+        params.append("ICU")
+    if p.non_icu.rate <= 0.05:
+        params.append("Ventilators")
+
+    if (len(params) > 0) and (p.app_mode == Mode.EMPIRICAL):
+        st.markdown(
+            f"""
+            *Please check "Severity Parameters" {", ".join(params)} 
+            to ensure demand is appropriate given the subset of patients tested for COVID-19.*
+            """
+        )
