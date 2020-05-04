@@ -54,6 +54,7 @@ class SimSirModelBase:
             'day': self.raw['day'],
             'date': self.raw['date'],
             'non_icu': self.raw['admits_non_icu'],
+            'non_icu_after_icu': self.raw['admits_non_icu_after_icu'],
             'icu': self.raw['admits_icu'],
             'ventilators': self.raw['admits_ventilators'],
             'total': self.raw['admits_total']
@@ -62,6 +63,7 @@ class SimSirModelBase:
             'day': self.raw['day'],
             'date': self.raw['date'],
             'non_icu': self.raw['census_non_icu'],
+            'non_icu_after_icu': self.raw['census_non_icu_after_icu'],
             'icu': self.raw['census_icu'],
             'ventilators': self.raw['census_ventilators'],
             'total': self.raw['census_total'],
@@ -75,7 +77,7 @@ class SimSirModelBase:
         self.sim_sir_w_date_floor_df = self.build_floor_df(self.sim_sir_w_date_df, self.keys)
         self.admits_floor_df = self.build_floor_df(self.admits_df, self.p.dispositions.keys())
         self.census_floor_df = self.build_floor_df(self.census_df, self.p.dispositions.keys())
-        self.beds_floor_df = self.build_floor_df(self.beds_df, self.p.dispositions.keys())
+        self.beds_floor_df = self.build_floor_df(self.beds_df, self.beds_df.columns[2:])
         self.ppe_floor_df = self.build_floor_df(self.ppe_df, self.ppe_df.columns[2:])
         self.staffing_floor_df = self.build_floor_df(self.staffing_df, self.staffing_df.columns[2:])
 
@@ -241,7 +243,7 @@ class SimSirModelBase:
             raw[key] = raw["ever_infected"] * rate * market_share
 
 
-    def calculate_admits(self, raw: Dict, rates):
+    def calculate_admits(self, raw: Dict, rates, p,):
         """Build admits dataframe from dispositions."""
         for key in rates.keys():
             ever = raw["ever_" + key]
@@ -250,21 +252,42 @@ class SimSirModelBase:
             admit[1:] = ever[1:] - ever[:-1]
             raw["admits_"+key] = admit
             raw[key] = admit
+        
+        # Pad with icu LOS 0's then cut off icu LOS from end.
+        if p.non_icu_after_icu.days > 0:  # If non-ICU LOS > 0, shift by icu LOS
+            print("creating ########")
+            raw["admits_non_icu_after_icu"] = np.pad(
+                raw["admits_non_icu"], [p.icu.days, 0], mode="constant")[:-p.icu.days]
+        else:
+            raw["admits_non_icu_after_icu"] = np.zeros(len(raw["admits_non_icu"]))
+        # Uncomment to count transfers as admissions to non-icu, though this double counts census.
+        # Have to copy admits_non_icu before the addition to avoid double counting. When commented, census is correct. 
+        # raw["admits_non_icu"] = raw["admits_non_icu"] + raw["admits_non_icu_after_icu"]
         raw['admits_total'] = np.floor(raw['admits_non_icu']) + np.floor(raw['admits_icu'])
 
+        # Replace NaNs with 0
+        for key in raw.keys():
+            raw[key] = np.nan_to_num(raw[key])
 
     def calculate_census(
         self,
         raw: Dict,
         lengths_of_stay: Dict[str, int],
+        p,
     ):
         """Average Length of Stay for each disposition of COVID-19 case (total guesses)"""
         n_days = raw["day"].shape[0]
         for key, los in lengths_of_stay.items():
-            cumsum = np.empty(n_days + los)
-            cumsum[:los+1] = 0.0
-            cumsum[los+1:] = raw["admits_" + key][1:].cumsum()
+            if (key == "non_icu_after_icu") and (los == 0):
+                raw['census_non_icu_after_icu'] = np.zeros(len(raw["census_icu"]))
+            else:
+                cumsum = np.empty(n_days + los)
+                cumsum[:los+1] = 0.0
+                cumsum[los+1:] = raw["admits_" + key][1:].cumsum()
 
-            census = cumsum[los:] - cumsum[:-los]
-            raw["census_" + key] = census
+                census = cumsum[los:] - cumsum[:-los]
+                raw["census_" + key] = census
+        import streamlit as st
+        st.markdown(list(lengths_of_stay.items()))
+        raw['census_non_icu'] = raw['census_non_icu'] + raw['census_non_icu_after_icu']
         raw['census_total'] = np.floor(raw['census_non_icu']) + np.floor(raw['census_icu'])

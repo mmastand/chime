@@ -17,6 +17,7 @@ def get_defaults():
         doubling_time=5.0,
         non_icu=Disposition(0.025, 7),
         icu=Disposition(0.0075, 9),
+        non_icu_after_icu=Disposition(0.0, 4),
         infectious_days=10,
         market_share=0.15,
         n_days=30,

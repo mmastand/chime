@@ -58,8 +58,8 @@ class EmpiricalModel(SimSirModelBase):
             self.raw = raw = self.raw_from_r_output(out_py_df, p)
 
             self.calculate_dispositions(raw, self.rates, self.p.market_share)
-            self.calculate_admits(raw, self.rates)
-            self.calculate_census(raw, self.days)
+            self.calculate_admits(raw, self.rates, p)
+            self.calculate_census(raw, self.days, p)
             self.add_counts()
             # Add day number to R dataframe
             self.r_df["day"] = self.admits_df.day
