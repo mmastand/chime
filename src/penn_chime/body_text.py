@@ -21,10 +21,9 @@ def display_app_description():
         * Estimate demand for personal protective equipment (PPE) and staff
 
         Important note on definitions (<span style="color:red;"><i>different from Penn Med model</i></span>):
-        * Non-ICU: Inpatient hospital beds outside of critical care
-        * ICU: Beds used for critical care patients 
-        * Total: Sum of beds/patients in non-ICU plus ICU 
+        * Total: Sum of beds/patients in "non-ICU" plus "ICU" 
         * Ventilators: Devices used to assist with patient breathing, counted independently of beds (not a subset of ICU or Total patients/beds)
+        * Length of Stay: ICU Admissions is divided into an ICU portion followed by a non-ICU portion
 
         Questions, comments, support, or requests: [covidcapacity@healthcatalyst.com](mailto:covidcapacity@healthcatalyst.com)  
         <p>See <strong><a href="#application_guidance">Application Guidance</a></strong> section below for more information.</p>
