@@ -258,9 +258,10 @@ def display_footer():
     st.markdown("""<a name="release_notes"></a>""", unsafe_allow_html=True)
     st.subheader("Features and Enhancements History")
     st.markdown("""  
-        **V: 2.0.0 (Monday, May 4, 2020)**
+        **V: 2.1.0 (Monday, May 4, 2020)**
         * Added "emprical forecasts".  Leverages county infection and population data to forecast future infections.
-        
+        * Changed how ICU length of stay is represented.
+
         **V: 1.7.1 (Tuesday, April 14, 2020)**
         * Added Non-ICU to all charts. This corresponds to Hospitalized in Penn Med.
         * Changed Total color to black, other colors match Penn Med.

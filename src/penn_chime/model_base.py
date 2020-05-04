@@ -255,7 +255,6 @@ class SimSirModelBase:
         
         # Pad with icu LOS 0's then cut off icu LOS from end.
         if p.non_icu_after_icu.days > 0:  # If non-ICU LOS > 0, shift by icu LOS
-            print("creating ########")
             raw["admits_non_icu_after_icu"] = np.pad(
                 raw["admits_non_icu"], [p.icu.days, 0], mode="constant")[:-p.icu.days]
         else:

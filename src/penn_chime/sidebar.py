@@ -187,14 +187,14 @@ def display_sidebar(d: Parameters) -> Parameters:
     )
     non_icu_days = st.sidebar.number_input(
         "Non-ICU Admissions (days)",
-        min_value=0,
+        min_value=1,
         value=d.non_icu.days,
         step=1,
         format="%i",
     )
     icu_days = st.sidebar.number_input(
         "ICU Admissions: ICU Portion (days)",
-        min_value=0,
+        min_value=1,
         value=d.icu.days,
         step=1,
         format="%i",
@@ -208,7 +208,7 @@ def display_sidebar(d: Parameters) -> Parameters:
     )
     ventilators_days = st.sidebar.number_input(
         "Average Days on Ventilator",
-        min_value=0,
+        min_value=1,
         value=d.ventilators.days,
         step=1,
         format="%i",
