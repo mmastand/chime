@@ -182,22 +182,25 @@ def display_sidebar(d: Parameters) -> Parameters:
         step=1,
         format="%i",
     )
+    st.sidebar.markdown(
+        "### Average Length of Stay"
+    )
     non_icu_days = st.sidebar.number_input(
-        "Average Non-ICU Length of Stay (days)",
+        "Non-ICU Admissions (days)",
         min_value=0,
         value=d.non_icu.days,
         step=1,
         format="%i",
     )
     icu_days = st.sidebar.number_input(
-        "Average Days in ICU",
+        "ICU Admissions: ICU Portion (days)",
         min_value=0,
         value=d.icu.days,
         step=1,
         format="%i",
     )
     non_icu_after_icu_days = st.sidebar.number_input(
-        "Average Non-ICU Length of Stay After ICU Stay",
+        "ICU Admissions: Non-ICU Portion (days)",
         min_value=0,
         value=d.non_icu_after_icu.days,
         step=1,

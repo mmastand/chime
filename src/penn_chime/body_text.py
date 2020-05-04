@@ -362,7 +362,7 @@ def zero_admits_warning(p):
         params.append("Non-ICU")
     if p.icu.rate <= 0.05:
         params.append("ICU")
-    if p.non_icu.rate <= 0.05:
+    if p.ventilators.rate <= 0.05:
         params.append("Ventilators")
 
     if (len(params) > 0) and (p.app_mode == Mode.EMPIRICAL):
