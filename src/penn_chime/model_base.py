@@ -273,7 +273,6 @@ class SimSirModelBase:
         self,
         raw: Dict,
         lengths_of_stay: Dict[str, int],
-        p,
     ):
         """Average Length of Stay for each disposition of COVID-19 case (total guesses)"""
         n_days = raw["day"].shape[0]
@@ -287,7 +286,5 @@ class SimSirModelBase:
 
                 census = cumsum[los:] - cumsum[:-los]
                 raw["census_" + key] = census
-        import streamlit as st
-        st.markdown(list(lengths_of_stay.items()))
         raw['census_non_icu'] = raw['census_non_icu'] + raw['census_non_icu_after_icu']
         raw['census_total'] = np.floor(raw['census_non_icu']) + np.floor(raw['census_icu'])

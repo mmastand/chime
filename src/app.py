@@ -102,12 +102,6 @@ if mode == Mode.EMPIRICAL:
                 
                 # Forecasted new Regional cases
                 display_daily_cases_forecast_chart(m.r_df)
-                # st.markdown("admits and admits_floor")
-                # st.dataframe(m.admits_df)
-                # st.dataframe(m.admits_floor_df)
-                # st.markdown("census and census_floor")
-                # st.dataframe(m.census_df)
-                # st.dataframe(m.census_floor_df)
                 display_body_charts(m, p, d, actuals, mode)
     else:
         st.markdown("""
@@ -116,7 +110,6 @@ if mode == Mode.EMPIRICAL:
 
 else:
     # Mode is classic Penn
-    
     m = PennModel(p)
     display_parameter_text(m, p)
     if st.checkbox("Show more info about this tool"):
