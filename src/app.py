@@ -78,7 +78,15 @@ if mode == Mode.EMPIRICAL:
         p.selected_states = selected_states
         counties = nat_data.loc[nat_data.state.isin(selected_states)].county.unique()
         counties = sorted(list(counties))
-        selected_counties = st.multiselect("Please choose one or more counties.", counties, default=p.selected_counties)
+        selected_counties = []
+        try:
+            # this block is to catch the error that happens when you try to change the state after you load
+            # a scenario and the default counties aren't there yet.
+            selected_counties = st.multiselect("Please choose one or more counties.", counties, default=p.selected_counties)
+        except:
+            st.markdown("""
+            <h4 style="color:red">Please refresh your page before selecting a different state.</h4>
+        """, unsafe_allow_html=True)
 
         if len(selected_counties) > 0:
 
