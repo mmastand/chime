@@ -318,7 +318,7 @@ class Parameters:
         }
         
         self.admits_patient_chart_desc = {
-            "Non-ICU": "Non-ICU COVID-19 census peak at",
+            "Non-ICU": "Non-ICU COVID-19 Admissions peak at",
             "ICU": "ICU COVID-19 Admissions peak at",
             "Ventilators": "COVID-19 Ventilators peak at",
             "Total": "Total COVID-19 Admissions peaks at",
