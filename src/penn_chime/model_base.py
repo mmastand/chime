@@ -148,6 +148,7 @@ class SimSirModelBase:
                     new_icu.append(row.icu)
             beds_df["non_icu"] = new_hosp
             beds_df["icu"] = new_icu
+            beds_df = beds_df[["day", "date", "total", "non_icu", "icu", "ventilators"]]
         return beds_df
 
 

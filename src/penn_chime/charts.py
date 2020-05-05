@@ -505,7 +505,7 @@ def build_ppe_descriptions(
 
     if asterisk:
         messages.append(
-            "_* The max is at the upper bound of the data, and therefore may not be the actual max_")
+            "* _The max is at the upper bound of the data, and therefore may not be the actual max_")
     return "  \n".join(messages)
 
 def build_staffing_descriptions(
@@ -544,7 +544,7 @@ def build_staffing_descriptions(
 
     if asterisk:
         messages.append(
-            "_* The max is at the upper bound of the data, and therefore may not be the actual max_")
+            "* _The max is at the upper bound of the data, and therefore may not be the actual max_")
     return "  \n".join(messages)
 
 def build_table(
@@ -560,7 +560,7 @@ def build_table(
     if "non_icu_after_icu" in table_df.columns:
         table_df = table_df.drop(columns="non_icu_after_icu")
 
-    if "masks_n95" in table_df.columns:
+    if "masks_n95_icu" in table_df.columns:
         table_df = table_df[[
             "day",
             "date",
@@ -583,7 +583,7 @@ def build_table(
             "other_ppe_non_icu",
             "other_ppe_icu",
         ]]
-    if "nurses_total" in table_df.columns:
+    if "nurses_total_icu" in table_df.columns:
         table_df = table_df[[
             "day",
             "date",
