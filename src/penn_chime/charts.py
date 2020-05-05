@@ -583,7 +583,7 @@ def build_table(
             "other_ppe_non_icu",
             "other_ppe_icu",
         ]]
-    if "nurses_total_icu" in table_df.columns:
+    if "nurses_icu" in table_df.columns:
         table_df = table_df[[
             "day",
             "date",
