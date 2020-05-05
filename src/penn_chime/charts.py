@@ -556,6 +556,10 @@ def build_table(
     table_df = df[np.mod(df.day, modulo) == 0].copy()
     table_df.date = table_df.date.dt.strftime(DATE_FORMAT)
     table_df.rename(labels)
+    # Remove non_icu_after_icu column when printing
+    if "non_icu_after_icu" in table_df.columns:
+        table_df = table_df.drop(columns="non_icu_after_icu")
+
     if "masks_n95" in table_df.columns:
         table_df = table_df[[
             "day",
