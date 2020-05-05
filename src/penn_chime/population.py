@@ -5,7 +5,6 @@ def display_population_widgets(p, selected_states, selected_counties, nat_data) 
     sub_nat = nat_data.loc[nat_data.state.isin(selected_states) & nat_data.county.isin(selected_counties)]
     population = int(np.sum(sub_nat.pop_est2019.unique()).item())
     st.subheader(f"""Calculated Regional Population: {population:,}""")
-    p.population
     override_population = st.checkbox(
         "Override Calculated Population",
         value = p.override_population
@@ -21,4 +20,5 @@ def display_population_widgets(p, selected_states, selected_counties, nat_data) 
         )
         p.population_manual_override = population_manual_override
         population = population_manual_override
+    p.population = population
     return population

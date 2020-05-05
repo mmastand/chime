@@ -43,6 +43,7 @@ def constants_from_uploaded_file(file: io.StringIO) -> Tuple[Parameters, dict]:
         mitigation_date=mitigation_date,
         social_distancing_is_implemented=imported_params["SocialDistancingIsImplemented"] if "SocialDistancingIsImplemented" in imported_params else True,
         non_icu=Disposition(float(imported_params["HospitalizationPercentage"]), imported_params["HospitalLengthOfStay"]),
+        non_icu_after_icu=Disposition(0.0, imported_params.get("HospitalAfterICULengthOfStay", 4)),
         icu=Disposition(float(imported_params["ICUPercentage"]), imported_params["ICULengthOfStay"]),
         ventilators=Disposition(float(imported_params["VentilatorsPercentage"]),imported_params["VentLengthOfStay"]),
 
@@ -135,6 +136,7 @@ def param_download_widget(parameters):
         "VentilatorsPercentage": parameters.ventilators.rate,
         "HospitalLengthOfStay": parameters.non_icu.days,
         "ICULengthOfStay": parameters.icu.days,
+        "HospitalAfterICULengthOfStay": parameters.non_icu_after_icu.days,
         "VentLengthOfStay": parameters.ventilators.days,
         "HospitalMarketShare": parameters.market_share,
         "RegionalPopulation": parameters.population,

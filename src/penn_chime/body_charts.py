@@ -252,6 +252,14 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
     df["Scenario"] = parameters.scenario
     df["DateGenerated"] = (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).isoformat()
     
+    # Model Settings
+    df["Mode"] = parameters.app_mode
+    df["InfectionSpreadMeasure"] = parameters.forecasted_metric
+    df["ForecastMethod"] = parameters.forecast_method
+
+    df["States"] = ", ".join(parameters.selected_states)
+    df["Counties"] = ", ".join(parameters.selected_counties)
+
     # Census and Severity
     df["CovidCensusValue"] = parameters.covid_census_value
     df["CovidCensusDate"] = parameters.covid_census_date
@@ -267,6 +275,7 @@ def build_data_and_params(projection_admits, census_df, beds_df, ppe_df, staffin
 
     df["NonICULengthOfStay"] = parameters.non_icu.days
     df["ICULengthOfStay"] = parameters.icu.days
+    df["NonICUAfterICULengthOfStay"] = parameters.non_icu_after_icu.days
     df["VentLengthOfStay"] = parameters.ventilators.days
 
     df["HospitalMarketShare"] = parameters.market_share

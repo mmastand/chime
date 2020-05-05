@@ -21,10 +21,9 @@ def display_app_description():
         * Estimate demand for personal protective equipment (PPE) and staff
 
         Important note on definitions (<span style="color:red;"><i>different from Penn Med model</i></span>):
-        * Non-ICU: Inpatient hospital beds outside of critical care
-        * ICU: Beds used for critical care patients 
-        * Total: Sum of beds/patients in non-ICU plus ICU 
+        * Total: Sum of beds/patients in "non-ICU" plus "ICU" 
         * Ventilators: Devices used to assist with patient breathing, counted independently of beds (not a subset of ICU or Total patients/beds)
+        * Length of Stay: ICU Admissions is divided into an ICU portion followed by a non-ICU portion
 
         Questions, comments, support, or requests: [covidcapacity@healthcatalyst.com](mailto:covidcapacity@healthcatalyst.com)  
         <p>See <strong><a href="#application_guidance">Application Guidance</a></strong> section below for more information.</p>
@@ -259,9 +258,10 @@ def display_footer():
     st.markdown("""<a name="release_notes"></a>""", unsafe_allow_html=True)
     st.subheader("Features and Enhancements History")
     st.markdown("""  
-        **V: 2.0.0 (Monday, May 4, 2020)**
+        **V: 2.1.0 (Tuesday, May 5, 2020)**
         * Added "emprical forecasts".  Leverages county infection and population data to forecast future infections.
-        
+        * Changed how ICU length of stay is represented.
+
         **V: 1.7.1 (Tuesday, April 14, 2020)**
         * Added Non-ICU to all charts. This corresponds to Hospitalized in Penn Med.
         * Changed Total color to black, other colors match Penn Med.

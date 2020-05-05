@@ -200,7 +200,7 @@ class PennModel(SimSirModelBase):
         )
 
         self.calculate_dispositions(raw, self.rates, p.market_share)
-        self.calculate_admits(raw, self.rates)
+        self.calculate_admits(raw, self.rates, p)
         self.calculate_census(raw, self.days)
 
         return raw

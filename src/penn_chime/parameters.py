@@ -92,6 +92,7 @@ class Parameters:
         icu_covid_beds: int,
         covid_ventilators: int,
         non_icu: Disposition,
+        non_icu_after_icu: Disposition,
         icu: Disposition,
         relative_contact_rate: float,
         ventilators: Disposition, # used to be ventilated
@@ -170,9 +171,11 @@ class Parameters:
         self.covid_ventilators = covid_ventilators
         Rate(value=non_icu.rate)
         Rate(value=icu.rate)
+        Rate(value=non_icu_after_icu.rate)
 
         self.non_icu = non_icu
         self.icu = icu
+        self.non_icu_after_icu = non_icu_after_icu
 
         self.ventilators = ventilators
 
@@ -300,6 +303,7 @@ class Parameters:
             "non_icu": non_icu,
             "icu": icu,
             "ventilators": ventilators,
+            "non_icu_after_icu": non_icu_after_icu,
         }
 
         self.actuals_labels = {
