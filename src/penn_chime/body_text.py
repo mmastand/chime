@@ -23,7 +23,7 @@ def display_app_description():
         Important note on definitions (<span style="color:red;"><i>different from Penn Med model</i></span>):
         * Total: Sum of beds/patients in "non-ICU" plus "ICU" 
         * Ventilators: Devices used to assist with patient breathing, counted independently of beds (not a subset of ICU or Total patients/beds)
-        * Length of Stay: ICU Admissions is divided into an ICU portion followed by a non-ICU portion
+        * Length of Stay: ICU Admissions may be divided into an ICU portion followed by a non-ICU portion. (Non-ICU portion assumed to be zero in Penn model)
 
         Questions, comments, support, or requests: [covidcapacity@healthcatalyst.com](mailto:covidcapacity@healthcatalyst.com)  
         <p>See <strong><a href="#application_guidance">Application Guidance</a></strong> section below for more information.</p>
