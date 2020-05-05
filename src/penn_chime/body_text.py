@@ -258,7 +258,7 @@ def display_footer():
     st.markdown("""<a name="release_notes"></a>""", unsafe_allow_html=True)
     st.subheader("Features and Enhancements History")
     st.markdown("""  
-        **V: 2.1.0 (Monday, May 4, 2020)**
+        **V: 2.1.0 (Tuesday, May 5, 2020)**
         * Added "emprical forecasts".  Leverages county infection and population data to forecast future infections.
         * Changed how ICU length of stay is represented.
 
