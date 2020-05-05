@@ -285,5 +285,5 @@ class SimSirModelBase:
 
                 census = cumsum[los:] - cumsum[:-los]
                 raw["census_" + key] = census
-        raw['census_non_icu'] = np.floor(raw['census_non_icu']) + np.floor(raw['census_non_icu_after_icu'])
+        raw['census_non_icu'] = raw['census_non_icu'] + raw['census_non_icu_after_icu']
         raw['census_total'] = np.floor(raw['census_non_icu']) + np.floor(raw['census_icu'])
