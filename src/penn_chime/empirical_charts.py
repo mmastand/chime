@@ -252,10 +252,12 @@ def display_daily_cases_forecast_chart(d):
     y = dict(shorthand="fit:Q", title="Daily Cases", scale=y_scale)
     tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
         DATE_FORMAT)), alt.Tooltip("fit:Q", format=".0f", title="New Cases")]
+    
+    # dark2 is [#1b9e77, #d95f02, #7570b3, #e7298a]
     color = alt.Color("Data Source:N",
                       sort=plot_columns,
                       scale=alt.Scale(domain=plot_columns,
-                                      range=["black", "red"]))
+                                      range=["black", "green"]))
     fc = (
         alt.Chart(data=d, title=title)
         .transform_fold(fold=plot_columns, as_=["Data Source", "fit"])
