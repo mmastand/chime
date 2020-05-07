@@ -257,7 +257,7 @@ class SimSirModelBase:
         # Pad with icu LOS 0's then cut off icu LOS from end.
         if p.non_icu_after_icu.days > 0:  # If non-ICU LOS > 0, shift by icu LOS
             raw["admits_non_icu_after_icu"] = np.pad(
-                raw["admits_non_icu"], [p.icu.days, 0], mode="constant")[:-p.icu.days]
+                raw["admits_icu"], [p.icu.days, 0], mode="constant")[:-p.icu.days]
         else:
             raw["admits_non_icu_after_icu"] = np.zeros(len(raw["admits_non_icu"]))
         # Uncomment to count transfers as admissions to non-icu, though this double counts census.

@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.1.1] 2020-05-07
+### Fixed
+- Bug where we were pulling patients from the non-icu instead of the icu to calculate the post icu census numbers.
+
 ## [2.1.0] 2020-05-05
 ### Added 
 - Emprical forecast mode.  Leverages county infection and population data to forecast future infections.
