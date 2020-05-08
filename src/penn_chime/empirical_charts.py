@@ -45,7 +45,8 @@ def get_names_for_display():
 def display_forecast_charts(d):
     dbT = plot_dynamic_doubling_fit(d)
     Rt = plot_Rt_fit(d)
-    st.altair_chart(alt.vconcat(dbT, Rt), use_container_width=True)
+    st.altair_chart(dbT, use_container_width=True)
+    st.altair_chart(Rt, use_container_width=True)
 
 def plot_dynamic_doubling_fit(d):
     DATE_FORMAT = "%b %d"
@@ -75,10 +76,9 @@ def plot_dynamic_doubling_fit(d):
     # Names for display
     pcn = get_names_for_display()
     d = d.rename(columns=pcn)
-    plot_columns = ["Log-Spline", "Exponential Smoothing", "Loess", "Linear"]
+    plot_columns = ["Exponential Smoothing", "Loess", "Log-Spline", "Linear"]
 
     # Chart title
-    #title = str(d.rgn.iloc[0] + " Doubling Time")
     title = "Doubling Time"
 
     # Forecast Chart
@@ -87,10 +87,11 @@ def plot_dynamic_doubling_fit(d):
     tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
         DATE_FORMAT)), alt.Tooltip("Fit:Q", format=".2f", title="Doubling Time (days)"), "Forecast Method:N"]
     color = alt.Color("Forecast Method:N",
-                    scale=alt.Scale(scheme="dark2"))
+                    scale=alt.Scale(scheme="dark2",
+                                    domain=plot_columns))
     fc = (alt.Chart(data=d, title=title)
         .transform_fold(fold=plot_columns, as_=["Forecast Method", "Fit"],)
-        .encode(x=alt.X(**x), y=alt.Y(**y), color=color,tooltip=tooltip)
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip, size=alt.value(3))
         .mark_line()
         )
 
@@ -117,7 +118,7 @@ def plot_dynamic_doubling_fit(d):
     )
 
     chart = [db_points, db_line, fc, bar]
-    chart = alt.layer(*chart, data=d)
+    chart = alt.layer(*chart, data=d).configure_legend(symbolStrokeWidth=4, symbolSize=300, labelFontSize=12, titleFontSize=12)
     return(chart)
 
 def plot_Rt_fit(d):
@@ -148,10 +149,10 @@ def plot_Rt_fit(d):
     # Names for display
     pcn = get_names_for_display()
     d = d.rename(columns=pcn)
+    plot_columns = ["Exponential Smoothing", "Loess", "Log-Spline", "Linear"]
 
 
     # Chart title
-    # title = str(d.rgn.iloc[0] + " Reproduction Rate")
     title = "Reproduction Rate"
 
     d["one"] = 1
@@ -159,17 +160,17 @@ def plot_Rt_fit(d):
     # Lines
     x = dict(shorthand="date:T", title="Date", axis=alt.Axis(format=(DATE_FORMAT)))
     y = dict(shorthand="Fit:Q", title="Reproduction Rate", scale=y_scale)
-    plot_columns = ["Log-Spline", "Exponential Smoothing", "Loess", "Linear"]
     tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
         DATE_FORMAT)), alt.Tooltip("Fit:Q", format=".2f", title="Reproduction Rate"), "Forecast Method:N"]
     color = alt.Color("Forecast Method:N",
-                      scale=alt.Scale(scheme="dark2"))
+                      scale=alt.Scale(scheme="dark2",
+                                      domain=plot_columns))
 
     fc = (
         alt.Chart(data=d, title=title)
         .transform_fold(fold=plot_columns, as_=["Forecast Method", "Fit"])
-        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
-        .mark_line()
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip, size=alt.value(3))
+        .mark_line(strokeDash=[16, 3])
     )
     
     # Points
@@ -210,6 +211,7 @@ def plot_Rt_fit(d):
 
     p = (
         alt.layer(fc, rt_line, rt_points, conf, dash, bar)
+        .configure_legend(symbolStrokeWidth=4, symbolSize=300, symbolDash=[8, 3], labelFontSize=12, titleFontSize=12)
     )
     return(p)
 
@@ -244,7 +246,24 @@ def display_daily_cases_forecast_chart(d):
     # Chart title
     title = "Projected Regional Daily Cases"  # Get method to fit actuals and forecast
     act_fc = d.mSIR.iloc[0].split(",")
-    subtitle = str("Model Generated from\n" + act_fc[0] + " and" + act_fc[1])
+    inf_spr = "Reproduction Number" #act_fc[0]
+    fc_mth = act_fc[1][1:] # Remove first space.
+    subtitle = str("Model Generated from\n" + inf_spr + " and " + fc_mth)
+
+    line_color_type = {
+        "Doubling Time": {
+            "chart": [16, 0],
+            "legend": [16, 0],
+        },
+        "Reproduction Number": {
+            "chart": [16, 3],
+            "legend": [8, 3],
+        },
+        "ETS": "#1b9e77",
+        "Loess": "#d95f02",
+        "Log-Spline": "#7570b3",
+        "Linear": "#e7298a",
+    }               
 
     plot_columns = ["Actual", "Projected"]
     x = dict(shorthand="date:T", title="Date",
@@ -253,15 +272,18 @@ def display_daily_cases_forecast_chart(d):
     tooltip = [alt.Tooltip("utcmonthdate(date):O", title="Date", format=(
         DATE_FORMAT)), alt.Tooltip("fit:Q", format=".0f", title="New Cases")]
     
-    # dark2 is [#1b9e77, #d95f02, #7570b3, #e7298a]
     color = alt.Color("Data Source:N",
                       sort=plot_columns,
                       scale=alt.Scale(domain=plot_columns,
-                                      range=["black", "green"]))
+                                      range=["black", line_color_type[fc_mth]]))
+    strokeDash = alt.StrokeDash("Data Source:N",
+                                scale=alt.Scale(
+                                    domain=plot_columns,
+                                    range=[[20, 0], [5,3]]))  # line_color_type[inf_spr]["chart"]]))
     fc = (
         alt.Chart(data=d, title=title)
         .transform_fold(fold=plot_columns, as_=["Data Source", "fit"])
-        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip)
+        .encode(x=alt.X(**x), y=alt.Y(**y), color=color, tooltip=tooltip, size=alt.value(3), strokeDash=strokeDash)
         .mark_line()
         .properties(
             title={
@@ -289,5 +311,7 @@ def display_daily_cases_forecast_chart(d):
  
     p = (
         alt.layer(fc, hist_points, bar)
+        .configure_legend(symbolStrokeWidth=4, symbolSize=300, labelFontSize=12, titleFontSize=12)
     )
-    st.altair_chart(p, use_container_width=True)
+    return(p)
+    # st.altair_chart(p, use_container_width=True)
