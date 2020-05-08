@@ -18,7 +18,7 @@ COPY national_data_downloader.py .
 
 # Include any necessary data files
 RUN mkdir data
-COPY ./modeling/data/county_populations.csv ./modeling/king_ets_ff4.csv ./modeling/nyc_ets_ff23.csv ./data/
+COPY ./modeling/data/updated_census_populations.csv ./modeling/king_ets_ff4.csv ./modeling/nyc_ets_ff23.csv ./data/
 
 # Include any R scripts
 COPY ./modeling/jason_model.R ./src/
