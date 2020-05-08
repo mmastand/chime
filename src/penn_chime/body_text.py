@@ -23,7 +23,7 @@ def display_app_description():
         Important note on definitions (<span style="color:red;"><i>different from Penn Med model</i></span>):
         * Total: Sum of beds/patients in "non-ICU" plus "ICU" 
         * Ventilators: Devices used to assist with patient breathing, counted independently of beds (not a subset of ICU or Total patients/beds)
-        * Length of Stay: ICU Admissions may be divided into an ICU portion followed by a non-ICU portion. (non-ICU portion assumed to be zero in Penn Med model)
+        * Length of Stay: ICU Admissions may be divided into an ICU portion followed by a non-ICU portion. (non-ICU portion assumed to be zero in Penn Med wmodel)
 
         Questions, comments, support, or requests: [covidcapacity@healthcatalyst.com](mailto:covidcapacity@healthcatalyst.com)  
         <p>See <strong><a href="#application_guidance">Application Guidance</a></strong> section below for more information.</p>
@@ -258,6 +258,10 @@ def display_footer():
     st.markdown("""<a name="release_notes"></a>""", unsafe_allow_html=True)
     st.subheader("Features and Enhancements History")
     st.markdown("""  
+        **V: 2.1.1 (Thursday, May 7, 2020)**
+        * In empirical mode the forecasts are now run at the state-level if no counties are selected.
+        * Fixed a bug in calculated transfer from ICU to non-ICU for patients initially admitted to ICU.
+
         **V: 2.1.0 (Tuesday, May 5, 2020)**
         * Added "emprical forecasts".  Leverages county infection and population data to forecast future infections.
         * Changed how ICU length of stay is represented.

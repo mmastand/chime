@@ -7,7 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ## [2.1.1] 2020-05-07
+### Added
+- Ability to run forecasts on all counties in state if only a state is selected in empirical mode.
 ### Fixed
+- We had a bad population data file which was missing population data for 101 counties. That has been updated.
 - Bug where we were pulling patients from the non-icu instead of the icu to calculate the post icu census numbers.
 
 ## [2.1.0] 2020-05-05

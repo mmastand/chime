@@ -5,7 +5,7 @@ import traceback
 import requests
 import pandas as pd
 
-SLACK_URL = "https://hooks.slack.com/services/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"
+SLACK_URL = "https://hooks.slack.com/services/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"
 DATA_URL = "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv"
 COUNTY_DATA_FILEPATH = "./data/county_data.csv"
 
@@ -58,7 +58,7 @@ def fetch_data():
                     )
 
         # Add Populations from Jason's Script
-        pop_df_raw = pd.read_csv("./data/county_populations.csv")
+        pop_df_raw = pd.read_csv("./data/updated_census_populations.csv", engine="python")
         pop_df = (pop_df_raw
             .dropna()
             .assign(fips=lambda d: d.fips.astype('int'))

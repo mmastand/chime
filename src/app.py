@@ -79,22 +79,28 @@ if mode == Mode.EMPIRICAL:
         counties = nat_data.loc[nat_data.state.isin(selected_states)].county.unique()
         counties = sorted(list(counties))
         selected_counties = []
+        error = False
         try:
             # this block is to catch the error that happens when you try to change the state after you load
             # a scenario and the default counties aren't there yet.
-            selected_counties = st.multiselect("Please choose one or more counties.", counties, default=p.selected_counties)
+            # If the user does this the state selection will work and we can show them the state-level data, but
+            # they will be unable to select counties until the refresh. Rather than try to explain this nuance
+            # we will just show a message that says they need to refresh their page before selecting a different
+            # state.
+            selected_counties = st.multiselect("Select one or more counties to run projections at the county level.", counties, default=p.selected_counties)
         except:
+            error = True
             st.markdown("""
-            <h4 style="color:red">Please refresh your page before selecting a different state.</h4>
-        """, unsafe_allow_html=True)
-
-        if len(selected_counties) > 0:
+                <h4 style="color:red">Please refresh your page before selecting a different state.</h4>
+            """, unsafe_allow_html=True)
+        if not error:
+            effective_counties = counties if len(selected_counties) == 0 else selected_counties
 
             # Display population
-            population = display_population_widgets(p, selected_states, selected_counties, nat_data)
+            population = display_population_widgets(p, selected_states, effective_counties, nat_data)
 
             p.selected_counties = selected_counties
-            m = EmpiricalModel(p, nat_data, selected_states, selected_counties, population)
+            m = EmpiricalModel(p, nat_data, selected_states, effective_counties, population)
             if not m.fail_flag:
                 # Forecast Methods Charts
                 display_empirical_short(m.r_df)
