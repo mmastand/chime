@@ -358,21 +358,21 @@
                        ,infect_dys=10, grw="dbT", fcst="ets", useAct=TRUE, n_days=30) {
    data$date <- as.Date(data[,d])
    hdt <- max(data[,d], na.rm=TRUE) + n_days
-   print("***** just entered *******")
-   print(head(data))
+   # print("***** just entered *******")
+   # print(head(data))
    dat <- .fncPreProcess(data[,c(rgn,pop,d,cases,cumCases)])
-   print("***** after preproc *******")
-   print(head(dat))
+   # print("***** after preproc *******")
+   # print(head(dat))
    # Get growth rates
    try(dat <- .fncDynRt(data=dat, d=d, y=cases), TRUE)
    try(dat <- .fncDynDblTim(data=dat, d=d, y=cumCases), TRUE)
-   print("***** after growht rates *******")
-   print(head(dat))
+   # print("***** after growht rates *******")
+   # print(head(dat))
    # Forecast
    try(dat <- .fncFcst(dat, d=d, y="Rt" , n=cumCases, mthds=fcst_mthds, h=hdt, trough=fcst_trough), TRUE)
    try(dat <- .fncFcst(dat, d=d, y="dbT", n=cumCases, mthds=fcst_mthds, h=hdt), TRUE)
-   print("***** after fcst *******")
-   print(head(dat))
+   # print("***** after fcst *******")
+   # print(head(dat))
    
    # Run SIR
    try(dat <- .fncSIR(data=dat, pop=dat[1,pop], infect_dys=infect_dys, grw=grw, fcst=fcst, useAct=useAct), TRUE)
