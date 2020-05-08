@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.2] 2020-05-08
+### Changed
+- Forecast Methods colors and linewidths updated
+- Projected Regional Cases chart updates color based on chosen forecasting method
+
 ## [2.1.1] 2020-05-07
 ### Added
 - Ability to run forecasts on all counties in state if only a state is selected in empirical mode.

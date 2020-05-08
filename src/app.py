@@ -115,7 +115,7 @@ if mode == Mode.EMPIRICAL:
                     st.markdown("Choose your Infection Spread Measure and Forecast Method on the sidebar to update Projected Regional Daily Cases.")
                 
                 # Forecasted new Regional cases
-                display_daily_cases_forecast_chart(m.r_df)
+                st.altair_chart(display_daily_cases_forecast_chart(m.r_df), use_container_width=True)
                 display_body_charts(m, p, d, actuals, mode)
     else:
         st.markdown("""

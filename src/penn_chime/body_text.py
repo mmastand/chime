@@ -257,7 +257,10 @@ def display_footer():
     
     st.markdown("""<a name="release_notes"></a>""", unsafe_allow_html=True)
     st.subheader("Features and Enhancements History")
-    st.markdown("""  
+    st.markdown("""
+        **V: 2.1.2 (Friday, May 8, 2020)**
+        * Updated colors and linewidths in forecast method charts.
+        
         **V: 2.1.1 (Thursday, May 7, 2020)**
         * In empirical mode the forecasts are now run at the state-level if no counties are selected.
         * Fixed a bug in calculated transfer from ICU to non-ICU for patients initially admitted to ICU.

@@ -26,7 +26,7 @@ setup(
         "pandas",
         "numpy",
         "scipy",
-        "altair",
+        "altair==4.1.0",
         "pytest",
         "dash",
         "dash_bootstrap_components",
